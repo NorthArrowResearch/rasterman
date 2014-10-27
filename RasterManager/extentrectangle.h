@@ -10,7 +10,7 @@ class RasterMeta;
 
 namespace RasterManager {
 
-class ExtentRectangle
+class DLL_API ExtentRectangle
 {
 public:
     /**

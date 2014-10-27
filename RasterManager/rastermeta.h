@@ -9,7 +9,7 @@ namespace RasterManager {
 
 const int DEFAULT_NO_DATA = -9999;
 
-class RasterMeta : public ExtentRectangle
+class DLL_API RasterMeta : public ExtentRectangle
 {
 public:
 
