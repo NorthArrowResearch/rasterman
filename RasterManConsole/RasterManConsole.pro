@@ -29,6 +29,8 @@ HEADERS += \
 INCLUDEPATH += $$PWD/../RasterManager
 DEPENDPATH += $$PWD/../RasterManager
 
+Libs += -L$$PWD/../RasterManager
+
 win32 {
     ## Windows common build here
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -43,8 +45,14 @@ win32 {
         DEPENDPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
     }
 
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../RasterManager/release/ -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../RasterManager/debug/ -lRasterManager
+    # Compile to a central location
+    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release32
+    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug32
+
+    # Tell it where to find compiled RasterManager.dll
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release32 -lRasterManager
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug32 -lRasterManager
+
 }
 macx{
     ## OSX common build here
@@ -54,13 +62,14 @@ macx{
     CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
     else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
 
+    # Tell it where to find compiled RasterManager.dll
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lRasterManager
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lRasterManager
+
     # Find GDAL on OSX
     LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
     INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
     DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
-
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lRasterManager
 
     message("Building to: $$DESTDIR")
 

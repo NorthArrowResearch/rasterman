@@ -211,7 +211,11 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     // Reset the pointer back to the top
     inputCSVFile.seekg(0);
 
-    double csvX[csvNumLines], csvY[csvNumLines], csvZ[csvNumLines];
+
+    double * csvX = (double*) calloc(csvNumLines, sizeof(double));
+    double * csvY = (double*) calloc(csvNumLines, sizeof(double));
+    double * csvZ = (double*) calloc(csvNumLines, sizeof(double));
+
     int xcol, ycol, zcol;
 
     // Read CSV file into 3 different arrays

@@ -8,6 +8,7 @@ QT       -= core gui
 
 VERSION = 6.0.45
 TARGET = RasterManager
+TARGET_EXT = .dll
 TEMPLATE = lib
 
 QMAKE_CXXFLAGS += -stdlib=libc++
@@ -37,6 +38,11 @@ HEADERS +=\
     rastermeta.h
 
 win32 {
+
+    # Compile to a central location
+    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release32
+    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug32
+
     ## Windows common build here
     !contains(QMAKE_TARGET.arch, x86_64) {
         message("x86 build (32 bit) ")
@@ -54,6 +60,7 @@ macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
 
+    # Compile to a central location
     CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
     else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
 

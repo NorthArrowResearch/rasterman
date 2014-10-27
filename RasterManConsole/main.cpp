@@ -3,7 +3,7 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QDebug>
-#include <rastermanengine.h>
+#include "rastermanengine.h"
 
 int main(int argc, char *argv[])
 {
