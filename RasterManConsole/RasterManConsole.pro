@@ -49,11 +49,21 @@ win32 {
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
+
+    # Compile to a central location
+    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
+    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
+
+    # Find GDAL on OSX
     LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
     INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
     DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
 
-    LIBS += -L$$OUT_PWD/../RasterManager/ -lRasterManager
+    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lRasterManager
+    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lRasterManager
+
+    message("Building to: $$DESTDIR")
+
 }
 
 

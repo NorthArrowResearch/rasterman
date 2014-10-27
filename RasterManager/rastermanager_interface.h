@@ -147,9 +147,9 @@ extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                  const int iOperation,
                                  const char * psOutput);
 
-extern "C" __declspec(dllexport) GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
+extern "C" DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
 
-extern "C" __declspec(dllexport) GDALDataset * CreateOutputDS(const char * pOutputRaster,
+extern "C" DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                                                               GDALDataType eDataType,
                                                               bool bHasNoData,
                                                               double fNoDataValue,

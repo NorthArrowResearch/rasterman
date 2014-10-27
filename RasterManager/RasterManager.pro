@@ -14,6 +14,8 @@ QMAKE_CXXFLAGS += -stdlib=libc++
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
 
+
+
 DEFINES += RASTERMANAGER_LIBRARY
 
 SOURCES += \
@@ -51,6 +53,10 @@ win32 {
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
+
+    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
+    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
+
     LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
     INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
     DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
