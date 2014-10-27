@@ -60,4 +60,6 @@ macx{
     LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
     INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
     DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
+
+    message("Building to: $$DESTDIR")
 }
