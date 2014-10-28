@@ -72,7 +72,7 @@ public:
      * @param src Existing raster object
      * @return Updated raster object with the properties from the argument raster.
      */
-    Raster& operator= (const Raster& src);
+    Raster& operator= (Raster& src);
 
     /**
      * @brief Destructor for cleaning up memory associated with a raster object.
@@ -92,14 +92,7 @@ public:
      * @param yBlockSize Returned number of cells vertically down the block.
      */
     void BlockSize(int& xBlockSize, int& yBlockSize) const;
-    //inline OGRPolygon* Extent() const {return (OGRPolygon*)pExtent->clone();}
-    //bool Extent(OGRPolygon& newExtent);
-    /**
-     * @brief
-     *
-     * @return double
-     */
-    inline double NoDataValue() const {return noDataValue;}
+
     //OGRPolygon* Overlap(Raster& ds) const;
     //void Overlap(OGRPolygon* poly) const;
     /**
@@ -108,49 +101,13 @@ public:
      * @param xSize
      * @param ySize
      */
-    void Size(int& xSize, int& ySize) const;
-
-    /**
-     * @brief XOrigin
-     * @return
-     */
-    inline double XOrigin() const {return m_fXOrigin;}
-
-    /**
-     * @brief YOrigin
-     * @return
-     */
-    inline double YOrigin() const {return m_fYOrigin;}
+    void Size(int& xSize, int& ySize);
 
     /**
      * @brief HasNoDataValue
      * @return
      */
     inline bool HasNoDataValue() const {return !(hasNoData == 0);}
-
-    /**
-     * @brief XSize
-     * @return
-     */
-    inline int XSize() const {return xSize;}
-    /**
-     * @brief
-     *
-     * @return int
-     */
-    inline int YSize() const {return ySize;}
-
-    /**
-     * @brief CellHeight
-     * @return
-     */
-    inline double CellHeight() const {return cellHeight;}
-
-    /**
-     * @brief CellWidth
-     * @return
-     */
-    inline double CellWidth() const {return cellWidth;}
 
     /**
      * @brief ReSample
@@ -230,7 +187,7 @@ protected:
      *
      * @param src
      */
-    void CopyObject(const Raster & src);
+    void CopyObject(Raster & src);
     /**
      * @brief
      *
@@ -250,24 +207,16 @@ protected:
 
 private:
     char * m_sFilePath; /**< TODO */
-    int xSize; /**< TODO */
-    int ySize; /**< TODO */
     int xBlockSize; /**< TODO */
     int yBlockSize; /**< TODO */
     int hasNoData; /**< TODO */
-    double noDataValue; /**< TODO */
-    int xOrigin; /**< TODO */
-    int yOrigin; /**< TODO */
-    double cellHeight; /**< TODO */
-    double cellWidth; /**< TODO */
-    //OGRPolygon* pExtent;
 
-    int m_eDataType; /**< TODO */
+    int m_eDataType;
 
     double m_fXOrigin; /**< TODO */
     double m_fYOrigin; /**< TODO */
 
-    /* These are the privte implementations of the resample and copy raster routines depending on the data size
+    /* These are the private implementations of the resample and copy raster routines depending on the data size
      * of the raster data values
      */
     /**

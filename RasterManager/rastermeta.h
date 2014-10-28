@@ -40,7 +40,7 @@ public:
      * @brief GetNoData
      * @return
      */
-    inline double GetNoData() { return m_fNoData; }
+    inline double GetNoDataValue() { return m_fNoDataValue; }
 
     /**
      * @brief GetGDALDataType
@@ -54,6 +54,9 @@ public:
      */
     inline char * GetProjectionRef() { return m_psProjection; }
 
+protected:
+    inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
+    inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
 
 private:
 
@@ -63,7 +66,7 @@ private:
     char * m_psGDALDriver;
     char * m_psProjection;
 
-    double m_fNoData;
+    double m_fNoDataValue;
     GDALDataType m_eDataType;
 
 

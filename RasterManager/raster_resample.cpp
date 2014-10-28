@@ -11,10 +11,10 @@ namespace RasterManager {
 int Raster::ReSample_Float64(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols)
 {
     // The properties of the original raster.
-    double fOldLeft = this->XOrigin();
-    double fOldYOrigin = this->YOrigin();
-    double fOldCellHeight = this->CellHeight();
-    double fOldCellWidth = this->CellWidth();
+    double fOldLeft = GetLeft();
+    double fOldYOrigin = GetRight();
+    double fOldCellHeight = GetCellHeight();
+    double fOldCellWidth = GetCellWidth();
 
     int nSuccess = 0;
     double fNoData = pRBInput->GetNoDataValue(&nSuccess);
@@ -139,10 +139,10 @@ printf("Input Col+1: % 4d Input+1 X: %0.6f\n\n", nOldLeftCol + 1, fOldX + fOldCe
 int Raster::ReSample_Float32(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols)
 {
     // The properties of the original raster.
-    double fOldLeft = this->XOrigin();
-    double fOldYOrigin = this->YOrigin();
-    double fOldCellHeight = this->CellHeight();
-    double fOldCellWidth = this->CellWidth();
+    double fOldLeft = GetLeft();
+    double fOldYOrigin = GetTop();
+    double fOldCellHeight = GetCellHeight();
+    double fOldCellWidth = GetCellWidth();
 
     int nSuccess = 0;
     double fNoData = pRBInput->GetNoDataValue(&nSuccess);

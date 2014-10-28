@@ -500,16 +500,15 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fNoData, int & bHasNoData, int & nDataType)
 {
     RasterManager::Raster r(ppszRaster);
-    fCellHeight = r.CellHeight();
-    fCellWidth = r.CellWidth();
-    fLeft = r.XOrigin();
-    fTop = r.YOrigin();
-    nRows = r.YSize();
-    nCols = r.XSize();
-    fNoData = r.NoDataValue();
+    fCellHeight = r.GetCellHeight();
+    fCellWidth = r.GetCellWidth();
+    fLeft = r.GetLeft();
+    fTop = r.GetTop();
+    nRows = r.GetRows();
+    nCols = r.GetCols();
+    fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
     nDataType = (int) r.DataType();
-
 }
 
 
@@ -526,13 +525,13 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     int nDataType;
 
     RasterManager::Raster r(ppszRaster);
-    fCellHeight = r.CellHeight();
-    fCellWidth = r.CellWidth();
-    fLeft = r.XOrigin();
-    fTop = r.YOrigin();
-    nRows = r.YSize();
-    nCols = r.XSize();
-    fNoData = r.NoDataValue();
+    fCellHeight = r.GetCellHeight();
+    fCellWidth = r.GetCellWidth();
+    fLeft = r.GetLeft();
+    fTop = r.GetTop();
+    nRows = r.GetRows();
+    nCols = r.GetCols();
+    fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
     nDataType = (int) r.DataType();
 

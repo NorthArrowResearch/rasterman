@@ -38,14 +38,14 @@ void DoDRaster::GetChangeStats(double & fAreaErosion, double & fAreaDeposition, 
 
     int i, j;
     float *pafScanline;
-    pafScanline = (float *) CPLMalloc(sizeof(float)*XSize());
+    pafScanline = (float *) CPLMalloc(sizeof(float)*GetCols());
     double fDoDValue = 0;
 
-    for (i = 0; i < YSize(); i++)
+    for (i = 0; i < GetRows(); i++)
     {
-        pRB->RasterIO(GF_Read, 0, i, XSize(), 1, pafScanline, XSize(), 1, GDT_Float32, 0, 0);
+        pRB->RasterIO(GF_Read, 0, i, GetCols(), 1, pafScanline, GetCols(), 1, GDT_Float32, 0, 0);
 
-        for (j = 0; j < XSize(); j++)
+        for (j = 0; j < GetCols(); j++)
         {
             fDoDValue = pafScanline[j];
             if (fDoDValue != fNoData)
@@ -103,7 +103,7 @@ void DoDRaster::GetChangeStats(Raster & pPropagatedError, double & fVolErosion, 
     //float fNoData = (float) pRB->GetNoDataValue(&nSuccess);
 
     float *pafScanline;
-    pafScanline = (float *) CPLMalloc(sizeof(float)*XSize());
+    pafScanline = (float *) CPLMalloc(sizeof(float)*GetCols());
 
     //**********************************************************************************
     // Open the Mask
@@ -115,7 +115,7 @@ void DoDRaster::GetChangeStats(Raster & pPropagatedError, double & fVolErosion, 
     GDALRasterBand * pRBMask = dsMask->GetRasterBand(1);
     double fNoDataMask = pRBMask->GetNoDataValue(&nSuccess);
     float *pafScanlineMask;
-    pafScanlineMask = (float *) CPLMalloc(sizeof(float)*XSize());
+    pafScanlineMask = (float *) CPLMalloc(sizeof(float)*GetCols());
 
     //**********************************************************************************
     // TODO: Confirm that the Mask and the member raster are the same size
@@ -123,12 +123,12 @@ void DoDRaster::GetChangeStats(Raster & pPropagatedError, double & fVolErosion, 
     int i, j;
     float fPropErrorValue = 0;
 
-    for (i = 0; i < YSize(); i++)
+    for (i = 0; i < GetRows(); i++)
     {
-        pRB->RasterIO(GF_Read, 0, i, XSize(), 1, pafScanline, XSize(), 1, GDT_Float32, 0, 0);
-        pRBMask->RasterIO(GF_Read, 0, i, XSize(), 1, pafScanlineMask, XSize(), 1, GDT_Float32, 0, 0);
+        pRB->RasterIO(GF_Read, 0, i, GetCols(), 1, pafScanline, GetCols(), 1, GDT_Float32, 0, 0);
+        pRBMask->RasterIO(GF_Read, 0, i, GetCols(), 1, pafScanlineMask, GetCols(), 1, GDT_Float32, 0, 0);
 
-        for (j = 0; j < XSize(); j++)
+        for (j = 0; j < GetCols(); j++)
         {
             fPropErrorValue = pafScanline[j];
             // See comment above method
@@ -191,8 +191,8 @@ extern "C" __declspec(dllexport) void GetDoDMinLoDStats(const char * ppszRawDoD,
         return;
 
     GDALRasterBand * pRB = ds->GetRasterBand(1);
-    double xSize = pRB->GetXSize();
-    double ySize = pRB->GetYSize();
+    double GetCols = pRB->GetXSize();
+    double GetRows = pRB->GetYSize();
 
     // Get the dataset cell size;
     double transform[6];
@@ -206,14 +206,14 @@ extern "C" __declspec(dllexport) void GetDoDMinLoDStats(const char * ppszRawDoD,
 
     int i, j;
     float *pafScanline;
-    pafScanline = (float *) CPLMalloc(sizeof(float)*xSize);
+    pafScanline = (float *) CPLMalloc(sizeof(float)*GetCols);
     double fDoDValue = 0;
 
-    for (i = 0; i < ySize; i++)
+    for (i = 0; i < GetRows; i++)
     {
-        pRB->RasterIO(GF_Read, 0, i, xSize, 1, pafScanline, xSize, 1, GDT_Float32, 0, 0);
+        pRB->RasterIO(GF_Read, 0, i, GetCols, 1, pafScanline, GetCols, 1, GDT_Float32, 0, 0);
 
-        for (j = 0; j < xSize; j++)
+        for (j = 0; j < GetCols; j++)
         {
             fDoDValue = pafScanline[j];
             if (fDoDValue != fNoData)
@@ -303,8 +303,8 @@ extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, c
     if (dsDod == NULL)
         return;
     GDALRasterBand * pRBDoD = dsDod->GetRasterBand(1);
-    double xSize = pRBDoD->GetXSize();
-    double ySize = pRBDoD->GetYSize();
+    double GetCols = pRBDoD->GetXSize();
+    double GetRows = pRBDoD->GetYSize();
     // Get the dataset cell size;
     double transform[6];
     dsDod->GetGeoTransform(transform);
@@ -318,10 +318,10 @@ extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, c
         return;
 
     GDALRasterBand * pRBErr = dsErr->GetRasterBand(1);
-    double xSizeErr = pRBErr->GetXSize();
-    double ySizeErr = pRBErr->GetYSize();
+    double GetColsErr = pRBErr->GetXSize();
+    double GetRowsErr = pRBErr->GetYSize();
 
-    if ((xSize != xSizeErr) || (ySize != ySizeErr))
+    if ((GetCols != GetColsErr) || (GetRows != GetRowsErr))
         return;
 
     int nSuccess;
@@ -329,18 +329,18 @@ extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, c
     double fNoDataErr = pRBErr->GetNoDataValue(&nSuccess);
 
     int i, j;
-    float * pafScanlineDoD = (float *) CPLMalloc(sizeof(float)*xSize);
-    float * pafScanlineErr = (float *) CPLMalloc(sizeof(float)*xSizeErr);
+    float * pafScanlineDoD = (float *) CPLMalloc(sizeof(float)*GetCols);
+    float * pafScanlineErr = (float *) CPLMalloc(sizeof(float)*GetColsErr);
 
     double fDoDValue = 0;
     double fPropErr = 0;
 
-    for (i = 0; i < ySize; i++)
+    for (i = 0; i < GetRows; i++)
     {
-        pRBDoD->RasterIO(GF_Read, 0, i, xSize, 1, pafScanlineDoD, xSize, 1, GDT_Float32, 0, 0);
-        pRBErr->RasterIO(GF_Read, 0, i, xSize, 1, pafScanlineErr, xSize, 1, GDT_Float32, 0, 0);
+        pRBDoD->RasterIO(GF_Read, 0, i, GetCols, 1, pafScanlineDoD, GetCols, 1, GDT_Float32, 0, 0);
+        pRBErr->RasterIO(GF_Read, 0, i, GetCols, 1, pafScanlineErr, GetCols, 1, GDT_Float32, 0, 0);
 
-        for (j = 0; j < xSize; j++)
+        for (j = 0; j < GetCols; j++)
         {
             fDoDValue = pafScanlineDoD[j];
             fPropErr = pafScanlineErr[j];

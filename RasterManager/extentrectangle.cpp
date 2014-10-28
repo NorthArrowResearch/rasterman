@@ -71,7 +71,7 @@ void ExtentRectangle::Init(double fTop,
     rows = nRows;
 
     // Cell height is usually negative but we need it to be positive
-    SetTransform(fTop, fLeft, fabs(dCellWidth), fabs(dCellHeight));
+    SetTransform(fTop, fLeft, dCellWidth, dCellHeight);
 }
 
 void ExtentRectangle::Union(ExtentRectangle * aRectangle){
@@ -83,8 +83,8 @@ void ExtentRectangle::Union(ExtentRectangle * aRectangle){
     double left = std::min(GetLeft(), aRectangle->GetLeft());
     double top = std::max(GetTop(), aRectangle->GetTop());
 
-    cols = (int)((right - left) / GetCellWidth());
-    rows = (int)((top - bottom) / GetCellHeight());
+    cols = (int)((right - left) / fabs(GetCellWidth()));
+    rows = (int)((top - bottom) / fabs(GetCellHeight()));
 
     SetTransform(top, left, GetCellWidth(), GetCellHeight());
 }
@@ -100,23 +100,25 @@ void ExtentRectangle::SetTransform(double dTop, double dLeft, double dCellWidth,
 }
 
 int ExtentRectangle::GetRowTranslation(ExtentRectangle * aRectangle){
-    return (int) ((aRectangle->GetTop() - GetTop()) / GetCellHeight() ) ;
+    return (int) ((aRectangle->GetTop() - GetTop()) / fabs(GetCellHeight()) ) ;
 }
 
 int ExtentRectangle::GetColTranslation(ExtentRectangle * aRectangle){
-    return (int) ((aRectangle->GetLeft() - GetLeft()) / GetCellWidth() );
+    return (int) ((aRectangle->GetLeft() - GetLeft()) / fabs(GetCellWidth()) );
 }
 
 double ExtentRectangle::GetRight(){
-    return GetLeft() + ( (double)rows * GetCellWidth() );
+    return GetLeft() + ( (double)rows * fabs(GetCellWidth()) );
 }
 double ExtentRectangle::GetBottom(){
-    return GetTop() - ((double)cols * GetCellHeight() );
+    return GetTop() - ((double)cols * fabs(GetCellHeight()) );
 }
 double ExtentRectangle::GetWidth(){
-    return cols * GetCellWidth();
+    return cols * fabs(GetCellWidth());
 }
-
+double ExtentRectangle::GetHeight(){
+    return rows * fabs(GetCellHeight());
+}
 double ExtentRectangle::GetTop(){
     return m_GeoTransform[3];
 }

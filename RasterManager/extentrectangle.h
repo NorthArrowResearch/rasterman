@@ -165,6 +165,19 @@ public:
      * @return
      */
     double * GetGeoTransform();
+
+protected:
+    inline void SetRows(int nRows) { rows = nRows; }
+    inline void SetCols(int nCols) { cols = nCols; }
+
+    void SetTransform(double dTop, double dLeft, double dCellWidth, double dCellHeight);
+
+    inline void SetCellWidth(double nCellWidth) { m_GeoTransform[1] = nCellWidth; }
+    inline void SetCellHeight(double nCellHeight) { m_GeoTransform[5] = nCellHeight; }
+    inline void SetLeft(double nLeft) { m_GeoTransform[0] = nLeft; }
+    inline void SetTop(double nTop) { m_GeoTransform[3] = nTop; }
+
+
 private:
 
     double m_GeoTransform[6];
@@ -173,8 +186,6 @@ private:
     //    double cellWidth;   m_GeoTransform[1]
     //    double top;         m_GeoTransform[3]
     //    double cellHeight;  m_GeoTransform[5]
-
-    void SetTransform(double dTop, double dLeft, double dCellWidth, double dCellHeight);
 
     int cols;
     int rows;

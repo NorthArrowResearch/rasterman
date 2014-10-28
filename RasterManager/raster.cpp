@@ -25,50 +25,9 @@ Raster::Raster(const char * psFilePath) :
     Init(true);
 }
 
-/*
- * PGB: hoping that we can do away with this version and
- * stick to just a full, complete path
-Raster::Raster(const char * psFolder, const char * psFile)
-{
-    std::string sFullPath(psFolder);
-    //std::strcpy(sFullPath, psFolder);
-    sFullPath.append("\\");
-    sFullPath.append(psFile);
-    Raster::Raster(sFullPath.c_str());
-}
+/**
+* Copy constructor.
 */
-
-/*
-Raster::Raster(const QDir & qFolder, const QString & sFileName)
-{
-    if(sFileName.isNull() || sFileName.isEmpty())
-        throw "The raster file path cannot be null or empty.";
-
-    qDebug() << qFolder.absolutePath();
-
-    if (!qFolder.exists())
-        throw "The folder containing the raster does not exist.";
-
-
-    m_fFileInfo.setFile(qFolder, sFileName);
-    if (!m_fFileInfo.exists())
-        throw "The raster file path does not exist.";
-
-    Init(true);
-}
-
-    Raster::Raster(const QFileInfo &fInfo)
-    {
-        if (!fInfo.exists())
-            throw "The raster file path does not exist.";
-
-        m_fFileInfo = fInfo;
-        Init(true);
-    }
-
-    /*
-     * Copy constructor.
-     */
 Raster::Raster(Raster &src) :
     RasterMeta(src)
 {
@@ -78,7 +37,7 @@ Raster::Raster(Raster &src) :
 /*
  * Assignment operator.
  */
-Raster& Raster::operator= (const Raster& src)
+Raster& Raster::operator= (Raster& src)
 {
     if (this == &src)
         return *this;
@@ -122,42 +81,40 @@ void Raster::Init(bool bFullImage)
 
     GDALRasterBand * band = ds->GetRasterBand(1);
     band->GetBlockSize(&xBlockSize, &yBlockSize);
-    noDataValue = band->GetNoDataValue(&hasNoData);
+    SetNoDataValue( band->GetNoDataValue(&hasNoData) );
     double transform[6];
     ds->GetGeoTransform(transform);
-    cellHeight = transform[5];
-    cellWidth = transform[1];
 
-    m_fXOrigin = transform[0];
-    m_fYOrigin = transform[3];
+    SetTransform(transform[3], transform[0], transform[1], transform[5]);
 
-    m_eDataType = band->GetRasterDataType();
+    SetGDALDataType(band->GetRasterDataType());
 
     OGRLinearRing ring = OGRLinearRing();
     if (bFullImage)
     {
-        xSize = band->GetXSize();
-        ySize = band->GetYSize();
+        SetCols( band->GetXSize() );
+        SetRows( band->GetYSize() );
+
         ring.addPoint(transform[0], transform[3]);
-        ring.addPoint(transform[0], transform[3] + (cellHeight * ySize));
-        ring.addPoint(transform[0] + (cellWidth * xSize), transform[3] + (cellHeight * ySize));
-        ring.addPoint(transform[0] + (cellWidth * xSize), transform[3]);
+        ring.addPoint(transform[0], transform[3] + (GetCellHeight() * GetRows()));
+        ring.addPoint(transform[0] + (GetCellWidth() * GetCols()), transform[3] + (GetCellHeight() * GetRows()));
+        ring.addPoint(transform[0] + (GetCellWidth() * GetCols()), transform[3]);
         ring.closeRings();
     }
     else
     {
-        if ((xOrigin + xSize > band->GetXSize()) || (yOrigin + ySize > band->GetYSize()))
+        if ((GetLeft() + GetCols() > band->GetXSize()) || (GetTop() + GetRows() > band->GetYSize()))
         {
-            throw RMException("Invalid origin (" + stringify(xOrigin) + "," +
-                              stringify(yOrigin) + " and size (" + stringify(xSize) + "," + stringify(ySize) +
+            throw RMException("Invalid origin (" + stringify(GetLeft()) + "," +
+                              stringify(GetTop()) + " and size (" + stringify(GetCols()) + "," + stringify(GetRows()) +
                               " for file " + FilePath());
         }
-        double xMapOrigin = transform[0] + (xOrigin * cellWidth);
-        double yMapOrigin = transform[3] + (yOrigin * cellHeight);
+        double xMapOrigin = transform[0] + (GetLeft() * GetCellWidth());
+        double yMapOrigin = transform[3] + (GetTop() * GetCellHeight());
         ring.addPoint(xMapOrigin, yMapOrigin);
-        ring.addPoint(xMapOrigin, yMapOrigin + (cellHeight * ySize));
-        ring.addPoint(xMapOrigin + (cellWidth * xSize), yMapOrigin + (cellHeight * ySize));
-        ring.addPoint(xMapOrigin + (cellWidth * xSize), yMapOrigin);
+        ring.addPoint(xMapOrigin, yMapOrigin + (GetCellHeight() * GetRows()));
+        ring.addPoint(xMapOrigin + (GetCellWidth() * GetCols()), yMapOrigin + (GetCellHeight() * GetRows()));
+        ring.addPoint(xMapOrigin + (GetCellWidth() * GetCols()), yMapOrigin);
         ring.closeRings();
     }
     GDALClose(ds);
@@ -193,7 +150,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          RasterMeta * p_rastermeta){
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, GDT_Float32, true, p_rastermeta->GetNoData(),
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, GDT_Float32, true, p_rastermeta->GetNoDataValue(),
                                              p_rastermeta->GetCols(), p_rastermeta->GetRows(), NULL, NULL);
 
     // open the csv file and count the lines
@@ -294,24 +251,24 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
  * Copy() method for actually copying the raster dataset object to a new
  * file on disk.
 */
-void Raster::CopyObject(const Raster & src)
+void Raster::CopyObject(Raster &src)
 {
     Init();
 
     m_sFilePath = (char *) malloc(strlen(src.FilePath()) * sizeof(char)+1);
     std::strcpy(m_sFilePath, src.FilePath());
-    xOrigin = src.xOrigin;
-    yOrigin = src.yOrigin;
-    cellHeight = src.cellHeight;
-    cellWidth = src.cellWidth;
-    xSize = src.xSize;
-    ySize = src.ySize;
+
+    SetTransform(src.GetTop(), src.GetLeft(), src.GetCellWidth(), src.GetCellHeight());
+
+    SetRows(src.GetRows());
+    SetCols(src.GetCols());
+
+    SetNoDataValue(src.GetNoDataValue());
+
     xBlockSize = src.xBlockSize;
     yBlockSize = src.yBlockSize;
     hasNoData = src.hasNoData;
-    noDataValue = src.noDataValue;
-    //pExtent = (OGRPolygon*)src.Extent()->clone();
-    //m_sError = src.Error();
+
 }
 
 /*
@@ -320,93 +277,34 @@ void Raster::CopyObject(const Raster & src)
 void Raster::Dispose()
 {
     free(m_sFilePath);
-    //if (pExtent != NULL)
-    //delete pExtent;
-
-    //pExtent = NULL;
 }
 
-/*
-     * Gets the intersection of this extent and the extent of another datasource. The caller has
-     * ownership.
-     * @param ds The other DataSourceClass object to get the intersection with.
-     *
-OGRPolygon* Raster::Overlap(Raster& ds) const
-{
-    // For some reason Intersection() returns NULL if the geometries are equal
-    if (pExtent->Equals(ds.Extent()))
-        return (OGRPolygon*)pExtent->clone();
-    else
-        return (OGRPolygon*)pExtent->Intersection(ds.Extent());
-}
-*/
-
-/*
-     * Gets the intersection of this extent and another polygon.
-     * @param ds The other polygon to get the intersection with.
-     *
-void Raster::Overlap(OGRPolygon* poly) const
-{
-    if (!pExtent->Equals(poly))
-    {
-        OGRPolygon* temp = (OGRPolygon*)pExtent->Intersection(poly);
-        delete poly;
-        poly = temp;
-    }
-}
-*/
 /*
      * Gets the number of rows and columns for this dataset. This is the number actually being used,
      * not necessarily the number in the image.
      * @param xSize The int to put the number of columns into.
      * @param ySize The int to put the number of rows into.
      */
-void Raster::Size(int& xSize, int& ySize) const
+void Raster::Size(int& xSize, int& ySize)
 {
-    xSize = this->xSize;
-    ySize = this->ySize;
+    xSize = GetCols();
+    ySize = GetRows();
 }
-
-/*
-     * Set an extent (subset) to use. Can only be used to set an extent WITHIN the current one! The
-     * idea is that this will be used to set a subset based on the overlap with another datasource.
-     * The caller maintains ownership of the extent passed in.
-     *
-bool Raster::Extent(OGRPolygon& newExtent)
-{
-    OGREnvelope oldEnvelope, newEnvelope;
-    pExtent->getEnvelope(&oldEnvelope);
-    newExtent.getEnvelope(&newEnvelope);
-    if ((newEnvelope.MinX < oldEnvelope.MinX) || (newEnvelope.MaxX > oldEnvelope.MaxX) ||
-            (newEnvelope.MaxY > oldEnvelope.MaxY) || (newEnvelope.MinY < oldEnvelope.MinY))
-    {
-        //m_sError = "New extent does not fall within old one.";
-        return false;
-    }
-    xOrigin = (int)((newEnvelope.MinX - oldEnvelope.MinX) / cellWidth);
-    yOrigin = (int)((newEnvelope.MaxY - oldEnvelope.MaxY) / cellHeight);
-    xSize = (int)ceil((newEnvelope.MaxX - newEnvelope.MinX) / cellWidth);
-    ySize = (int)ceil((newEnvelope.MinY - newEnvelope.MaxY) / cellHeight);
-    delete pExtent;
-    pExtent = (OGRPolygon*)newExtent.clone();
-    return true;
-}
-*/
 
 void Raster::GetInfo()
 {
     printf("\n");
     printf("Raster: %s\n", m_sFilePath);
-    printf("X Origin: %0.5f\n", m_fXOrigin);
-    printf("Y Origin: %.5f\n",m_fYOrigin);
-    printf("Cell Heigh: %.5f\n",cellHeight);
-    printf("Cell Width: %.5f\n", cellWidth);
-    printf("X Size: %d\n", xSize);
-    printf("Y Size %d\n", ySize);
+    printf("X Origin: %0.5f\n", GetLeft() );
+    printf("Y Origin: %.5f\n", GetTop());
+    printf("Cell Heigh: %.5f\n",GetCellHeight() );
+    printf("Cell Width: %.5f\n", GetCellWidth() );
+    printf("X Size: %d\n", GetCols() );
+    printf("Y Size %d\n", GetRows() );
     printf("X BLock Size: %d\n", xBlockSize);
     printf("Y Block Size: %d\n", yBlockSize);
-    printf("Has NoData: %d\n", hasNoData);
-    printf("NoData Value: %f\n", noDataValue);
+    printf("Has NoData: %d\n",  hasNoData );
+    printf("NoData Value: %f\n", GetNoDataValue());
     printf("\n");
 }
 
@@ -473,7 +371,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
     if (HasNoDataValue())
     {
-        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(NoDataValue());
+        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
             return OUTPUT_NO_DATA_ERROR;
     }
@@ -583,23 +481,23 @@ int  Raster::Copy(const char *pOutputRaster,
                         switch ((GDALDataType) DataType())
                         {
                         case GDT_Byte:
-                            ((char *) pOutputLine)[j] = (char) NoDataValue();
+                            ((char *) pOutputLine)[j] = (char) GetNoDataValue();
                             break;
 
                         case GDT_Int16:
-                            ((short int *) pOutputLine)[j] = (short int) NoDataValue();
+                            ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
                             break;
 
                         case GDT_Int32:
-                            ((int *) pOutputLine)[j] = (int) NoDataValue();
+                            ((int *) pOutputLine)[j] = (int) GetNoDataValue();
                             break;
 
                         case GDT_Float32:
-                            ((float *) pOutputLine)[j] = (float) NoDataValue();
+                            ((float *) pOutputLine)[j] = (float) GetNoDataValue();
                             break;
 
                         case GDT_Float64:
-                            ((double *) pOutputLine)[j] = (double) NoDataValue();
+                            ((double *) pOutputLine)[j] = (double) GetNoDataValue();
                             break;
                         }
                     }
@@ -639,23 +537,23 @@ int  Raster::Copy(const char *pOutputRaster,
                 switch ((GDALDataType) DataType())
                 {
                 case GDT_Byte:
-                    ((char *) pOutputLine)[j] = (char) NoDataValue();
+                    ((char *) pOutputLine)[j] = (char) GetNoDataValue();
                     break;
 
                 case GDT_Int16:
-                    ((short int *) pOutputLine)[j] = (short int) NoDataValue();
+                    ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
                     break;
 
                 case GDT_Int32:
-                    ((int *) pOutputLine)[j] = (int) NoDataValue();
+                    ((int *) pOutputLine)[j] = (int) GetNoDataValue();
                     break;
 
                 case GDT_Float32:
-                    ((float *) pOutputLine)[j] = (float) NoDataValue();
+                    ((float *) pOutputLine)[j] = (float) GetNoDataValue();
                     break;
 
                 case GDT_Float64:
-                    ((double *) pOutputLine)[j] = (double) NoDataValue();
+                    ((double *) pOutputLine)[j] = (double) GetNoDataValue();
                     break;
                 }
             }
@@ -741,7 +639,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     if (this->HasNoDataValue())
     {
-        CPLErr er = pRBOutput->SetNoDataValue(this->NoDataValue());
+        CPLErr er = pRBOutput->SetNoDataValue(this->GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
             return OUTPUT_NO_DATA_ERROR;
     }

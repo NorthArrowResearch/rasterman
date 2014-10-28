@@ -31,12 +31,12 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
-    Init(source.GetNoData(), source.GetGDALDriver(), source.GetGDALDataType());
+    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType());
 }
 
-void RasterMeta::Init(double fNoData, const char * psDriver, GDALDataType eDataType)
+void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType)
 {
-    m_fNoData = fNoData;
+    m_fNoDataValue = fNoDataValue;
     m_psGDALDriver = const_cast<char *>(psDriver);
     m_eDataType = eDataType;
 }
@@ -44,7 +44,7 @@ void RasterMeta::Init(double fNoData, const char * psDriver, GDALDataType eDataT
 void RasterMeta::operator=(RasterMeta &source)
 {
     ExtentRectangle::operator =(source);
-    Init(source.GetNoData(), source.GetGDALDriver(), source.GetGDALDataType());
+    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType());
 }
 
 
@@ -58,9 +58,10 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
         throw "error opening raster file";
 
     int nSuccess;
-    m_fNoData = pDS->GetRasterBand(1)->GetNoDataValue(&nSuccess);
+    SetNoDataValue(pDS->GetRasterBand(1)->GetNoDataValue(&nSuccess));
+
     if (nSuccess == 0)
-        m_fNoData = DEFAULT_NO_DATA;
+        SetNoDataValue(DEFAULT_NO_DATA);
 
     GDALClose(pDS);
     //GDALDestroyDriverManager();
