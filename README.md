@@ -10,9 +10,9 @@ In order to build this project alongside our [Habitat Model](https://bitbucket.o
 
 ```
 <PROJECTROOT>/
-<PROJECTROOT>/HabitatModel/habitatmodel      <-- This repo's root
+<PROJECTROOT>/RasterManager/rastermanager/   <-- This repo's root
 <PROJECTROOT>/GCD/gcd-console/               <-- The GCD console repo root
-<PROJECTROOT>/RasterManager/rastermanager/   <-- The GCD console repo root
+<PROJECTROOT>/HabitatModel/habitatmodel      <-- CHaMP Habitat model repo root
 <PROJECTROOT>/Release/Debug(32/64)           <-- Debug executable for all projects
 <PROJECTROOT>/Deploy/Release(32/64)          <-- Release executables for all projects
 ```
