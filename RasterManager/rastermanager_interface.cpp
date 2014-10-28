@@ -508,7 +508,7 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
     nCols = r.GetCols();
     fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
-    nDataType = (int) r.DataType();
+    nDataType = (int) r.GetGDALDataType();
 }
 
 
@@ -533,7 +533,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     nCols = r.GetCols();
     fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
-    nDataType = (int) r.DataType();
+    nDataType = (int) r.GetGDALDataType();
 
     std::cout << "\n    Raster: " << ppszRaster;
     std::printf( "\n      Left: %.8lf", fLeft);

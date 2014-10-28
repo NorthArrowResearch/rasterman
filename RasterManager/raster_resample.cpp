@@ -58,8 +58,8 @@ int Raster::ReSample_Float64(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutp
 
         if (nOldTopRow >=0 && nOldBotRow < pRBInput->GetYSize())
         {
-            pRBInput->RasterIO(GF_Read, 0, nOldTopRow, pRBInput->GetXSize(), 1, pTopLine, pRBInput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
-            pRBInput->RasterIO(GF_Read, 0, nOldBotRow, pRBInput->GetXSize(), 1, pBotLine, pRBInput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldTopRow, pRBInput->GetXSize(), 1, pTopLine, pRBInput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldBotRow, pRBInput->GetXSize(), 1, pBotLine, pRBInput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
 
             for (j = 0; j < nNewCols; j++)
             {
@@ -125,7 +125,7 @@ printf("Input Col+1: % 4d Input+1 X: %0.6f\n\n", nOldLeftCol + 1, fOldX + fOldCe
                 pOutputLine[j] = (double) fNoData;
             }
         }
-        pRBOutput->RasterIO(GF_Write, 0, i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
+        pRBOutput->RasterIO(GF_Write, 0, i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
     }
 
     CPLFree(pTopLine);
@@ -186,8 +186,8 @@ int Raster::ReSample_Float32(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutp
 
         if (nOldTopRow >=0 && nOldBotRow < pRBInput->GetYSize())
         {
-            pRBInput->RasterIO(GF_Read, 0, nOldTopRow, pRBInput->GetXSize(), 1, pTopLine, pRBInput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
-            pRBInput->RasterIO(GF_Read, 0, nOldBotRow, pRBInput->GetXSize(), 1, pBotLine, pRBInput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldTopRow, pRBInput->GetXSize(), 1, pTopLine, pRBInput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldBotRow, pRBInput->GetXSize(), 1, pBotLine, pRBInput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
 
             for (j = 0; j < nNewCols; j++)
             {
@@ -256,7 +256,7 @@ printf("Input Col+1: % 4d Input+1 X: %0.6f\n\n", nOldLeftCol + 1, fOldX + fOldCe
                 pOutputLine[j] = (float) fNoData;
             }
         }
-        pRBOutput->RasterIO(GF_Write, 0, i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, (GDALDataType) this->DataType(), 0, 0);
+        pRBOutput->RasterIO(GF_Write, 0, i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, (GDALDataType) this->GetGDALDataType(), 0, 0);
     }
 
     CPLFree(pTopLine);

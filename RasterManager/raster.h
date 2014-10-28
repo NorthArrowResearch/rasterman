@@ -135,12 +135,6 @@ public:
     int Copy(const char * pOutputRaster, double fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
 
     /**
-     * @brief DataType
-     * @return
-     */
-    int DataType() {return m_eDataType;}
-
-    /**
      * @brief Slope
      * @param pOutputRaster
      * @param bDegrees
@@ -210,8 +204,6 @@ private:
     int xBlockSize; /**< TODO */
     int yBlockSize; /**< TODO */
     int hasNoData; /**< TODO */
-
-    int m_eDataType;
 
     double m_fXOrigin; /**< TODO */
     double m_fYOrigin; /**< TODO */

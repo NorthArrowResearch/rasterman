@@ -365,7 +365,7 @@ int  Raster::Copy(const char *pOutputRaster,
     }
 
     //const char * pC = pDR->GetDescription();
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, (GDALDataType) DataType(), papszOptions);
+    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
@@ -390,7 +390,7 @@ int  Raster::Copy(const char *pOutputRaster,
     void * pInputLine;
     void * pOutputLine;
 
-    switch ((GDALDataType) DataType())
+    switch (GetGDALDataType())
     {
     case GDT_Byte:
         pInputLine = CPLMalloc(pRBInput->GetXSize());
@@ -438,7 +438,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
         if (nOldRow >= 0 && nOldRow < pRBInput->GetYSize())
         {
-            pRBInput->RasterIO(GF_Read, 0, nOldRow, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, (GDALDataType) DataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldRow, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GetGDALDataType(), 0, 0);
 
             for (j = 0; j < nCols; j++)
             {
@@ -446,7 +446,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
                 if (nOldCol >=0 && nOldCol < pRBInput->GetXSize())
                 {
-                    switch ((GDALDataType) DataType())
+                    switch ( GetGDALDataType())
                     {
                     case GDT_Byte:
                         ((char *) pOutputLine)[j] = ((char *) pInputLine)[nOldCol];
@@ -478,7 +478,7 @@ int  Raster::Copy(const char *pOutputRaster,
                 {
                     if (HasNoDataValue())
                     {
-                        switch ((GDALDataType) DataType())
+                        switch ( GetGDALDataType() )
                         {
                         case GDT_Byte:
                             ((char *) pOutputLine)[j] = (char) GetNoDataValue();
@@ -503,7 +503,7 @@ int  Raster::Copy(const char *pOutputRaster,
                     }
                     else
                     {
-                        switch ((GDALDataType) DataType())
+                        switch ( GetGDALDataType())
                         {
                         case GDT_Byte:
                             ((char *) pOutputLine)[j] = (char) 0;
@@ -534,7 +534,7 @@ int  Raster::Copy(const char *pOutputRaster,
             // Outside the bounds of the input image. Loop over all cells in current output row and set to NoData.
             for (j = 0; j < nCols; j++)
             {
-                switch ((GDALDataType) DataType())
+                switch (GetGDALDataType())
                 {
                 case GDT_Byte:
                     ((char *) pOutputLine)[j] = (char) GetNoDataValue();
@@ -558,7 +558,7 @@ int  Raster::Copy(const char *pOutputRaster,
                 }
             }
         }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i, pDSOutput->GetRasterBand(1)->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, (GDALDataType) DataType(), 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i, pDSOutput->GetRasterBand(1)->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GetGDALDataType(), 0, 0);
     }
 
     CPLFree(pInputLine);
@@ -631,7 +631,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
             return OUTPUT_UNHANDLED_DRIVER;
     }
 
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1, (GDALDataType) this->DataType(), papszOptions);
+    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1,  GetGDALDataType(), papszOptions);
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
@@ -658,7 +658,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     /* Call the particular version of the resample routine depending on
      * the type of raster data involved.
      */
-    switch ((GDALDataType) this->DataType())
+    switch (GetGDALDataType())
     {
     case GDT_Byte:
     case GDT_Int32:
