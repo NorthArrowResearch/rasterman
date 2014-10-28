@@ -356,7 +356,7 @@ int  Raster::Copy(const char *pOutputRaster,
         {
             pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
+//            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
         else if (strcmp(pSuffix, ".img") == 0)
             pDR = GetGDALDriverManager()->GetDriverByName("HFA");
@@ -390,7 +390,7 @@ int  Raster::Copy(const char *pOutputRaster,
     void * pInputLine;
     void * pOutputLine;
 
-    switch (GetGDALDataType())
+    switch ((GDALDataType) GetGDALDataType())
     {
     case GDT_Byte:
         pInputLine = CPLMalloc(pRBInput->GetXSize());
@@ -421,6 +421,8 @@ int  Raster::Copy(const char *pOutputRaster,
         throw std::runtime_error("Unhandled raster data type.");
     }
 
+
+
     /*
     * Loop over the raster rows. Note that geographic coordinate origin is bottom left. But
     * the GDAL image anchor is top left. The cell height is negative.
@@ -446,7 +448,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
                 if (nOldCol >=0 && nOldCol < pRBInput->GetXSize())
                 {
-                    switch ( GetGDALDataType())
+                    switch (GetGDALDataType())
                     {
                     case GDT_Byte:
                         ((char *) pOutputLine)[j] = ((char *) pInputLine)[nOldCol];
@@ -468,17 +470,11 @@ int  Raster::Copy(const char *pOutputRaster,
                         ((double *) pOutputLine)[j] = ((double *) pInputLine)[nOldCol];
                         break;
                     }
-
-                    //if (pInputLine[nOldCol] != NoDataValue())
-                    // pOutputLine[j] = pInputLine[nOldCol];
-                    //else
-                    //pOutputLine[j] = NoDataValue();
                 }
                 else
                 {
-                    if (HasNoDataValue())
-                    {
-                        switch ( GetGDALDataType() )
+                    if (HasNoDataValue()) {
+                        switch ( GetGDALDataType())
                         {
                         case GDT_Byte:
                             ((char *) pOutputLine)[j] = (char) GetNoDataValue();
@@ -534,31 +530,33 @@ int  Raster::Copy(const char *pOutputRaster,
             // Outside the bounds of the input image. Loop over all cells in current output row and set to NoData.
             for (j = 0; j < nCols; j++)
             {
-                switch (GetGDALDataType())
-                {
-                case GDT_Byte:
-                    ((char *) pOutputLine)[j] = (char) GetNoDataValue();
-                    break;
+                switch ( GetGDALDataType())
+                 {
+                 case GDT_Byte:
+                     ((char *) pOutputLine)[j] = (char) GetNoDataValue();
+                     break;
 
-                case GDT_Int16:
-                    ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
-                    break;
+                 case GDT_Int16:
+                     ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
+                     break;
 
-                case GDT_Int32:
-                    ((int *) pOutputLine)[j] = (int) GetNoDataValue();
-                    break;
+                 case GDT_Int32:
+                     ((int *) pOutputLine)[j] = (int) GetNoDataValue();
+                     break;
 
-                case GDT_Float32:
-                    ((float *) pOutputLine)[j] = (float) GetNoDataValue();
-                    break;
+                 case GDT_Float32:
+                     ((float *) pOutputLine)[j] = (float) GetNoDataValue();
+                     break;
 
-                case GDT_Float64:
-                    ((double *) pOutputLine)[j] = (double) GetNoDataValue();
-                    break;
-                }
+                 case GDT_Float64:
+                     ((double *) pOutputLine)[j] = (double) GetNoDataValue();
+                     break;
+                 }
             }
         }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i, pDSOutput->GetRasterBand(1)->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GetGDALDataType(), 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i, pDSOutput->GetRasterBand(1)->GetXSize(), 1,
+                                              pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1,
+                                              GetGDALDataType(), 0, 0);
     }
 
     CPLFree(pInputLine);
