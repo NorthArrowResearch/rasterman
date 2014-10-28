@@ -15,7 +15,7 @@
 namespace RasterManager {
 
 ExtentRectangle::ExtentRectangle(){
-
+    Init(0, 0, 0, 0, 0.1, 0.1);
 }
 
 ExtentRectangle::ExtentRectangle(double fTop,
@@ -79,8 +79,8 @@ void ExtentRectangle::Init(double fTop,
     rows = nRows;
 
     // Cell height is usually negative but we need it to be positive
-    cellHeight = abs(dCellHeight);
-    cellWidth = abs(dCellWidth);
+    cellHeight = fabs(dCellHeight);
+    cellWidth = fabs(dCellWidth);
 }
 
 void ExtentRectangle::Union(ExtentRectangle * aRectangle){
