@@ -10,6 +10,14 @@
 namespace RasterManager
 {
 
+const char * DEFAULT_RASTER_DRIVER = "GTiff";
+
+RasterMeta::RasterMeta() : ExtentRectangle()
+{
+    float fNoDataValue = (float) std::numeric_limits<float>::min();
+    Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32);
+}
+
 RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols, double dCellHeight, double dCellWidth, double fNoData, const char * psDriver, GDALDataType eDataType)
     : ExtentRectangle(fTop, fLeft,  nRows, nCols, dCellHeight, dCellWidth)
 {
@@ -21,12 +29,6 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
     GetPropertiesFromExistingRaster(psFilePath);
 }
 
-//RasterMeta::RasterMeta(Raster * pRaster) :
-//    ExtentRectangle(pRaster->YOrigin(), pRaster->XOrigin(), pRaster->YSize(), pRaster->XSize(),pRaster->CellHeight(), pRaster->CellWidth())
-//{
-//    Init(pRaster->GetNoData(), pRaster->GetGDALDriver(), pRaster->GetGDALDataType());
-//}
-
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
     Init(source.GetNoData(), source.GetGDALDriver(), source.GetGDALDataType());
@@ -35,13 +37,13 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 void RasterMeta::Init(double fNoData, const char * psDriver, GDALDataType eDataType)
 {
     m_fNoData = fNoData;
-    m_psGDALDriver = (char *) malloc(strlen(psDriver) * sizeof(char)+1);
+    m_psGDALDriver = const_cast<char *>(psDriver);
     m_eDataType = eDataType;
 }
 
 void RasterMeta::operator=(RasterMeta &source)
 {
-    free((void *) m_psGDALDriver);
+    ExtentRectangle::operator =(source);
     Init(source.GetNoData(), source.GetGDALDriver(), source.GetGDALDataType());
 }
 

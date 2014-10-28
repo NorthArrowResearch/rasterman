@@ -148,16 +148,36 @@ public:
      */
     int GetCols();
 
+    /**
+     * @brief GetCellHeight
+     * @return
+     */
+    double GetCellHeight();
 
+    /**
+     * @brief GetCellWidth
+     * @return
+     */
+    double GetCellWidth();
 
+    /**
+     * @brief GetGeoTransform
+     * @return
+     */
+    double * GetGeoTransform();
 private:
-    double top;
-    double left;
+
+    double m_GeoTransform[6];
+    // FOR REFERENCE:
+    //    double left;        m_GeoTransform[0]
+    //    double cellWidth;   m_GeoTransform[1]
+    //    double top;         m_GeoTransform[3]
+    //    double cellHeight;  m_GeoTransform[5]
+
+    void SetTransform(double dTop, double dLeft, double dCellWidth, double dCellHeight);
+
     int cols;
     int rows;
-
-    double cellHeight;
-    double cellWidth;
 
 };
 }

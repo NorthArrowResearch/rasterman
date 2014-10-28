@@ -377,7 +377,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
     // The output raster info
     GDALRasterBand * pRBOutput;
-    ExtentRectangle OutputMeta;
+    RasterMeta OutputMeta;
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.
@@ -393,20 +393,13 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
         RasterMeta erRasterInput (RasterFileName.c_str());
 
-
-        GDALDataset * pDSs = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
-        if (pDSs == NULL)
-            return INPUT_FILE_ERROR;
-
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
-            pRBOutput = pDSs->GetRasterBand(1);
             OutputMeta = erRasterInput;
         }
         else{
             OutputMeta.Union(&erRasterInput);
         }
-        GDALClose(pDSs);
     }
 
 
@@ -416,8 +409,17 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     float fNoDataValue = (float) std::numeric_limits<float>::min();
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, GDT_Float32, true, fNoDataValue,
-                                             OutputMeta.GetCols(), OutputMeta.GetRows(), NULL, NULL);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput,
+                                             GDT_Float32,
+                                             true,
+                                             fNoDataValue,
+                                             OutputMeta.GetCols(),
+                                             OutputMeta.GetRows(),
+                                             OutputMeta.GetGeoTransform(),
+                                             OutputMeta.GetProjectionRef() );
+
+
+    //projectionRef use from inputs.
 
     float * pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
 

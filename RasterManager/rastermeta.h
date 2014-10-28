@@ -13,8 +13,13 @@ class DLL_API RasterMeta : public ExtentRectangle
 {
 public:
 
+    // Build an empty rastermeta object
+    RasterMeta();
+
     // Build a RasterMeta from first principles
-    RasterMeta(double fTop, double fLeft, int nRows, int nCols, double dCellHeight, double dCellWidth, double fNoData, const char * psDriver, GDALDataType eDataType);
+    RasterMeta(double fTop, double fLeft, int nRows, int nCols,
+               double dCellHeight, double dCellWidth, double fNoData,
+               const char * psDriver, GDALDataType eDataType);
 
     // Build a RasterMeta from an existing raster file path
     RasterMeta(const char * psFilePath);
@@ -25,18 +30,44 @@ public:
     // Assignment Operator, for assigning properties from another RasterMeta
     void operator=(RasterMeta &source);
 
-    inline const char * GetGDALDriver() { return m_psGDALDriver; }
+    /**
+     * @brief GetGDALDriver
+     * @return
+     */
+    inline char * GetGDALDriver() { return m_psGDALDriver; }
+
+    /**
+     * @brief GetNoData
+     * @return
+     */
     inline double GetNoData() { return m_fNoData; }
+
+    /**
+     * @brief GetGDALDataType
+     * @return
+     */
     inline GDALDataType GetGDALDataType() { return m_eDataType; }
+
+    /**
+     * @brief GetProjectionRef
+     * @return
+     */
+    inline char * GetProjectionRef() { return m_psProjection; }
+
 
 private:
 
     void Init(double fNoData, const char * psDriver, GDALDataType eDataType);
     void GetPropertiesFromExistingRaster(const char * psFilePath);
 
-    const char * m_psGDALDriver;
+    char * m_psGDALDriver;
+    char * m_psProjection;
+
     double m_fNoData;
     GDALDataType m_eDataType;
+
+
+
 };
 
 } // RasterManager
