@@ -377,7 +377,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
     // The output raster info
     GDALRasterBand * pRBOutput;
-    ExtentRectangle OutputRect;
+    RasterMeta OutputMeta;
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.
@@ -391,22 +391,15 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
         if (RasterFileName.c_str() == NULL)
             return INPUT_FILE_ERROR;
 
-        Raster erRasterInput (RasterFileName.c_str());
-
-
-        GDALDataset * pDSs = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
-        if (pDSs == NULL)
-            return INPUT_FILE_ERROR;
+        RasterMeta erRasterInput (RasterFileName.c_str());
 
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
-            pRBOutput = pDSs->GetRasterBand(1);
-            OutputRect = erRasterInput;
+            OutputMeta = erRasterInput;
         }
         else{
-            OutputRect.Union(&erRasterInput);
+            OutputMeta.Union(&erRasterInput);
         }
-        GDALClose(pDSs);
     }
 
 
@@ -416,21 +409,28 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     float fNoDataValue = (float) std::numeric_limits<float>::min();
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, GDT_Float32, true, fNoDataValue,
-                                             OutputRect.GetCols(), OutputRect.GetRows(), NULL, NULL);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput,
+                                             GDT_Float32,
+                                             true,
+                                             fNoDataValue,
+                                             OutputMeta.GetCols(),
+                                             OutputMeta.GetRows(),
+                                             OutputMeta.GetGeoTransform(),
+                                             OutputMeta.GetProjectionRef() );
+
+
+    //projectionRef use from inputs.
 
     float * pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
-
 
     /*****************************************************************************************
      * Loop over the output file to make sure every cell gets a value of fNoDataValue
      * Every line is the same so we can have the for loops adjacent
      */
-    int outi, outj;
-    for (outj = 0; outj < OutputRect.GetCols(); outj++){
-        pOutputLine[outj] = fNoDataValue;
-    }
-    for (outi = 0; outi < OutputRect.GetRows(); outi++){
+    for (int outi = 0; outi < OutputMeta.GetRows(); outi++){
+        for (int outj = 0; outj < OutputMeta.GetCols(); outj++){
+            pOutputLine[outj] = fNoDataValue;
+        }
         pRBOutput->RasterIO(GF_Write, 0,  outi, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, GDT_Float32, 0, 0);
     }
 
@@ -451,8 +451,8 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
         //Raster rInput (RasterFileName.c_str());
         ExtentRectangle inputRect (RasterFileName.c_str());
         // We need to figure out where in the output the input lives.
-        int trans_i = OutputRect.GetRowTranslation(&inputRect);
-        int trans_j = OutputRect.GetColTranslation(&inputRect);
+        int trans_i = OutputMeta.GetRowTranslation(&inputRect);
+        int trans_j = OutputMeta.GetColTranslation(&inputRect);
 
         float * pInputLine = (float *) CPLMalloc(sizeof(float)*pRBInput->GetXSize());
 
@@ -483,6 +483,8 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     CPLFree(pOutputLine);
     GDALClose(pDSOutput);
 
+    PrintRasterProperties(psOutput);
+
     return PROCESS_OK;
 }
 
@@ -509,6 +511,62 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
     nDataType = (int) r.DataType();
 
 }
+
+
+extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
+{
+    double fCellWidth = 0;
+    double fCellHeight = 0;
+    double fLeft = 0;
+    double fTop = 0;
+    int nRows = 0;
+    int nCols = 0;
+    double fNoData = 0;
+    int bHasNoData = 0;
+    int nDataType;
+
+    RasterManager::Raster r(ppszRaster);
+    fCellHeight = r.CellHeight();
+    fCellWidth = r.CellWidth();
+    fLeft = r.XOrigin();
+    fTop = r.YOrigin();
+    nRows = r.YSize();
+    nCols = r.XSize();
+    fNoData = r.NoDataValue();
+    bHasNoData = (int) r.HasNoDataValue();
+    nDataType = (int) r.DataType();
+
+    std::cout << "\n    Raster: " << ppszRaster;
+    std::printf( "\n      Left: %.8lf", fLeft);
+    std::printf( "\n      Top: %.8lf", fTop);
+    //std::cout << "\n       Top: " << fTop;
+    std::cout << "\n      Rows: " << nRows;
+    std::cout << "\n      Cols: " << nCols;
+
+    std::cout << "\n Data Type: ";
+
+    switch (nDataType)
+    {
+    // Note 0 = unknown;
+    case  1: std::cout << "1, GDT_Byte, Eight bit unsigned integer"; break;
+    case  2: std::cout << "2, GDT_UInt16, Sixteen bit unsigned integer"; break;
+    case  3: std::cout << "3, GDT_Int16, Sixteen bit signed integer"; break;
+    case  4: std::cout << "4, GDT_UInt32, Thirty two bit unsigned integer"; break;
+    case  5: std::cout << "5, GDT_Int32, Thirty two bit signed integer"; break;
+    case  6: std::cout << "6, GDT_Float32, Thirty two bit floating point"; break;
+    case  7: std::cout << "7, GDT_Float64, Sixty four bit floating point"; break;
+    case  8: std::cout << "8, GDT_CInt16, Complex Int16"; break;
+    case  9: std::cout << "9, GDT_CInt32, Complex Int32"; break;
+    case 10: std::cout << "10, GDT_CFloat32, Complex Float32"; break;
+    case 11: std::cout << "11, GDT_CFloat64, Complex Float64"; break;
+    default: std::cout << "Unknown"; break;
+    }
+    if (bHasNoData)
+        std::cout << "\n   No Data: " << fNoData;
+    else
+        std::cout << "\n   No Data: none";
+}
+
 
 /*******************************************************************************************************
  *******************************************************************************************************

@@ -83,7 +83,7 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode);
 extern "C" DLL_API void inline RegisterGDAL() { GDALAllRegister();}
 
 /**
- * @brief
+ * @brief GetRasterProperties
  *
  * @param ppszRaster
  * @param fCellHeight
@@ -100,9 +100,24 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType);
+/**
+ * @brief PrintRasterProperties
+ *
+ * @param ppszRaster
+ * @param fCellHeight
+ * @param fCellWidth
+ * @param fLeft
+ * @param fTop
+ * @param nRows
+ * @param nCols
+ * @param fNoData
+ * @param bHasNoData
+ * @param nDataType
+ */
+extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster);
 
 /**
- * @brief
+ * @brief BiLinearResample
  *
  * @param ppszOriginalRaster
  * @param ppszOutputRaster
@@ -118,7 +133,7 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                                       double fLeft, double fTop, int nRows, int nCols);
 
 /**
- * @brief
+ * @brief Copy
  *
  * @param ppszOriginalRaster
  * @param ppszOutputRaster
@@ -135,7 +150,7 @@ extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
 
 
 /**
- * @brief
+ * @brief BasicMath
  *
  * @param ppszOriginalRaster1
  * @param ppszOriginalRaster2

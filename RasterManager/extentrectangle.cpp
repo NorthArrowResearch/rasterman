@@ -15,7 +15,7 @@
 namespace RasterManager {
 
 ExtentRectangle::ExtentRectangle(){
-
+    Init(0, 0, 0, 0, 0.1, 0.1);
 }
 
 ExtentRectangle::ExtentRectangle(double fTop,
@@ -30,16 +30,16 @@ ExtentRectangle::ExtentRectangle(double fTop,
 
 ExtentRectangle::ExtentRectangle(ExtentRectangle &source)
 {
-    Init(source.top, source.left,
-          source.rows,  source.cols,
-         source.cellHeight, source.cellWidth);
+    Init(source.GetTop(), source.GetLeft(),
+         source.GetRows(),  source.GetCols(),
+         source.GetCellHeight(), source.GetCellWidth());
 }
 
 void ExtentRectangle::operator=(ExtentRectangle &source)
 {
-    Init(source.top, source.left,
-          source.rows,  source.cols,
-         source.cellHeight, source.cellWidth);
+    Init(source.GetTop(),   source.GetLeft(),
+         source.GetRows(),  source.GetCols(),
+         source.GetCellHeight(), source.GetCellWidth());
 }
 
 ExtentRectangle::ExtentRectangle(const char * psFilePath)
@@ -51,77 +51,83 @@ ExtentRectangle::ExtentRectangle(const char * psFilePath)
         throw RMException(CPLGetLastErrorMsg());
 
     GDALRasterBand * pBand = pDS->GetRasterBand(1);
+
     cols = pBand->GetXSize();
     rows = pBand->GetYSize();
 
-    double transform[6];
-    pDS->GetGeoTransform(transform);
-    cellHeight = transform[5];
-    cellWidth = transform[1];
-
-    left = transform[0];
-    top = transform[3];
+    pDS->GetGeoTransform(m_GeoTransform);
 
     GDALClose(pDS);
 }
 
 void ExtentRectangle::Init(double fTop,
-          double fLeft,
-          int nRows,
-          int nCols,
-          double dCellHeight,
-          double dCellWidth){
-
-    top = fTop;
-    left = fLeft;
+                           double fLeft,
+                           int nRows,
+                           int nCols,
+                           double dCellHeight,
+                           double dCellWidth){
 
     cols = nCols;
     rows = nRows;
 
     // Cell height is usually negative but we need it to be positive
-    cellHeight = abs(dCellHeight);
-    cellWidth = abs(dCellWidth);
+    SetTransform(fTop, fLeft, fabs(dCellWidth), fabs(dCellHeight));
 }
 
 void ExtentRectangle::Union(ExtentRectangle * aRectangle){
 
-    double right = std::max(this->GetRight(), aRectangle->GetRight());
-    double bottom = std::min(this->GetBottom(), aRectangle->GetBottom());
+    // For readability let's set all the values first
+    double right = std::max(GetRight(), aRectangle->GetRight());
+    double bottom = std::min(GetBottom(), aRectangle->GetBottom());
 
-    cols = (int)((right - left) / cellWidth);
-    rows = (int)((top - bottom) / cellHeight);
+    double left = std::min(GetLeft(), aRectangle->GetLeft());
+    double top = std::max(GetTop(), aRectangle->GetTop());
 
-    top = std::max(top, aRectangle->GetTop());
-    left = std::min(left, aRectangle->GetLeft());
+    cols = (int)((right - left) / GetCellWidth());
+    rows = (int)((top - bottom) / GetCellHeight());
 
-    cols = (int)((right - left) / cellWidth);
-    rows = (int)((top - bottom) / cellHeight);
+    SetTransform(top, left, GetCellWidth(), GetCellHeight());
+}
+
+
+void ExtentRectangle::SetTransform(double dTop, double dLeft, double dCellWidth, double dCellHeight){
+    m_GeoTransform[0] = dLeft;
+    m_GeoTransform[1] = dCellWidth;
+    m_GeoTransform[2] = 0;
+    m_GeoTransform[3] = dTop;
+    m_GeoTransform[4] = 0;
+    m_GeoTransform[5] = dCellHeight;
 }
 
 int ExtentRectangle::GetRowTranslation(ExtentRectangle * aRectangle){
-    return (int) ((aRectangle->GetTop() - top) / cellHeight ) ;
+    return (int) ((aRectangle->GetTop() - GetTop()) / GetCellHeight() ) ;
 }
 
 int ExtentRectangle::GetColTranslation(ExtentRectangle * aRectangle){
-    return (int) ((aRectangle->GetLeft() - left) / cellWidth );
+    return (int) ((aRectangle->GetLeft() - GetLeft()) / GetCellWidth() );
 }
-double ExtentRectangle::GetTop(){
-    return top;
-}
-double ExtentRectangle::GetLeft(){
-    return left;
-}
+
 double ExtentRectangle::GetRight(){
-    return left + ( (double)rows * cellWidth);
+    return GetLeft() + ( (double)rows * GetCellWidth() );
 }
 double ExtentRectangle::GetBottom(){
-    return top - ((double)cols * cellHeight);
+    return GetTop() - ((double)cols * GetCellHeight() );
 }
 double ExtentRectangle::GetWidth(){
-    return cols * cellWidth;
+    return cols * GetCellWidth();
 }
-double ExtentRectangle::GetHeight(){
-    return rows * cellHeight;
+
+double ExtentRectangle::GetTop(){
+    return m_GeoTransform[3];
+}
+double ExtentRectangle::GetLeft(){
+    return m_GeoTransform[0];
+}
+double ExtentRectangle::GetCellWidth(){
+    return m_GeoTransform[1];
+}
+double ExtentRectangle::GetCellHeight(){
+    return m_GeoTransform[5];
 }
 
 int ExtentRectangle::GetRows(){
@@ -130,6 +136,21 @@ int ExtentRectangle::GetRows(){
 int ExtentRectangle::GetCols(){
     return cols;
 }
+double * ExtentRectangle::GetGeoTransform(){
+
+    // The affine transform consists of six coefficients returned by GDALDataset::GetGeoTransform()
+    // which map pixel/line coordinates into georeferenced space using the following relationship:
+
+    //    Xgeo = GT(0) + Xpixel*GT(1) + Yline*GT(2)
+    //    Ygeo = GT(3) + Xpixel*GT(4) + Yline*GT(5)
+
+    // In case of north up images, the GT(2) and GT(4) coefficients are zero, and the GT(1) is
+    // pixel width, and GT(5) is pixel height. The (GT(0),GT(3)) position is the top left corner
+    // of the top left pixel of the raster.
+
+    return m_GeoTransform;
+}
+
 
 } // Namespace
 
