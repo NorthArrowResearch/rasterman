@@ -58,7 +58,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
     if (pDSOutput == NULL)
         return NULL;
 
-    if (!pTemplateRastermeta->GetNoDataValue())
+    if (pTemplateRastermeta->GetNoDataValue() != NULL)
     {
         CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(pTemplateRastermeta->GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
@@ -228,8 +228,6 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         CPLFree(pInputLine2);
         GDALClose(pDS2);
 
-        PrintRasterProperties(psOutput);
-
     }
     else if (dOperator != NULL || iOperation == RM_BASIC_MATH_SQRT){
         /*****************************************************************************************
@@ -293,6 +291,8 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
     GDALClose(pDS1);
     GDALClose(pDSOutput);
+
+    PrintRasterProperties(psOutput);
 
     return PROCESS_OK;
 }
@@ -427,8 +427,6 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, &OutputMeta);
     double fNoDataValue = OutputMeta.GetNoDataValue();
-
-    pDSOutput->GetRasterBand(1)->SetNoDataValue(fNoDataValue);
 
     //projectionRef use from inputs.
 
