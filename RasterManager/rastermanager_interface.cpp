@@ -119,9 +119,6 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     if (psRaster2 == NULL && dOperator == NULL && iOperation != RM_BASIC_MATH_SQRT)
         return MISSING_ARGUMENT;
 
-    float fOperator = (float) dOperator;
-
-
     /*****************************************************************************************
      * Raster 1
      */
@@ -232,13 +229,13 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         GDALClose(pDS2);
 
     }
-    else if (fOperator != NULL){
+    else if (dOperator != NULL || iOperation == RM_BASIC_MATH_SQRT){
         /*****************************************************************************************
         * Numerical Value to be used
         */
 
         int i, j;
-        for (i = 0; i < pRBInput1->GetYSize(); i++)
+        for (i = 0; i < rmOutputMeta.GetRows(); i++)
         {
             pRBInput1->RasterIO(GF_Read, 0,  i, rmRasterMeta1.GetCols(), 1, pInputLine1, rmRasterMeta1.GetCols(), 1, GDT_Float64, 0, 0);
 
@@ -251,25 +248,25 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                 else
                 {
                     if (iOperation == RM_BASIC_MATH_ADD)
-                        pOutputLine[j] = pInputLine1[j] + fOperator;
+                        pOutputLine[j] = pInputLine1[j] + dOperator;
 
                     else if (iOperation == RM_BASIC_MATH_SUBTRACT)
-                        pOutputLine[j] = pInputLine1[j] - fOperator;
+                        pOutputLine[j] = pInputLine1[j] - dOperator;
 
                     else if (iOperation == RM_BASIC_MATH_MULTIPLY)
-                        pOutputLine[j] = pInputLine1[j] * fOperator;
+                        pOutputLine[j] = pInputLine1[j] * dOperator;
 
                     else if (iOperation == RM_BASIC_MATH_DIVIDE){
                         // Remember to cover the divide by zero case
-                        if(fOperator != 0)
-                            pOutputLine[j] = pInputLine1[j] / fOperator;
+                        if(dOperator != 0)
+                            pOutputLine[j] = pInputLine1[j] / dOperator;
                         else
                             pOutputLine[j] = (float) fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_POWER){
                         // We're throwing away imaginary numbers
-                        if (fOperator >= 0)
-                            pOutputLine[j] = pow(pInputLine1[j], fOperator);
+                        if (dOperator >= 0)
+                            pOutputLine[j] = pow(pInputLine1[j], dOperator);
                         else
                             pOutputLine[j] = (float) fNoDataValue;
                     }
