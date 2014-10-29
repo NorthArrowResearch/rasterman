@@ -166,7 +166,7 @@ extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
 
 DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
 
-DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pInputMeta);
+DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
 DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
 

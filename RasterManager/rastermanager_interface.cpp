@@ -29,7 +29,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
     CreateOutputDS(pOutputRaster, &pInputMeta);
 }
 
-DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pInputMeta){
+DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
 
     /* Create the new dataset. Determine the driver from the output file extension.
      * Enforce LZW compression for TIFs. The predictor 3 is used for floating point prediction.
@@ -37,41 +37,36 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pI
      */
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
-    const char * pSuffix = RasterManager::ExtractFileExt(pOutputRaster);
-    if (pSuffix == NULL)
-        return NULL;
-    else
-    {
-        if (strcmp(pSuffix, ".tif") == 0)
-        {
-            pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
-            papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
-        }
-        else if (strcmp(pSuffix, ".img") == 0)
-            pDR = GetGDALDriverManager()->GetDriverByName("HFA");
-        else
-            return NULL;
+
+    if (pTemplateRastermeta->GetGDALDriver() == NULL){
+        pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
+    }
+    else {
+        pDR = GetGDALDriverManager()->GetDriverByName(pTemplateRastermeta->GetGDALDriver());
+    }
+
+    if (strcmp( pDR->GetDescription() , "GTiff") == 0){
+        papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
     }
 
     GDALDataset * pDSOutput =  pDR->Create(pOutputRaster,
-                                          pInputMeta->GetCols(),
-                                          pInputMeta->GetRows(),
+                                          pTemplateRastermeta->GetCols(),
+                                          pTemplateRastermeta->GetRows(),
                                           1,
-                                          pInputMeta->GetGDALDataType(),
+                                          pTemplateRastermeta->GetGDALDataType(),
                                           papszOptions);
     if (pDSOutput == NULL)
         return NULL;
 
-    if (!pInputMeta->GetNoDataValue())
+    if (!pTemplateRastermeta->GetNoDataValue())
     {
-        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(pInputMeta->GetNoDataValue());
+        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(pTemplateRastermeta->GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
             return NULL;
     }
 
-    double * newTransform = pInputMeta->GetGeoTransform();
-    char * projectionRef = pInputMeta->GetProjectionRef();
+    double * newTransform = pTemplateRastermeta->GetGeoTransform();
+    char * projectionRef = pTemplateRastermeta->GetProjectionRef();
 
     if (newTransform != NULL)
         pDSOutput->SetGeoTransform(newTransform);
@@ -126,32 +121,41 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
     float fOperator = (float) dOperator;
 
+
     /*****************************************************************************************
      * Raster 1
      */
     if (psRaster1 == NULL)
         return INPUT_FILE_ERROR;
 
+    RasterMeta rmRasterMeta1(psRaster1);
+
     GDALDataset * pDS1 = (GDALDataset*) GDALOpen(psRaster1, GA_ReadOnly);
     if (pDS1 == NULL)
         return INPUT_FILE_ERROR;
 
     GDALRasterBand * pRBInput1 = pDS1->GetRasterBand(1);
-    int nHasNoData1 = 0;
-    double fNoDataValue1 = pRBInput1->GetNoDataValue(&nHasNoData1);
 
-    float * pInputLine1 = (float *) CPLMalloc(sizeof(float)*pRBInput1->GetXSize());
+    double * pInputLine1 = (double *) CPLMalloc(sizeof(double)*rmRasterMeta1.GetCols());
 
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
-    float fNoDataValue = (float) std::numeric_limits<float>::min();
+    RasterMeta rmOutputMeta;
+    rmOutputMeta = rmRasterMeta1;
+
+    double fNoDataValue;
+    if (rmRasterMeta1.GetNoDataValue() == NULL){
+        fNoDataValue = (double) std::numeric_limits<float>::min();
+    }
+    else {
+        fNoDataValue = rmRasterMeta1.GetNoDataValue();
+    }
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDSfromRef(psOutput, GDT_Float32, true, fNoDataValue, pDS1);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmRasterMeta1);
 
-    float * pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
-
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
 
     /*****************************************************************************************
      * Raster 2 to be used
@@ -162,9 +166,9 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         if (pDS1 == NULL)
             return INPUT_FILE_ERROR;
 
+        RasterMeta rmRasterMeta2(psRaster2);
+
         GDALRasterBand * pRBInput2 = pDS2->GetRasterBand(1);
-        int nHasNoData2 = 0;
-        double fNoDataValue2 = pRBInput2->GetNoDataValue(&nHasNoData2);
 
         /*****************************************************************************************
         /* Check that input rasters have the same numbers of rows and columns
@@ -179,20 +183,20 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         if (psOutput == NULL)
             return OUTPUT_FILE_MISSING;
 
-        float * pInputLine2 = (float *) CPLMalloc(sizeof(float)*pRBInput2->GetXSize());
+        double * pInputLine2 = (double *) CPLMalloc(sizeof(double)*rmRasterMeta2.GetCols());
 
         int i, j;
-        for (i = 0; i < pRBInput1->GetYSize(); i++)
+        for (i = 0; i < rmOutputMeta.GetRows(); i++)
         {
-            pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float32, 0, 0);
-            pRBInput2->RasterIO(GF_Read, 0,  i, pRBInput2->GetXSize(), 1, pInputLine2, pRBInput2->GetXSize(), 1, GDT_Float32, 0, 0);
+            pRBInput1->RasterIO(GF_Read, 0,  i, rmRasterMeta1.GetCols(), 1, pInputLine1, rmRasterMeta1.GetCols(), 1, GDT_Float64, 0, 0);
+            pRBInput2->RasterIO(GF_Read, 0,  i, rmRasterMeta2.GetCols(), 1, pInputLine2, rmRasterMeta2.GetCols(), 1, GDT_Float64, 0, 0);
 
-            for (j = 0; j < pRBInput1->GetXSize(); j++)
+            for (j = 0; j < rmOutputMeta.GetCols(); j++)
             {
-                if ( (nHasNoData1 != 0 && pInputLine1[j] == (float) fNoDataValue1) ||
-                     (nHasNoData2 != 0 && pInputLine2[j] == (float) fNoDataValue2) )
+                if ( (pInputLine1[j] == rmRasterMeta1.GetNoDataValue()) ||
+                     (pInputLine2[j] == rmRasterMeta1.GetNoDataValue()) )
                 {
-                    pOutputLine[j] = (float) fNoDataValue;
+                    pOutputLine[j] = rmOutputMeta.GetNoDataValue();
                 }
                 else
                 {
@@ -207,14 +211,14 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                         if (psRaster2 != 0)
                             pOutputLine[j] = pInputLine1[j] / pInputLine2[j];
                         else
-                            pOutputLine[j] = (float) fNoDataValue;
+                            pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_THRESHOLD_PROP_ERROR){
                         if (abs(pInputLine1[j]) > pInputLine2[j]){
                             pOutputLine[j] = pInputLine1[j];
                         }
                         else{
-                            pOutputLine[j] = (float) fNoDataValue;
+                            pOutputLine[j] = fNoDataValue;
                         }
                     }
                     else
@@ -222,11 +226,9 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                 }
             }
 
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput1->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float32, 0, 0);
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
         }
-        CPLFree(pInputLine1);
         CPLFree(pInputLine2);
-        CPLFree(pOutputLine);
         GDALClose(pDS2);
 
     }
@@ -238,13 +240,13 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         int i, j;
         for (i = 0; i < pRBInput1->GetYSize(); i++)
         {
-            pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float32, 0, 0);
+            pRBInput1->RasterIO(GF_Read, 0,  i, rmRasterMeta1.GetCols(), 1, pInputLine1, rmRasterMeta1.GetCols(), 1, GDT_Float64, 0, 0);
 
             for (j = 0; j < pRBInput1->GetXSize(); j++)
             {
-                if ( (nHasNoData1 != 0 && pInputLine1[j] == (float) fNoDataValue1))
+                if ( (pInputLine1[j] == fNoDataValue))
                 {
-                    pOutputLine[j] = (float) fNoDataValue;
+                    pOutputLine[j] = fNoDataValue;
                 }
                 else
                 {
@@ -282,9 +284,9 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                         return MISSING_ARGUMENT;
                 }
             }
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput1->GetXSize(), 1, pOutputLine,
-                                                  pDSOutput->GetRasterBand(1)->GetXSize(), 1,
-                                                  GDT_Float32, 0, 0);
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine,
+                                                  rmOutputMeta.GetCols(), 1,
+                                                  GDT_Float64, 0, 0);
         }
     }
     CPLFree(pInputLine1);
@@ -622,6 +624,25 @@ extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
             Ext[s.length()-Len] = '\0';
             return Ext;
         }
+    }
+}
+
+extern "C" DLL_API const char * GetDriverFromFilename(const char * FileName)
+{
+    const char * pSuffix = ExtractFileExt(FileName);
+
+    if (pSuffix == NULL)
+        return NULL;
+    else
+    {
+        if (strcmp(pSuffix, ".tif") == 0)
+        {
+            return "GTiff";
+        }
+        else if (strcmp(pSuffix, ".img") == 0)
+            return "HFA";
+        else
+            return NULL;
     }
 }
 
