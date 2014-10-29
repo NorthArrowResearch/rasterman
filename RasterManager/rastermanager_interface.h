@@ -3,6 +3,7 @@
 
 #include "rastermanager_global.h"
 #include "gdal.h"
+#include "rastermeta.h"
 
 #include <limits>
 #include <math.h>
@@ -162,13 +163,12 @@ extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                  const int iOperation,
                                  const char * psOutput);
 
-extern "C" DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
 
-extern "C" DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
-                                                              GDALDataType eDataType,
-                                                              bool bHasNoData,
-                                                              double fNoDataValue,
-                                                              int nCols, int nRows, double *newTransform, const char *projectionRef);
+DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
+
+DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pInputMeta);
+
+DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
 
 /**
  * @brief

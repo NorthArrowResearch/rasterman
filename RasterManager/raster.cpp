@@ -87,6 +87,8 @@ void Raster::Init(bool bFullImage)
 
     SetTransform(transform[3], transform[0], transform[1], transform[5]);
 
+    SetProjectionRef(ds->GetProjectionRef());
+
     SetGDALDataType(band->GetRasterDataType());
 
     OGRLinearRing ring = OGRLinearRing();
@@ -150,8 +152,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          RasterMeta * p_rastermeta){
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, GDT_Float32, true, p_rastermeta->GetNoDataValue(),
-                                             p_rastermeta->GetCols(), p_rastermeta->GetRows(), NULL, NULL);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, p_rastermeta);
 
     // open the csv file and count the lines
     int csvNumLines = 0;
@@ -339,6 +340,7 @@ int  Raster::Copy(const char *pOutputRaster,
      */
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
+    char * psDR = NULL;
     const char * pSuffix = ExtractFileExt(pOutputRaster);
     if (pSuffix == NULL)
         return OUTPUT_FILE_EXT_ERROR;
@@ -346,26 +348,29 @@ int  Raster::Copy(const char *pOutputRaster,
     {
         if (strcmp(pSuffix, ".tif") == 0)
         {
-            pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
+            psDR = "GTiff";
+            pDR = GetGDALDriverManager()->GetDriverByName(psDR);
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
             //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
-        else if (strcmp(pSuffix, ".img") == 0)
-            pDR = GetGDALDriverManager()->GetDriverByName("HFA");
+        else if (strcmp(pSuffix, ".img") == 0){
+            psDR = "HFA";
+            pDR = GetGDALDriverManager()->GetDriverByName(psDR);
+        }
         else
             return OUTPUT_UNHANDLED_DRIVER;
     }
 
     double dNewCellHeight = dNewCellSize * -1;
     RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, dNewCellHeight,
-                          dNewCellSize, GetNoDataValue(), GetGDALDriver(), GetGDALDataType() );
+                          dNewCellSize, GetNoDataValue(), psDR, GetGDALDataType(), GetProjectionRef() );
 
     //const char * pC = pDR->GetDescription();
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
-    if (HasNoDataValue())
+    if (GetNoDataValue() != NULL)
     {
         CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)

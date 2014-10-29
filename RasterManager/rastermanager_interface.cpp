@@ -18,11 +18,18 @@
 
 namespace RasterManager {
 
-extern "C" DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
+DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
                          double fNoDataValue,
                          int nCols, int nRows, double * newTransform, const char * projectionRef){
+
+    RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, newTransform[1], newTransform[5], fNoDataValue, NULL, eDataType, projectionRef);
+
+    CreateOutputDS(pOutputRaster, &pInputMeta);
+}
+
+DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pInputMeta){
 
     /* Create the new dataset. Determine the driver from the output file extension.
      * Enforce LZW compression for TIFs. The predictor 3 is used for floating point prediction.
@@ -47,27 +54,35 @@ extern "C" DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
             return NULL;
     }
 
-    //const char * pC = pDR->GetDescription();
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, eDataType, papszOptions);
+    GDALDataset * pDSOutput =  pDR->Create(pOutputRaster,
+                                          pInputMeta->GetCols(),
+                                          pInputMeta->GetRows(),
+                                          1,
+                                          pInputMeta->GetGDALDataType(),
+                                          papszOptions);
     if (pDSOutput == NULL)
         return NULL;
 
-    if (bHasNoData)
+    if (!pInputMeta->GetNoDataValue())
     {
-        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(fNoDataValue);
+        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(pInputMeta->GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
             return NULL;
     }
+
+    double * newTransform = pInputMeta->GetGeoTransform();
+    char * projectionRef = pInputMeta->GetProjectionRef();
+
     if (newTransform != NULL)
         pDSOutput->SetGeoTransform(newTransform);
     if (projectionRef != NULL)
         pDSOutput->SetProjection(projectionRef);
 
     return pDSOutput;
+
 }
 
-
-extern "C" DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
+DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
                          double fNoDataValue,
@@ -413,11 +428,11 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     GDALDataset * pDSOutput = CreateOutputDS(psOutput,
                                              GDT_Float32,
                                              true,
-                                             fNoDataValue,
+                                             OutputMeta.GetNoDataValue(),
                                              OutputMeta.GetCols(),
                                              OutputMeta.GetRows(),
                                              OutputMeta.GetGeoTransform(),
-                                             OutputMeta.GetProjectionRef() );
+                                             OutputMeta.GetProjectionRef());
 
 
     //projectionRef use from inputs.

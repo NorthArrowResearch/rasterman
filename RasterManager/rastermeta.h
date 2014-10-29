@@ -19,7 +19,7 @@ public:
     // Build a RasterMeta from first principles
     RasterMeta(double fTop, double fLeft, int nRows, int nCols,
                double dCellHeight, double dCellWidth, double fNoData,
-               const char * psDriver, GDALDataType eDataType);
+               const char * psDriver, GDALDataType eDataType, const char *psProjection);
 
     // Build a RasterMeta from an existing raster file path
     RasterMeta(const char * psFilePath);
@@ -57,10 +57,11 @@ public:
 protected:
     inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
     inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+    inline void SetProjectionRef(const char * fProjectionRef);
 
 private:
 
-    void Init(double fNoData, const char * psDriver, GDALDataType eDataType);
+    void Init(double fNoData, const char * psDriver, GDALDataType eDataType, const char *psProjection);
     void GetPropertiesFromExistingRaster(const char * psFilePath);
 
     char * m_psGDALDriver;
@@ -72,6 +73,7 @@ private:
 
 
 };
+
 
 } // RasterManager
 

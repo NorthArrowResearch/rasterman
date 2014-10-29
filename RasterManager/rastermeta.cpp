@@ -15,15 +15,15 @@ const char * DEFAULT_RASTER_DRIVER = "GTiff";
 RasterMeta::RasterMeta() : ExtentRectangle()
 {
     float fNoDataValue = (float) std::numeric_limits<float>::min();
-    Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32);
+    Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32, NULL);
 }
 
 RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
                        double dCellHeight, double dCellWidth, double fNoData,
-                       const char * psDriver, GDALDataType eDataType)
+                       const char * psDriver, GDALDataType eDataType, const char * psProjection)
     : ExtentRectangle(fTop, fLeft,  nRows, nCols, dCellHeight, dCellWidth)
 {
-    Init(fNoData, psDriver, eDataType);
+    Init(fNoData, psDriver, eDataType, psProjection);
 }
 
 RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
@@ -33,22 +33,28 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
-    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType());
+    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
-void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType)
+void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
-    m_fNoDataValue = fNoDataValue;
     m_psGDALDriver = const_cast<char *>(psDriver);
-    m_eDataType = eDataType;
+
+    if (fNoDataValue != NULL)
+    SetNoDataValue(fNoDataValue);
+
+    if (eDataType != NULL)
+        SetGDALDataType(eDataType);
+
+    if (psProjection != NULL)
+        SetProjectionRef(psProjection);
 }
 
 void RasterMeta::operator=(RasterMeta &source)
 {
     ExtentRectangle::operator =(source);
-    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType());
+    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
-
 
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
@@ -67,6 +73,12 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
     GDALClose(pDS);
     //GDALDestroyDriverManager();
+}
+
+
+void RasterMeta::SetProjectionRef(const char *fProjectionRef) {
+    m_psProjection = (char *) malloc(std::strlen(fProjectionRef) * sizeof(char)+1);
+    std::strcpy(m_psProjection, fProjectionRef);
 }
 
 } // RasterManager
