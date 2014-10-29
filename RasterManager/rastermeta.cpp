@@ -18,7 +18,9 @@ RasterMeta::RasterMeta() : ExtentRectangle()
     Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32);
 }
 
-RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols, double dCellHeight, double dCellWidth, double fNoData, const char * psDriver, GDALDataType eDataType)
+RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
+                       double dCellHeight, double dCellWidth, double fNoData,
+                       const char * psDriver, GDALDataType eDataType)
     : ExtentRectangle(fTop, fLeft,  nRows, nCols, dCellHeight, dCellWidth)
 {
     Init(fNoData, psDriver, eDataType);

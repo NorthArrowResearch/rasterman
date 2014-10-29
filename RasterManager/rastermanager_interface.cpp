@@ -209,8 +209,9 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
             pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput1->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float32, 0, 0);
         }
-
+        CPLFree(pInputLine1);
         CPLFree(pInputLine2);
+        CPLFree(pOutputLine);
         GDALClose(pDS2);
 
     }
@@ -449,7 +450,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
         GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
         GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
         //Raster rInput (RasterFileName.c_str());
-        ExtentRectangle inputRect (RasterFileName.c_str());
+        RasterMeta inputRect (RasterFileName.c_str());
         // We need to figure out where in the output the input lives.
         int trans_i = OutputMeta.GetRowTranslation(&inputRect);
         int trans_j = OutputMeta.GetColTranslation(&inputRect);

@@ -297,7 +297,7 @@ void Raster::GetInfo()
     printf("Raster: %s\n", m_sFilePath);
     printf("X Origin: %0.5f\n", GetLeft() );
     printf("Y Origin: %.5f\n", GetTop());
-    printf("Cell Heigh: %.5f\n",GetCellHeight() );
+    printf("Cell Height: %.5f\n",GetCellHeight() );
     printf("Cell Width: %.5f\n", GetCellWidth() );
     printf("X Size: %d\n", GetCols() );
     printf("Y Size %d\n", GetRows() );
@@ -309,7 +309,7 @@ void Raster::GetInfo()
 }
 
 int  Raster::Copy(const char *pOutputRaster,
-                  double fNewCellSize,
+                  double dNewCellSize,
                   double fLeft, double fTop, int nRows, int nCols)
 {
     if (fLeft <=0)
@@ -333,14 +333,6 @@ int  Raster::Copy(const char *pOutputRaster,
 
     GDALRasterBand * pRBInput = pDSOld->GetRasterBand(1);
 
-    // Get the spatial reference information for the original dataset.
-    double oldTransform[6];
-    pDSOld ->GetGeoTransform(oldTransform);
-    double fOldLeft = oldTransform[0];
-    double fOldYOrigin = oldTransform[3];
-    double fOldCellHeight = fNewCellSize; // oldTransform[5];
-    double fOldCellWidth = fNewCellSize; //oldTransform[1];
-
     /* Create the new dataset. Determine the driver from the output file extension.
      * Enforce LZW compression for TIFs. The predictor 3 is used for floating point prediction.
      * Not using this value defaults the LZW to prediction to 1 which causes striping.
@@ -356,13 +348,17 @@ int  Raster::Copy(const char *pOutputRaster,
         {
             pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-//            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
+            //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
         else if (strcmp(pSuffix, ".img") == 0)
             pDR = GetGDALDriverManager()->GetDriverByName("HFA");
         else
             return OUTPUT_UNHANDLED_DRIVER;
     }
+
+    double dNewCellHeight = dNewCellSize * -1;
+    RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, dNewCellHeight,
+                          dNewCellSize, GetNoDataValue(), GetGDALDriver(), GetGDALDataType() );
 
     //const char * pC = pDR->GetDescription();
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);
@@ -376,52 +372,20 @@ int  Raster::Copy(const char *pOutputRaster,
             return OUTPUT_NO_DATA_ERROR;
     }
 
-    double newTransform[6];
-    newTransform[0] = fLeft;
-    newTransform[1] = fNewCellSize;
-    newTransform[2] = 0;
-    newTransform[3] = fTop;
-    newTransform[4] = 0;
-    newTransform[5] = -1 * fNewCellSize;
-
-    pDSOutput->SetGeoTransform(newTransform);
+    pDSOutput->SetGeoTransform(OutputMeta.GetGeoTransform());
     pDSOutput->SetProjection(pDSOld->GetProjectionRef());
 
-    void * pInputLine;
-    void * pOutputLine;
+    int nInputCols = pRBInput->GetXSize();
+    int nInputRows = pRBInput->GetYSize();
 
-    switch ((GDALDataType) GetGDALDataType())
-    {
-    case GDT_Byte:
-        pInputLine = CPLMalloc(pRBInput->GetXSize());
-        pOutputLine = CPLMalloc(pDSOutput->GetRasterBand(1)->GetXSize());
-        break;
+    float * pInputLine;
+    float * pOutputLine;
 
-    case GDT_Int16:
-        pInputLine = CPLMalloc(sizeof(short int)*pRBInput->GetXSize());
-        pOutputLine = CPLMalloc(sizeof(short int) *pDSOutput->GetRasterBand(1)->GetXSize());
-        break;
+    pInputLine = (float *) CPLMalloc(sizeof(float)*nInputCols);
+    pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
 
-    case GDT_Int32:
-        pInputLine = CPLMalloc(sizeof(int)*pRBInput->GetXSize());
-        pOutputLine = CPLMalloc(sizeof(int) *pDSOutput->GetRasterBand(1)->GetXSize());
-        break;
-
-    case GDT_Float32:
-        pInputLine = CPLMalloc(sizeof(float)*pRBInput->GetXSize());
-        pOutputLine = CPLMalloc(sizeof(float) *pDSOutput->GetRasterBand(1)->GetXSize());
-        break;
-
-    case GDT_Float64:
-        pInputLine = CPLMalloc(sizeof(double)*pRBInput->GetXSize());
-        pOutputLine = CPLMalloc(sizeof(double) *pDSOutput->GetRasterBand(1)->GetXSize());
-        break;
-
-    default:
-        throw std::runtime_error("Unhandled raster data type.");
-    }
-
-
+    int nRowTrans = GetRowTranslation(&OutputMeta);
+    int nColTrans = GetColTranslation(&OutputMeta);
 
     /*
     * Loop over the raster rows. Note that geographic coordinate origin is bottom left. But
@@ -434,93 +398,32 @@ int  Raster::Copy(const char *pOutputRaster,
 
     int nOldRow, nOldCol;
     int i, j;
+
     for (i = 0; i < nRows; i++)
     {
-        nOldRow = i +  (int) ( (fTop - fOldYOrigin) / oldTransform[5] );
+        nOldRow = i + nRowTrans;
 
-        if (nOldRow >= 0 && nOldRow < pRBInput->GetYSize())
+        if (nOldRow >= 0 && nOldRow < nInputRows)
         {
-            pRBInput->RasterIO(GF_Read, 0, nOldRow, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GetGDALDataType(), 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldRow, nInputCols, 1, pInputLine, nInputRows, 1, GDT_CFloat32, 0, 0);
 
             for (j = 0; j < nCols; j++)
             {
-                nOldCol = j + (int) ( (fLeft - fOldLeft) / fOldCellWidth );
+                nOldCol = j + nColTrans;
 
-                if (nOldCol >=0 && nOldCol < pRBInput->GetXSize())
+                if (nOldCol >=0 && nOldCol < nInputCols)
                 {
-                    switch (GetGDALDataType())
-                    {
-                    case GDT_Byte:
-                        ((char *) pOutputLine)[j] = ((char *) pInputLine)[nOldCol];
-                        break;
-
-                    case GDT_Int16:
-                        ((short int *) pOutputLine)[j] = ((short int *) pInputLine)[nOldCol];
-                        break;
-
-                    case GDT_Int32:
-                        ((int *) pOutputLine)[j] = ((int *) pInputLine)[nOldCol];
-                        break;
-
-                    case GDT_Float32:
-                        ((float *) pOutputLine)[j] = ((float *) pInputLine)[nOldCol];
-                        break;
-
-                    case GDT_Float64:
-                        ((double *) pOutputLine)[j] = ((double *) pInputLine)[nOldCol];
-                        break;
-                    }
+                    float a = pInputLine[nOldCol];
+                    pOutputLine[j] = pInputLine[nOldCol];
                 }
                 else
                 {
                     if (HasNoDataValue()) {
-                        switch ( GetGDALDataType())
-                        {
-                        case GDT_Byte:
-                            ((char *) pOutputLine)[j] = (char) GetNoDataValue();
-                            break;
-
-                        case GDT_Int16:
-                            ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
-                            break;
-
-                        case GDT_Int32:
-                            ((int *) pOutputLine)[j] = (int) GetNoDataValue();
-                            break;
-
-                        case GDT_Float32:
-                            ((float *) pOutputLine)[j] = (float) GetNoDataValue();
-                            break;
-
-                        case GDT_Float64:
-                            ((double *) pOutputLine)[j] = (double) GetNoDataValue();
-                            break;
-                        }
+                        pOutputLine[j] = (float) GetNoDataValue();
                     }
                     else
                     {
-                        switch ( GetGDALDataType())
-                        {
-                        case GDT_Byte:
-                            ((char *) pOutputLine)[j] = (char) 0;
-                            break;
-
-                        case GDT_Int16:
-                            ((short int *) pOutputLine)[j] = (short int) 0;
-                            break;
-
-                        case GDT_Int32:
-                            ((int *) pOutputLine)[j] = (int) 0;
-                            break;
-
-                        case GDT_Float32:
-                            ((float *) pOutputLine)[j] = (float) 0;
-                            break;
-
-                        case GDT_Float64:
-                            ((double *) pOutputLine)[j] = (double) 0;
-                            break;
-                        }
+                        pOutputLine[j] = (float) 0;
                     }
                 }
             }
@@ -530,33 +433,14 @@ int  Raster::Copy(const char *pOutputRaster,
             // Outside the bounds of the input image. Loop over all cells in current output row and set to NoData.
             for (j = 0; j < nCols; j++)
             {
-                switch ( GetGDALDataType())
-                 {
-                 case GDT_Byte:
-                     ((char *) pOutputLine)[j] = (char) GetNoDataValue();
-                     break;
-
-                 case GDT_Int16:
-                     ((short int *) pOutputLine)[j] = (short int) GetNoDataValue();
-                     break;
-
-                 case GDT_Int32:
-                     ((int *) pOutputLine)[j] = (int) GetNoDataValue();
-                     break;
-
-                 case GDT_Float32:
-                     ((float *) pOutputLine)[j] = (float) GetNoDataValue();
-                     break;
-
-                 case GDT_Float64:
-                     ((double *) pOutputLine)[j] = (double) GetNoDataValue();
-                     break;
-                 }
+                pOutputLine[j] = (float) GetNoDataValue();
             }
         }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i, pDSOutput->GetRasterBand(1)->GetXSize(), 1,
-                                              pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1,
-                                              GetGDALDataType(), 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i,
+                                              pDSOutput->GetRasterBand(1)->GetXSize(), 1,
+                                              pOutputLine,
+                                              pDSOutput->GetRasterBand(1)->GetXSize(), 1,
+                                              GDT_Float32, 0, 0);
     }
 
     CPLFree(pInputLine);
