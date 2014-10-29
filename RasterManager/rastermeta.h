@@ -57,7 +57,7 @@ public:
 protected:
     inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
     inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
-    inline void SetProjectionRef(const char * fProjectionRef);
+    void SetProjectionRef(const char * fProjectionRef);
 
 private:
 
