@@ -108,10 +108,10 @@ int ExtentRectangle::GetColTranslation(ExtentRectangle * aRectangle){
 }
 
 double ExtentRectangle::GetRight(){
-    return GetLeft() + ( (double)rows * fabs(GetCellWidth()) );
+    return GetLeft() + ( (double)cols * fabs(GetCellWidth()) );
 }
 double ExtentRectangle::GetBottom(){
-    return GetTop() - ((double)cols * fabs(GetCellHeight()) );
+    return GetTop() - ((double)rows * fabs(GetCellHeight()) );
 }
 double ExtentRectangle::GetWidth(){
     return cols * fabs(GetCellWidth());

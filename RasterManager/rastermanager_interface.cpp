@@ -228,6 +228,8 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         CPLFree(pInputLine2);
         GDALClose(pDS2);
 
+        PrintRasterProperties(psOutput);
+
     }
     else if (dOperator != NULL || iOperation == RM_BASIC_MATH_SQRT){
         /*****************************************************************************************
@@ -391,8 +393,8 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     std::string RasterFileName, RasterFilesToken(csRasters);
 
     // The output raster info
-    GDALRasterBand * pRBOutput;
     RasterMeta OutputMeta;
+
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.
@@ -421,32 +423,26 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
-    float fNoDataValue = (float) std::numeric_limits<float>::min();
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput,
-                                             GDT_Float32,
-                                             true,
-                                             OutputMeta.GetNoDataValue(),
-                                             OutputMeta.GetCols(),
-                                             OutputMeta.GetRows(),
-                                             OutputMeta.GetGeoTransform(),
-                                             OutputMeta.GetProjectionRef());
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &OutputMeta);
+    double fNoDataValue = OutputMeta.GetNoDataValue();
 
+    pDSOutput->GetRasterBand(1)->SetNoDataValue(fNoDataValue);
 
     //projectionRef use from inputs.
 
-    float * pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*OutputMeta.GetCols());
 
     /*****************************************************************************************
      * Loop over the output file to make sure every cell gets a value of fNoDataValue
      * Every line is the same so we can have the for loops adjacent
      */
+    for (int outj = 0; outj < OutputMeta.GetCols(); outj++){
+        pOutputLine[outj] = fNoDataValue;
+    }
     for (int outi = 0; outi < OutputMeta.GetRows(); outi++){
-        for (int outj = 0; outj < OutputMeta.GetCols(); outj++){
-            pOutputLine[outj] = fNoDataValue;
-        }
-        pRBOutput->RasterIO(GF_Write, 0,  outi, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, GDT_Float32, 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  outi, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
     }
 
     /*****************************************************************************************
@@ -457,38 +453,39 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     std::string sRasterFiles(csRasters);
     RasterFileName = "";
 
-    while(RasterFileName != ""){
+    while(sRasterFiles != ""){
         RasterFileName = sRasterFiles.substr(0,sRasterFiles.find_first_of(";"));
         sRasterFiles = sRasterFiles.substr(sRasterFiles.find_first_of(";") + 1);
 
         GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
         GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
-        //Raster rInput (RasterFileName.c_str());
+
         RasterMeta inputRect (RasterFileName.c_str());
+
         // We need to figure out where in the output the input lives.
         int trans_i = OutputMeta.GetRowTranslation(&inputRect);
         int trans_j = OutputMeta.GetColTranslation(&inputRect);
 
-        float * pInputLine = (float *) CPLMalloc(sizeof(float)*pRBInput->GetXSize());
+        double * pInputLine = (double *) CPLMalloc(sizeof(double)*pRBInput->GetXSize());
 
         for (i = 0; i < pRBInput->GetYSize(); i++){
-            pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float32, 0, 0);
+            pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
             // here's where we need to get the correct row of the output. Replace
-            pRBOutput->RasterIO(GF_Read, 0,  trans_i+i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, GDT_Float32, 0, 0);
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Read, 0,  trans_i+i, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
 
             for (j = 0; j < pRBInput->GetXSize(); j++){
                 // If the input line is empty then do nothing
-                if ( (pInputLine[j] != (float) fNoDataValue)
+                if ( (pInputLine[j] != fNoDataValue)
                      && pOutputLine[trans_j+j] ==  fNoDataValue)
                 {
                     pOutputLine[trans_j+j] = pInputLine[j];
                 }
             }
             // here's where we need to get the correct row of the output. Replace
-            pRBOutput->RasterIO(GF_Write, 0,  trans_i+i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, GDT_Float32, 0, 0);
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  trans_i+i, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
 
         }
-        CPLFree(pInputLine); //SOMETHING
+        CPLFree(pInputLine);
 
     }
 
