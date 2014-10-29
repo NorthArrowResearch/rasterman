@@ -378,11 +378,8 @@ int  Raster::Copy(const char *pOutputRaster,
     int nInputCols = pRBInput->GetXSize();
     int nInputRows = pRBInput->GetYSize();
 
-    float * pInputLine;
-    float * pOutputLine;
-
-    pInputLine = (float *) CPLMalloc(sizeof(float)*nInputCols);
-    pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*nInputCols);
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*pDSOutput->GetRasterBand(1)->GetXSize());
 
     int nRowTrans = GetRowTranslation(&OutputMeta);
     int nColTrans = GetColTranslation(&OutputMeta);
@@ -405,7 +402,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
         if (nOldRow >= 0 && nOldRow < nInputRows)
         {
-            pRBInput->RasterIO(GF_Read, 0, nOldRow, nInputCols, 1, pInputLine, nInputRows, 1, GDT_CFloat32, 0, 0);
+            pRBInput->RasterIO(GF_Read, 0, nOldRow, nInputCols, 1, pInputLine, nInputCols, 1, GDT_Float64, 0, 0);
 
             for (j = 0; j < nCols; j++)
             {
@@ -419,11 +416,11 @@ int  Raster::Copy(const char *pOutputRaster,
                 else
                 {
                     if (HasNoDataValue()) {
-                        pOutputLine[j] = (float) GetNoDataValue();
+                        pOutputLine[j] = GetNoDataValue();
                     }
                     else
                     {
-                        pOutputLine[j] = (float) 0;
+                        pOutputLine[j] = 0;
                     }
                 }
             }
@@ -440,7 +437,7 @@ int  Raster::Copy(const char *pOutputRaster,
                                               pDSOutput->GetRasterBand(1)->GetXSize(), 1,
                                               pOutputLine,
                                               pDSOutput->GetRasterBand(1)->GetXSize(), 1,
-                                              GDT_Float32, 0, 0);
+                                              GDT_Float64, 0, 0);
     }
 
     CPLFree(pInputLine);
