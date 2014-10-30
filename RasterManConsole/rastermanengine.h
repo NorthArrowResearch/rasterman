@@ -88,7 +88,7 @@ private:
      * @return
      */
 
-    void CSVToRaster(int arc, char * argv[]);
+    void CSVToRaster(int argc, char * argv[]);
 
     QString GetFile(int argc, char * argv[], int nIndex, bool bMustExist);
     /**
@@ -117,7 +117,7 @@ private:
      * @param argc
      * @param argv
      */
-    void GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[]);
+    void GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[], int nStartArg);
 
 };
 

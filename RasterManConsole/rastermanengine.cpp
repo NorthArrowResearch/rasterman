@@ -45,7 +45,7 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         else if (QString::compare(sCommand, "Sqrt", Qt::CaseInsensitive) == 0)
             RasterSqrt(argc, argv);
 
-        else if (QString::compare(sCommand, "CSVToRaster", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(sCommand, "csv2raster", Qt::CaseInsensitive) == 0)
             CSVToRaster(argc, argv);
 
         else if (QString::compare(sCommand, "Slope", Qt::CaseInsensitive) == 0)
@@ -142,7 +142,7 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
         int nRows, nCols;
         int eResult;
 
-        GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv);
+        GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         eResult = rOriginal.ReSample(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
@@ -209,7 +209,7 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
 
         double fLeft, fTop, fCellSize;
         int nRows, nCols;
-        GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv);
+        GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         rOriginal.Copy(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
@@ -449,8 +449,70 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     }
 }
 
-void RasterManEngine::CSVToRaster(int arc, char * argv[])
+void RasterManEngine::CSVToRaster(int argc, char * argv[])
 {
+    if (argc < 8)
+    {
+        std::cout << "\n Convert a CSV file into a raster.";
+        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<left> <top> <rows> <cols> <cell_size> <EPSG_Proj>] | <csv_meta_file_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    csv_file_path: Absolute full path to existing .csv file.";
+        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+
+        std::cout << "\n    XField: Name of the field to use for the x values";
+        std::cout << "\n    YField: Name of the field to use for the x values";
+        std::cout << "\n    DataField: Name of the field to use for the raster data.";
+
+
+        std::cout << "\n    top: Top coordinate of the output raster extent.";
+        std::cout << "\n    left: Left coordinate of the output raster extent.";
+        std::cout << "\n    rows: Number of rows in the output raster.";
+        std::cout << "\n    cols: Number of columns in the output raster.";
+        std::cout << "\n    cell_size: Cell size for the output raster.";
+        std::cout << "\n    EPSG_Proj: EPSG Coordinate projection (integer).";
+
+        std::cout << "\n    output_file_path: (optional) csv file with single line:";
+        std::cout << "\n       Structure:  top, left, rows, cols, cell_size, EPSG_Proj";
+
+        std::cout << "\n ";
+        return;
+    }
+
+    QString sCSVDataFile = GetFile(argc, argv, 2, true);
+    QString sOutput = GetFile(argc, argv, 3, false);
+
+    QString sXField = argv[4];
+    QString sYField = argv[5];
+    QString sDataField = argv[6];
+
+
+    // Either all
+    if (argc == 13){
+        double dLeft, dTop, dCellSize;
+        int nRows, nCols, nEPSGproj;
+
+        GetOutputRasterProperties(dLeft, dTop, nRows, nCols, dCellSize, argc, argv, 7);
+        nEPSGproj = GetInteger(argc, argv, 12);
+
+        RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
+                                           sOutput.toStdString().c_str(),
+                                           dTop, dLeft, nRows, nCols,
+                                           dCellSize, nEPSGproj,
+                                           sXField.toStdString().c_str(),
+                                           sYField.toStdString().c_str(),
+                                           sDataField.toStdString().c_str() );
+    }
+    // Otherwise a csv file is used
+    else if (argc == 8){
+        QString sCSVMetaFile = GetFile(argc, argv, 7, true);
+        RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
+                                           sOutput.toStdString().c_str(),
+                                           sCSVMetaFile.toStdString().c_str(),
+                                           sXField.toStdString().c_str(),
+                                           sYField.toStdString().c_str(),
+                                           sDataField.toStdString().c_str() );
+    }
 
 
 }
@@ -483,7 +545,6 @@ QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMust
 
     return sFile;
 }
-
 
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
 {
@@ -533,15 +594,15 @@ double RasterManEngine::GetDouble(int argc, char * argv[], int nIndex)
     return fResult;
 }
 
-
-void RasterManEngine::GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[])
+void RasterManEngine::GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[], int nStartArg)
 {
-    fLeft = GetDouble(argc, argv, 4);
-    fTop = GetDouble(argc, argv, 5);
-    nRows = GetInteger(argc, argv, 6);
-    nCols = GetInteger(argc, argv, 7);
-    fCellSize = GetDouble(argc, argv, 8);
+    fLeft = GetDouble(argc, argv, nStartArg);
+    fTop = GetDouble(argc, argv, (nStartArg+1));
+    nRows = GetInteger(argc, argv, (nStartArg+2));
+    nCols = GetInteger(argc, argv, (nStartArg+3));
+    fCellSize = GetDouble(argc, argv, (nStartArg+4));
 }
+
 
 
 
