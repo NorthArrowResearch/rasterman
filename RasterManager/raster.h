@@ -157,7 +157,7 @@ public:
      * @param sFieldName
      * @param p_rastermeta
      */
-    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sXField, const char *sYField, const char *sFieldName, RasterMeta *p_rastermeta);
+    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sXField, const char *sYField, const char *sDataField, RasterMeta *p_rastermeta);
     /**
      * @brief CSVtoRaster when you don't have a meta file
      * @param sCSVSourcePath
@@ -180,7 +180,7 @@ public:
                                     int nRows,
                                     int nCols,
                                     double dCellWidth, double dNoDataVal,
-                                    int sEPSGProj,
+                                    const char * sEPSGProj,
                                     const char * sXField,
                                     const char * sYField,
                                     const char * sDataField);
