@@ -159,7 +159,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
         throw "ERROR: couldn't open the meta csv file.";
     }
 
-    double dLeft, dTop, dCellSize;
+    double dLeft, dTop, dCellSize, dNoDataVal;
     int nRows, nCols, nEPSGproj;
 
     // Read CSV file into 3 different arrays
@@ -176,13 +176,15 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
         std::string csvItem = uncleanCell;
         Raster::CSVCellClean(csvItem);
 
-        double dVal = std::stod(csvItem);
         switch (ncolnumber) {
-        case 1:
-
-            break;
-        default:
-            break;
+        case 1: dTop = std::stod(csvItem); break;
+        case 2: dLeft = std::stod(csvItem); break;
+        case 3: nRows = std::stoi(csvItem); break;
+        case 4: nCols = std::stoi(csvItem); break;
+        case 5: dCellSize = std::stod(csvItem); break;
+        case 6: dNoDataVal = std::stod(csvItem); break;
+        case 7: nEPSGproj = std::stoi(csvItem); break;
+        default: break;
         }
 
     }
