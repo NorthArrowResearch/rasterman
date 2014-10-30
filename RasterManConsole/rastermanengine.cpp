@@ -454,7 +454,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<left> <top> <rows> <cols> <cell_size> <EPSG_Proj>] | <csv_meta_file_path>";
+        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<left> <top> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    csv_file_path: Absolute full path to existing .csv file.";
@@ -470,6 +470,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n    rows: Number of rows in the output raster.";
         std::cout << "\n    cols: Number of columns in the output raster.";
         std::cout << "\n    cell_size: Cell size for the output raster.";
+        std::cout << "\n    no_data_val: number to use for no data val (use \"min\" for minimum float)";
         std::cout << "\n    EPSG_Proj: EPSG Coordinate projection (integer).";
 
         std::cout << "\n    output_file_path: (optional) csv file with single line:";
@@ -488,18 +489,24 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 
     // Either all
-    if (argc == 13){
+    if (argc == 14){
 
-        double dLeft, dTop, dCellSize;
+        double dLeft, dTop, dCellSize, dNoDataVal;
         int nRows, nCols, nEPSGproj;
 
         GetOutputRasterProperties(dLeft, dTop, nRows, nCols, dCellSize, argc, argv, 7);
-        nEPSGproj = GetInteger(argc, argv, 12);
+        nEPSGproj = GetInteger(argc, argv, 13);
+
+        QString sNoDataVal = argv[12];
+        if (sNoDataVal.compare("min", Qt::CaseInsensitive) == 0)
+            dNoDataVal = (double) std::numeric_limits<float>::lowest();
+        else
+            dNoDataVal = sNoDataVal.toDouble();
 
         RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
                                            sOutput.toStdString().c_str(),
                                            dTop, dLeft, nRows, nCols,
-                                           dCellSize, nEPSGproj,
+                                           dCellSize, nEPSGproj, dNoDataVal,
                                            sXField.toStdString().c_str(),
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );

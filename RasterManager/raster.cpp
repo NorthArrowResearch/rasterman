@@ -176,13 +176,20 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
         std::string csvItem = uncleanCell;
         Raster::CSVCellClean(csvItem);
 
+
         switch (ncolnumber) {
         case 1: dTop = std::stod(csvItem); break;
         case 2: dLeft = std::stod(csvItem); break;
         case 3: nRows = std::stoi(csvItem); break;
         case 4: nCols = std::stoi(csvItem); break;
         case 5: dCellSize = std::stod(csvItem); break;
-        case 6: dNoDataVal = std::stod(csvItem); break;
+        case 6:
+            // "min" is the convention for minimum float
+            if (std::strcmp(csvItem.c_str(), "min") == 0)
+                dNoDataVal = (double) std::numeric_limits<float>::min();
+            else
+                dNoDataVal = std::stod(csvItem);
+            break;
         case 7: nEPSGproj = std::stoi(csvItem); break;
         default: break;
         }
@@ -191,7 +198,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     CSVMEtaFile.close();
 
     CSVtoRaster(sCSVSourcePath, psOutput,
-                dTop, dLeft, nRows, nCols, dCellSize, nEPSGproj,
+                dTop, dLeft, nRows, nCols, dCellSize, dNoDataVal,nEPSGproj,
                 sXField, sYField, sDataField);
 
 
@@ -204,6 +211,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          int nRows,
                          int nCols,
                          double dCellWidth,
+                         double dNoDataVal,
                          int sEPSGProj,
                          const char * sXField,
                          const char * sYField,
@@ -212,16 +220,14 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     double dCellHeihgt = dCellWidth * -1;
     const char * psDriver = GetDriverFromFileName(sOutput);
 
-    double noDataValue = (double) std::numeric_limits<float>::min();
-
     OGRSpatialReference oSRS;
-    oSRS.SetWellKnownGeogCS( "EPSG:4326" );
+    oSRS.SetWellKnownGeogCS( "EPSG:" + sEPSGProj );
 
     char * sProjection = NULL;
     oSRS.exportToWkt(&sProjection);
 
     RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeihgt, dCellWidth,
-                               noDataValue, psDriver, GDT_CFloat32, sProjection);
+                               dNoDataVal, psDriver, GDT_CFloat32, sProjection);
 
     CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sDataField, &inputRasterMeta);
 

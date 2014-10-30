@@ -179,7 +179,7 @@ public:
                                     double dLeft,
                                     int nRows,
                                     int nCols,
-                                    double dCellWidth,
+                                    double dCellWidth, double dNoDataVal,
                                     int sEPSGProj,
                                     const char * sXField,
                                     const char * sYField,
