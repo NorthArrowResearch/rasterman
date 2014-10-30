@@ -146,6 +146,62 @@ void Raster::CSVCellClean(std::string & value){
 
 void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * psOutput,
+                         const char * sCSVMeta,
+                         const char * sXField,
+                         const char * sYField,
+                         const char * sFieldName){
+
+//    double dCellHeight = dCellWidth * -1;
+//    const char * psDriver = GetDriverFromFileName(psOutput);
+
+//    double noDataValue = (double) std::numeric_limits<float>::min();
+
+//    OGRSpatialReference oSRS;
+//    oSRS.SetWellKnownGeogCS( "EPSG:4326" );
+
+//    char * sProjection = NULL;
+//    oSRS.exportToWkt(&sProjection);
+
+//    RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeihgt, dCellWidth,
+//                               noDataValue, psDriver, GDT_CFloat32, sProjection);
+
+//    CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sFieldName, p_rastermeta);
+
+}
+
+void Raster::CSVtoRaster(const char * sCSVSourcePath,
+                         const char * sOutput,
+                         double dTop,
+                         double dLeft,
+                         int nRows,
+                         int nCols,
+                         double dCellWidth,
+                         int sEPSGProj,
+                         const char * sXField,
+                         const char * sYField,
+                         const char * sFieldName){
+
+    double dCellHeihgt = dCellWidth * -1;
+    const char * psDriver = GetDriverFromFileName(sOutput);
+
+    double noDataValue = (double) std::numeric_limits<float>::min();
+
+    OGRSpatialReference oSRS;
+    oSRS.SetWellKnownGeogCS( "EPSG:4326" );
+
+    char * sProjection = NULL;
+    oSRS.exportToWkt(&sProjection);
+
+    RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeihgt, dCellWidth,
+                               noDataValue, psDriver, GDT_CFloat32, sProjection);
+
+    CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sFieldName, &inputRasterMeta);
+
+}
+
+
+void Raster::CSVtoRaster(const char * sCSVSourcePath,
+                         const char * psOutput,
                          const char * sXField,
                          const char * sYField,
                          const char * sFieldName,
