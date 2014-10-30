@@ -26,7 +26,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
 
     RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, newTransform[1], newTransform[5], fNoDataValue, NULL, eDataType, projectionRef);
 
-    CreateOutputDS(pOutputRaster, &pInputMeta);
+   return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
 
 DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
