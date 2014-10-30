@@ -236,7 +236,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     const char * psDriver = GetDriverFromFileName(sOutput);
 
     OGRSpatialReference oSRS;
-    oSRS.SetWellKnownGeogCS( sEPSGProj );
+    oSRS.SetProjCS( sEPSGProj );
 
     char * sProjection = NULL;
     oSRS.exportToWkt(&sProjection);
@@ -275,11 +275,6 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     inputCSVFile.clear();
     inputCSVFile.seekg(0);
 
-
-    double csvX[csvNumLines];
-    double csvY[csvNumLines];
-    double csvZ[csvNumLines];
-
     int xcol, ycol, zcol;
 
     // Read CSV file into 3 different arrays
@@ -290,6 +285,11 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
         while (std::getline(inputCSVFile,fsLine)) {
 
             nlinenumber++;
+
+            // prepare our buffers
+            int csvX = -1;
+            int csvY = -1;
+            double csvDataVal;
 
             std::istringstream isLine (fsLine);
             int ncolnumber = 0;
@@ -315,53 +315,29 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                 // Not the first line read values if they apply
                 else{
                     double dVal = std::stod(csvItem);
-                    if (xcol == ncolnumber)
-                        csvX[nlinenumber] = dVal;
-                    else if (ycol == ncolnumber)
-                        csvY[nlinenumber] = dVal;
-                    else if (zcol == ncolnumber)
-                        csvZ[nlinenumber] = dVal;
-
+                    if (xcol == ncolnumber){
+                        csvX = (int) floor((dVal - p_rastermeta->GetLeft() ) / p_rastermeta->GetCellWidth());
+                    }
+                    else if (ycol == ncolnumber){
+                        csvY = (int) ceil((p_rastermeta->GetTop() - dVal) / p_rastermeta->GetCellHeight() * -1);
+                    }
+                    else if (zcol == ncolnumber){
+                        csvDataVal = dVal;
+                    }
                 }
 
             }
+            // here's where we need to get the correct row of the output. Replace
+            if (csvX >= 0 && csvX < p_rastermeta->GetCols()
+                    && csvY >=0 && csvY < p_rastermeta->GetRows() ){
+                pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, csvX,  csvY, 1, 1, &csvDataVal, 1, 1, GDT_Float64, 0, 0);
+            }
+
         }
     }
 
     inputCSVFile.close();
 
-    // https://github.com/etiennesky/gdal-netcdf/blob/84f2b9e95f15991f060d0469076cd1f3e961ee43/gdal/apps/gdal_grid.cpp
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*p_rastermeta->GetCols());
-
-    for ( int ny = 0; ny < p_rastermeta->GetRows(); ny++ ) {
-        for ( int nx = 0; nx < p_rastermeta->GetCols(); nx++){
-            // http://www.gdal.org/gdal_grid.html
-            // http://www.gdal.org/gdal__alg_8h.html#a1fdef40bcdbc98eff2328b0d093d3a22
-            GDALGridCreate(GGA_NearestNeighbor,
-                           NULL,
-                           nlinenumber,
-                           csvX,
-                           csvY,
-                           csvZ,
-                           p_rastermeta->GetLeft(),
-                           p_rastermeta->GetRight(),
-                           p_rastermeta->GetBottom(),
-                           p_rastermeta->GetTop(),
-                           p_rastermeta->GetCols(),
-                           p_rastermeta->GetRows(),
-                           p_rastermeta->GetGDALDataType(),
-                           &pOutputLine,
-                           NULL, NULL);
-        }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  ny, p_rastermeta->GetCols(),
-                                              1, pOutputLine, p_rastermeta->GetCols(), 1,
-                                              GDT_Float64, 0, 0);
-
-
-    }
-
-
-    CPLFree(pOutputLine);
     GDALClose(pDSOutput);
 
 }
