@@ -489,6 +489,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 
     // Either all
     if (argc == 13){
+
         double dLeft, dTop, dCellSize;
         int nRows, nCols, nEPSGproj;
 

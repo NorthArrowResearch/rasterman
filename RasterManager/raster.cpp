@@ -143,29 +143,55 @@ void Raster::CSVCellClean(std::string & value){
     else value.erase(value.begin(), value.end());
 }
 
-
+/**
+ * Open up the CSV meta file and read the top, left, rows, cols etc....
+ */
 void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * psOutput,
                          const char * sCSVMeta,
                          const char * sXField,
                          const char * sYField,
-                         const char * sFieldName){
+                         const char * sDataField){
 
-//    double dCellHeight = dCellWidth * -1;
-//    const char * psDriver = GetDriverFromFileName(psOutput);
+    std::ifstream CSVMEtaFile(sCSVMeta);
+    if (!CSVMEtaFile)
+    {
+        throw "ERROR: couldn't open the meta csv file.";
+    }
 
-//    double noDataValue = (double) std::numeric_limits<float>::min();
+    double dLeft, dTop, dCellSize;
+    int nRows, nCols, nEPSGproj;
 
-//    OGRSpatialReference oSRS;
-//    oSRS.SetWellKnownGeogCS( "EPSG:4326" );
+    // Read CSV file into 3 different arrays
+    std::string fsLine;
+    getline(CSVMEtaFile,fsLine);
 
-//    char * sProjection = NULL;
-//    oSRS.exportToWkt(&sProjection);
+    std::istringstream isLine (fsLine);
 
-//    RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeihgt, dCellWidth,
-//                               noDataValue, psDriver, GDT_CFloat32, sProjection);
+    std::string uncleanCell;
+    int ncolnumber = 0;
+    while(getline(isLine, uncleanCell, ',')){
 
-//    CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sFieldName, p_rastermeta);
+        ncolnumber++;
+        std::string csvItem = uncleanCell;
+        Raster::CSVCellClean(csvItem);
+
+        double dVal = std::stod(csvItem);
+        switch (ncolnumber) {
+        case 1:
+
+            break;
+        default:
+            break;
+        }
+
+    }
+    CSVMEtaFile.close();
+
+    CSVtoRaster(sCSVSourcePath, psOutput,
+                dTop, dLeft, nRows, nCols, dCellSize, nEPSGproj,
+                sXField, sYField, sDataField);
+
 
 }
 
@@ -179,7 +205,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          int sEPSGProj,
                          const char * sXField,
                          const char * sYField,
-                         const char * sFieldName){
+                         const char * sDataField){
 
     double dCellHeihgt = dCellWidth * -1;
     const char * psDriver = GetDriverFromFileName(sOutput);
@@ -195,7 +221,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeihgt, dCellWidth,
                                noDataValue, psDriver, GDT_CFloat32, sProjection);
 
-    CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sFieldName, &inputRasterMeta);
+    CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sDataField, &inputRasterMeta);
 
 }
 

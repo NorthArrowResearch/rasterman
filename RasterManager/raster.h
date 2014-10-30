@@ -183,7 +183,7 @@ public:
                                     int sEPSGProj,
                                     const char * sXField,
                                     const char * sYField,
-                                    const char * sFieldName);
+                                    const char * sDataField);
     /**
      * @brief CSVtoRaster This is when you are passing in a CSV meta file with top,left,rows,cols etc.
      * @param sCSVSourcePath
@@ -192,7 +192,7 @@ public:
      * @param sYField
      * @param sFieldName
      */
-    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sCSVMeta, const char *sXField, const char *sYField, const char *sFieldName);
+    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sCSVMeta, const char *sXField, const char *sYField, const char *sDataField);
 protected:
 
     /**
