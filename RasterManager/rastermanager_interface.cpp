@@ -72,7 +72,6 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
         pDSOutput->SetGeoTransform(newTransform);
     if (projectionRef != NULL)
         pDSOutput->SetProjection(projectionRef);
-
     return pDSOutput;
 
 }

@@ -173,7 +173,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     double dLeft, dTop, dCellSize, dNoDataVal;
     int nRows, nCols;
-    std::string sEPSGproj;
+    int nEPSGproj;
 
     // Read CSV file into 3 different arrays
     std::string fsLine;
@@ -202,7 +202,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
             else
                 dNoDataVal = std::stod(csvItem);
             break;
-        case 7: sEPSGproj = "EPSG:" + csvItem; break;
+        case 7: nEPSGproj = std::stoi(csvItem); break;
         default: break;
         }
 
@@ -211,7 +211,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     CSVtoRaster(sCSVSourcePath, psOutput,
                 dTop, dLeft, nRows, nCols, dCellSize, dNoDataVal,
-                sEPSGproj.c_str(),
+                nEPSGproj,
                 sXField,
                 sYField,
                 sDataField);
@@ -227,7 +227,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          int nCols,
                          double dCellWidth,
                          double dNoDataVal,
-                         const char * sEPSGProj,
+                         int nEPSGProj,
                          const char * sXField,
                          const char * sYField,
                          const char * sDataField){
@@ -236,7 +236,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     const char * psDriver = GetDriverFromFileName(sOutput);
 
     OGRSpatialReference oSRS;
-    oSRS.SetProjCS( sEPSGProj );
+    oSRS.importFromEPSG( nEPSGProj );
 
     char * sProjection = NULL;
     oSRS.exportToWkt(&sProjection);
@@ -281,6 +281,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     std::string fsLine;
     int nlinenumber = 0;
 
+    // Buffer for Writing
     if (inputCSVFile.is_open()) {
         while (std::getline(inputCSVFile,fsLine)) {
 
@@ -289,7 +290,8 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
             // prepare our buffers
             int csvX = -1;
             int csvY = -1;
-            double csvDataVal;
+            double csvDataVal = p_rastermeta->GetNoDataValue();
+
 
             std::istringstream isLine (fsLine);
             int ncolnumber = 0;
@@ -330,12 +332,11 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
             // here's where we need to get the correct row of the output. Replace
             if (csvX >= 0 && csvX < p_rastermeta->GetCols()
                     && csvY >=0 && csvY < p_rastermeta->GetRows() ){
-                pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, csvX,  csvY, 1, 1, &csvDataVal, 1, 1, GDT_Float64, 0, 0);
+                pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, csvX,  csvY, 1, 1, &csvDataVal, 1, 1, GDT_Float32, 0, 0);
             }
 
         }
     }
-
     inputCSVFile.close();
 
     GDALClose(pDSOutput);

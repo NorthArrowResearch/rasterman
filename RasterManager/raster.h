@@ -180,7 +180,7 @@ public:
                                     int nRows,
                                     int nCols,
                                     double dCellWidth, double dNoDataVal,
-                                    const char * sEPSGProj,
+                                    int nEPSGProj,
                                     const char * sXField,
                                     const char * sYField,
                                     const char * sDataField);

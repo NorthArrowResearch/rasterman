@@ -493,12 +493,11 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 
         double dLeft, dTop, dCellSize, dNoDataVal;
         int nRows, nCols;
-        QString sEPSGproj;
+        int nEPSGproj;
 
         GetOutputRasterProperties(dLeft, dTop, nRows, nCols, dCellSize, argc, argv, 7);
 
-        sEPSGproj = argv[13];
-        sEPSGproj.prepend("EPSG:");
+        nEPSGproj = GetInteger(argc, argv, 13);
 
         QString sNoDataVal = argv[12];
         if (sNoDataVal.compare("min", Qt::CaseInsensitive) == 0)
@@ -510,7 +509,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
                                            sOutput.toStdString().c_str(),
                                            dTop, dLeft, nRows, nCols,
                                            dCellSize, dNoDataVal,
-                                           sEPSGproj.toStdString().c_str(),
+                                           nEPSGproj,
                                            sXField.toStdString().c_str(),
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );
