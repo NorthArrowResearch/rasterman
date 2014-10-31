@@ -1,6 +1,7 @@
 #include "rastermanengine.h"
 
 #include <QFile>
+#include <QDir>
 #include <QFileInfo>
 #include <cstring>
 
@@ -532,20 +533,29 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMustExist)
 {
     QString sFile;
+
+    \
     if (nIndex < argc)
     {
         // Enough arguments
         sFile = argv[nIndex];
+
         if (sFile.isNull() || sFile.isEmpty())
-            throw "Command line missing a file path.";
+            throw std::runtime_error("Command line missing a file path.");
         else
         {
+            // Check if the directory the file exists in is actually there
+            QDir sFilePath = QFileInfo(sFile).absoluteDir();
+            if (!sFilePath.exists()){
+                throw  std::runtime_error("The directory of the file you specified does not exist.");
+            }
+
             sFile = sFile.trimmed();
             sFile = sFile.replace("\"","");
             if (bMustExist)
             {
                 if (!QFile::exists(sFile))
-                    throw  "The specified input file does not exist.";
+                    throw  std::runtime_error("The specified input file does not exist.");
             }
             else
                 if (QFile::exists(sFile))
@@ -566,18 +576,18 @@ int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
         // Enough arguments
         QString sInput = argv[nIndex];
         if (sInput.isNull() || sInput.isEmpty())
-            throw "Command line missing integer argument.";
+            throw std::runtime_error("Command line missing integer argument.");
         else
         {
             sInput = sInput.trimmed();
             bool bOK = false;
             nResult = sInput.toInt(&bOK);
             if (!bOK)
-                throw "Unable to convert input to integer numeric value.";
+                throw std::runtime_error("Unable to convert input to integer numeric value.");
         }
     }
     else
-        throw "Insufficient command line arguments for operation.";
+        throw std::runtime_error("Insufficient command line arguments for operation.");
 
     return nResult;
 }
