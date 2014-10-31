@@ -126,8 +126,18 @@ void Raster::Init(bool bFullImage)
 }
 
 void Raster::CSVCellClean(std::string & value){
+
+    std::string::size_type pos;
+
+    // First strip line endings
+    pos = value.find_last_not_of('\r');
+    if(pos != std::string::npos) {
+      value.erase(pos + 1);
+    }
+    else value.erase(value.begin(), value.end());
+
     // first strip quotes
-    std::string::size_type pos = value.find_last_not_of('"');
+    pos = value.find_last_not_of('"');
     if(pos != std::string::npos) {
       value.erase(pos + 1);
       pos = value.find_first_not_of('"');
@@ -144,14 +154,7 @@ void Raster::CSVCellClean(std::string & value){
     }
     else value.erase(value.begin(), value.end());
 
-    // Now strip line endings
-    pos = value.find_last_not_of('\r');
-    if(pos != std::string::npos) {
-      value.erase(pos + 1);
-      pos = value.find_first_not_of('\r');
-      if(pos != std::string::npos) value.erase(0, pos);
-    }
-    else value.erase(value.begin(), value.end());
+
 
 }
 
