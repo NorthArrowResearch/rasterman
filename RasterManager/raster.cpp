@@ -623,7 +623,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
         {
             pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
+            //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
         else if (strcmp(pSuffix, ".img") == 0)
             pDR = GetGDALDriverManager()->GetDriverByName("HFA");
@@ -658,6 +658,11 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
+
+    std::cout << "\n\n Input Raster: --------------------\n";
+    PrintRasterProperties(m_sFilePath);
+    std::cout << "\n\n Output Raster: --------------------\n";
+    PrintRasterProperties(pOutputRaster);
 
     return PROCESS_OK;
 }
