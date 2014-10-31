@@ -654,7 +654,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     pDSOutput->SetGeoTransform(newTransform);
     pDSOutput->SetProjection(GetProjectionRef());
 
-    ReSample_Raster(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
+    ReSampleRaster(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);

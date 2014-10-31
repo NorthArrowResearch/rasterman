@@ -136,8 +136,6 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
         QString sOutput = GetFile(argc, argv, 3, false);
 
         std::cout << "\n\n** Bilinear Resampling **";
-        std::cout << "\n Input Raster: " << sOriginal.toStdString();
-        std::cout << "\nOutput Raster: " << sOutput.toStdString();
 
         double fLeft, fTop, fCellSize;
         int nRows, nCols;

@@ -8,7 +8,7 @@
 
 namespace RasterManager {
 
-int Raster::ReSample_Raster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols)
+int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols)
 {
     // The properties of the original raster.
     double fOldLeft = GetLeft();
