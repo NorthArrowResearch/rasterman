@@ -652,30 +652,9 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     newTransform[4] = 0;
     newTransform[5] = -1 * fNewCellSize;
     pDSOutput->SetGeoTransform(newTransform);
-    pDSOutput->SetProjection(pDSOld->GetProjectionRef());
+    pDSOutput->SetProjection(GetProjectionRef());
 
-
-    /* Call the particular version of the resample routine depending on
-     * the type of raster data involved.
-     */
-    switch (GetGDALDataType())
-    {
-    case GDT_Byte:
-    case GDT_Int32:
-
-    case GDT_Int16:
-
-    case GDT_Float32:
-        ReSample_Float32(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
-        break;
-
-    case GDT_Float64:
-        ReSample_Float64(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
-        break;
-
-    default:
-        std::runtime_error("Unhandled raster data type.");
-    };
+    ReSample_Raster(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
