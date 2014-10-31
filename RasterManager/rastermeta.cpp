@@ -14,7 +14,7 @@ const char * DEFAULT_RASTER_DRIVER = "GTiff";
 
 RasterMeta::RasterMeta() : ExtentRectangle()
 {
-    float fNoDataValue = (float) std::numeric_limits<float>::min();
+    float fNoDataValue = (float) std::numeric_limits<float>::lowest();
     Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32, NULL);
 }
 

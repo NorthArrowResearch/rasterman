@@ -72,7 +72,6 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
         pDSOutput->SetGeoTransform(newTransform);
     if (projectionRef != NULL)
         pDSOutput->SetProjection(projectionRef);
-
     return pDSOutput;
 
 }
@@ -143,7 +142,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
     double fNoDataValue;
     if (rmRasterMeta1.GetNoDataValue() == NULL){
-        fNoDataValue = (double) std::numeric_limits<float>::min();
+        fNoDataValue = (double) std::numeric_limits<float>::lowest();
     }
     else {
         fNoDataValue = rmRasterMeta1.GetNoDataValue();
@@ -342,7 +341,7 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
-    float fNoDataValue = (float) std::numeric_limits<float>::min();
+    float fNoDataValue = (float) std::numeric_limits<float>::lowest();
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDSfromRef(psOutput, GDT_Float32, true, fNoDataValue, pDS1);
