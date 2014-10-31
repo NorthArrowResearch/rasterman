@@ -76,8 +76,8 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n    multiply     Multiply a raster by a number or another raster.";
         std::cout << "\n    power        Raise a raster to a power.";
         std::cout << "\n    sqrt         Get the square root of a raster.";
-        std::cout << "\n ";
-        std::cout << "\n    slope        Calculate a slope raster from a DEM raster.";
+        //std::cout << "\n ";
+        //std::cout << "\n    slope        Calculate a slope raster from a DEM raster.";
         std::cout << "\n";
         return;
     }
