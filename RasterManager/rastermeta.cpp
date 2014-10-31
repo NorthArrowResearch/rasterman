@@ -64,7 +64,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     // Open the original dataset
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS  == NULL)
-        throw "error opening raster file";
+        throw std::runtime_error("error opening raster file");
 
     int nSuccess;
 

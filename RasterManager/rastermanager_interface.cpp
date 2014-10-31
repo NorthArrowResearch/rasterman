@@ -724,7 +724,7 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
         return "Unspecified error.";
 
     default:
-        throw "Unhandled Raster Manager return code.";
+        return "Unhandled Raster Manager return code.";
     }
 
 }

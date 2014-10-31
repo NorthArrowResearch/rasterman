@@ -171,7 +171,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     std::ifstream CSVMEtaFile(sCSVMeta);
     if (!CSVMEtaFile)
     {
-        throw "ERROR: couldn't open the meta csv file.";
+        throw std::runtime_error("ERROR: couldn't open the meta csv file.");
     }
 
     double dLeft, dTop, dCellSize, dNoDataVal;
@@ -281,7 +281,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     std::ifstream inputCSVFile(sCSVSourcePath);
     if (!inputCSVFile)
     {
-        throw "ERROR: couldn't open csv file.";
+        throw std::runtime_error("ERROR: couldn't open csv file.");
     }
 
     std::string unused;
@@ -357,6 +357,8 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     inputCSVFile.close();
 
     GDALClose(pDSOutput);
+
+    PrintRasterProperties(psOutput);
 
 }
 

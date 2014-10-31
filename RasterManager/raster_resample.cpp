@@ -195,9 +195,6 @@ int Raster::ReSample_Float32(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutp
                 double fNewX = fNewLeft + (j * fNewCellSize) + (fNewCellSize / 2);
                 double fOldCol = (fNewX - fOldLeft) / fOldCellWidth;
 
-                //if (fOldCol > 81)
-                   // throw "stop";
-
                 int nOldLeftCol;
                 if ( fmod(fOldCol, 1) < 0.5)
                 {
