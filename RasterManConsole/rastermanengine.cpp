@@ -88,7 +88,7 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
     if (argc != 3)
     {
         std::cout << "\nRaster Properties Usage:";
-        std::cout << "\n    Usage: gcd raster <raster_file_path>";
+        std::cout << "\n    Usage: rasterman raster <raster_file_path>";
         std::cout << "\n    Command: raster";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
@@ -114,7 +114,7 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
     if (argc != 9)
     {
         std::cout << "\n Bilinear Resample Usage:";
-        std::cout << "\n    Syntax: gcd bilinear <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
+        std::cout << "\n    Syntax: rasterman bilinear <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
         std::cout << "\n   Command: bilinear";
         std::cout << "\n";
         std::cout << "\n Arguments:";
@@ -160,7 +160,7 @@ void RasterManEngine::Slope(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\nSlope Usage:";
-        std::cout << "\n    Usage: gcd slope <degrees | percent> <dem_file_path> <slope_file_path>";
+        std::cout << "\n    Usage: rasterman slope <degrees | percent> <dem_file_path> <slope_file_path>";
         std::cout << "\n   Command: slopedegrees";
         std::cout << "\n Arguments:";
         std::cout << "\n    type: degrees or percent";
@@ -188,7 +188,7 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
     if (argc != 9)
     {
         std::cout << "\nRaster Copy Usage:";
-        std::cout << "\n    Syntax: gcd copy <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
+        std::cout << "\n    Syntax: rasterman copy <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
         std::cout << "\n   Command: copy";
         std::cout << "\n Arguments:";
         std::cout << "\n\traster_file_path: Absolute full path to existing raster file.";
@@ -227,7 +227,7 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Raster Addition:";
-        std::cout << "\n    Usage: gcd add <raster1_file_path> <raster2_file_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman add <raster1_file_path> <raster2_file_path> <output_file_path>";
         std::cout << "\n";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster1_file_path: Absolute full path to existing first raster.";
@@ -247,7 +247,7 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
                                  sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_ADD,
                                  sOutputRaster.toStdString().c_str());
 
-        std::cout << "\nProcess completed successfully.\n";
+        std::cout << "\n\nProcess completed successfully.\n";
     }
     catch (std::exception & ex)
     {
@@ -260,7 +260,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Raster Subtraction: Subtract the second raster from the first.";
-        std::cout << "\n    Usage: gcd subtract <raster1_file_path> <raster2_file_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman subtract <raster1_file_path> <raster2_file_path> <output_file_path>";
         std::cout << "\n";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster1_file_path: Absolute full path to existing first raster.";
@@ -292,7 +292,7 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Raster Division: Divide the first raster by the second.";
-        std::cout << "\n    Usage: gcd divide <raster1_file_path> <raster2_file_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman divide <raster1_file_path> <raster2_file_path> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster1_file_path:  Absolute full path to existing first raster.";
@@ -325,7 +325,7 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Raster Multiplication: Multiply two rasters.";
-        std::cout << "\n    Usage: gcd multiply <raster1_file_path> <raster2_file_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman multiply <raster1_file_path> <raster2_file_path> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster1_file_path:  Absolute full path to existing first raster.";
@@ -358,7 +358,7 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Raise every value in a raster to the power of a value.";
-        std::cout << "\n    Usage: gcd power <raster_file_path> <power_value> <output_file_path>";
+        std::cout << "\n    Usage: rasterman power <raster_file_path> <power_value> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing first raster.";
@@ -390,7 +390,7 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
     if (argc != 4)
     {
         std::cout << "\n Get the square root of a raster.";
-        std::cout << "\n    Usage: gcd sqrt <raster_file_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman sqrt <raster_file_path> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing first raster.";
@@ -421,7 +421,7 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     if (argc < 4)
     {
         std::cout << "\n Stitch together two or more overlapping rasters.";
-        std::cout << "\n    Usage: gcd mosaic <raster_file_path1> <raster_file_path2> ... <output_file_path>";
+        std::cout << "\n    Usage: rasterman mosaic <raster_file_path1> <raster_file_path2> ... <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
