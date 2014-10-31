@@ -12,7 +12,7 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 {
     // The properties of the original raster.
     double fOldLeft = GetLeft();
-    double fOldYOrigin = GetRight();
+    double fOldYOrigin = GetTop();
     double fOldCellHeight = GetCellHeight();
     double fOldCellWidth = GetCellWidth();
 
@@ -86,10 +86,21 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
                     double Z00 = pBotLine[nOldLeftCol];
                     double Z10 = pBotLine[nOldLeftCol + 1];
 
+                    // On some dirty rasters there seems to be a loss of precision in the way they show
+                    // a
+
+                    static_cast<float>(fNoData);
+
                     // Proceed with calculation if the input cells have valid data. this is true if the
                     // input raster does not possess a NoData value or if it does, and all the cells do
                     // not equal the missing data value.
-                    if (!this->HasNoDataValue() || (Z01 != fNoData) && (Z11 != fNoData) && (Z00 != fNoData) && (Z10 != fNoData))
+
+
+
+                    if (!this->HasNoDataValue() || (Z01 != fNoData)
+                            && (Z11 != fNoData)
+                            && (Z00 != fNoData)
+                            && (Z10 != fNoData))
                     {
                         double Lx = fOldX;
                         double Z1 = Z01 + (Z11 - Z01) * ((fNewX - Lx) / fOldCellWidth);
@@ -97,6 +108,9 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 
                         double Ty = fOldY;
                         double Z = Z1 - (Z1 - Z0) * ((fNewY - Ty) / fOldCellHeight);
+
+                        if (Z > GetNoDataValue() )
+                            double stuff = 1;
 
                         pOutputLine[j] = Z;
                     }
