@@ -454,7 +454,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<left> <top> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
+        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    csv_file_path: Absolute full path to existing .csv file.";
@@ -495,7 +495,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         int nRows, nCols;
         int nEPSGproj;
 
-        GetOutputRasterProperties(dLeft, dTop, nRows, nCols, dCellSize, argc, argv, 7);
+        GetOutputRasterProperties(dTop, dLeft, nRows, nCols, dCellSize, argc, argv, 7);
 
         nEPSGproj = GetInteger(argc, argv, 13);
 
