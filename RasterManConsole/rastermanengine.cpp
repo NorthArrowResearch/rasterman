@@ -101,7 +101,7 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
     {
         RasterManager::PrintRasterProperties(sRaster.toStdString().c_str());
 
-        std::cout << "\nProcess completed successfully.\n";
+        std::cout << "\n\nProcess completed successfully.\n";
     }
     catch (std::exception & ex)
     {

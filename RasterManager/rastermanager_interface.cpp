@@ -547,8 +547,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
 
     std::cout << "\n    Raster: " << ppszRaster;
     std::printf( "\n      Left: %.8lf", fLeft);
-    std::printf( "\n      Top: %.8lf", fTop);
-    //std::cout << "\n       Top: " << fTop;
+    std::printf( "\n       Top: %.8lf", fTop);
     std::cout << "\n      Rows: " << nRows;
     std::cout << "\n      Cols: " << nCols;
 
