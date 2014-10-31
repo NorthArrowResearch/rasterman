@@ -101,7 +101,7 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
     {
         RasterManager::PrintRasterProperties(sRaster.toStdString().c_str());
 
-        std::cout << "\n\nProcess completed successfully.\n";
+        std::cout << "\n\n completed successfully.\n";
     }
     catch (std::exception & ex)
     {
@@ -187,17 +187,17 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
 {
     if (argc != 9)
     {
-        std::cout << "\nRaster Copy Usage:";
-        std::cout << "\n    Syntax: rasterman copy <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
-        std::cout << "\n   Command: copy";
+        std::cout << "\nRaster Copy: Copy an existing raster cell by cell, specifying the dimensions out the output.";
+        std::cout << "\n   Usage: rasterman copy <raster_file_path> <output_file_path> <left> <top> <rows> <cols> <cell_size>";
+        std::cout << "\n";
         std::cout << "\n Arguments:";
-        std::cout << "\n\traster_file_path: Absolute full path to existing raster file.";
-        std::cout << "\n\toutput_file_path: Absolute full path to output raster file.";
-        std::cout << "\n\tleft: Left coordinate of the output raster extent.";
-        std::cout << "\n\ttop: Top coordinate of the output raster extent.";
-        std::cout << "\n\trows: Number of rows in the output raster.";
-        std::cout << "\n\tcols: Number of columns in the output raster.";
-        std::cout << "\n\tcell_size: Cell size for the output raster.";
+        std::cout << "\n   raster_file_path: Absolute full path to existing raster file.";
+        std::cout << "\n   output_file_path: Absolute full path to output raster file.";
+        std::cout << "\n               left: Left coordinate of the output raster extent.";
+        std::cout << "\n                top: Top coordinate of the output raster extent.";
+        std::cout << "\n               rows: Number of rows in the output raster.";
+        std::cout << "\n               cols: Number of columns in the output raster.";
+        std::cout << "\n          cell_size: Cell size for the output raster.";
         std::cout << "\n";
         return;
     }
@@ -211,10 +211,11 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
         int nRows, nCols;
         GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv);
 
+        int eResult;
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
-        rOriginal.Copy(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
+        eResult = rOriginal.Copy(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
 
-        std::cout << "\nProcess completed successfully.\n";
+        std::cout << "\n\n" << GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -280,7 +281,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
         eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
                                             sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_SUBTRACT, sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" <<  RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -313,7 +314,7 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
                                            sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
                                            sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -346,7 +347,7 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
                                            sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
                                            sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -378,7 +379,7 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
         eResult = RasterManager::BasicMath(sRaster.toStdString().c_str(), NULL, iPower, RasterManager::RM_BASIC_MATH_POWER,
                                            sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -408,7 +409,7 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
         eResult = RasterManager::BasicMath(sRaster.toStdString().c_str(), NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
                                            sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -441,7 +442,7 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
 
         eResult = RasterManager::Mosaic(sInputFiles.toStdString().c_str(), sOutputRaster.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -542,7 +543,5 @@ void RasterManEngine::GetOutputRasterProperties(double & fLeft, double & fTop, i
     nCols = GetInteger(argc, argv, 7);
     fCellSize = GetDouble(argc, argv, 8);
 }
-
-
 
 } //RasterManager
