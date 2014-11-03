@@ -38,10 +38,10 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
-    if (psProjection != NULL)
+    if (psDriver != NULL)
         SetGDALDriver(psDriver);
 
-    if (fNoDataValue != NULL)
+    if (fNoDataValue != 0)
         SetNoDataValue(fNoDataValue);
 
     if (eDataType != NULL)
