@@ -350,28 +350,28 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
     /*****************************************************************************************
      * Allocate the memory for the input / output lines
      */
-    float * pInputLine1 = (float *) CPLMalloc(sizeof(float)*pRBInput1->GetXSize());
-    float * pInputLine2 = (float *) CPLMalloc(sizeof(float)*pRBInput2->GetXSize());
-    float * pOutputLine = (float *) CPLMalloc(sizeof(float)*pDSOutput->GetRasterBand(1)->GetXSize());
+    double * pInputLine1 = (double *) CPLMalloc(sizeof(double)*pRBInput1->GetXSize());
+    double * pInputLine2 = (double *) CPLMalloc(sizeof(double)*pRBInput2->GetXSize());
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*pDSOutput->GetRasterBand(1)->GetXSize());
 
     int i, j;
     for (i = 0; i < pRBInput1->GetYSize(); i++)
     {
-        pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float32, 0, 0);
-        pRBInput2->RasterIO(GF_Read, 0,  i, pRBInput2->GetXSize(), 1, pInputLine2, pRBInput2->GetXSize(), 1, GDT_Float32, 0, 0);
+        pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float64, 0, 0);
+        pRBInput2->RasterIO(GF_Read, 0,  i, pRBInput2->GetXSize(), 1, pInputLine2, pRBInput2->GetXSize(), 1, GDT_Float64, 0, 0);
 
         for (j = 0; j < pRBInput1->GetXSize(); j++)
         {
-            if ( (nHasNoData1 != 0 && pInputLine1[j] == (float) fNoDataValue1) ||
+            if ( (nHasNoData1 != 0 && pInputLine1[j] == fNoDataValue1) ||
                  (nHasNoData2 != 0 && pInputLine2[j] == fNoDataValue2) )
             {
-                pOutputLine[j] = (float) fNoDataValue;
+                pOutputLine[j] = fNoDataValue;
             }
             else
                 pOutputLine[j] = sqrt( pow(pInputLine1[j], 2) + pow(pInputLine2[j], 2) );
         }
 
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput2->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float32, 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput2->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float64, 0, 0);
     }
 
     CPLFree(pInputLine1);
