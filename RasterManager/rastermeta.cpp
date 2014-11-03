@@ -85,8 +85,10 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
 
 void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
-    m_psGDALDriver = (char *) malloc(std::strlen(sGDALDriver) * sizeof(char)+1);
-    std::strcpy(m_psGDALDriver, sGDALDriver);
+    if (sGDALDriver){
+        m_psGDALDriver = (char *) malloc(std::strlen(sGDALDriver) * sizeof(char)+1);
+        std::strcpy(m_psGDALDriver, sGDALDriver);
+    }
 }
 
 void RasterMeta::SetProjectionRef(const char *fProjectionRef)
