@@ -16,7 +16,7 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
     double fOldCellHeight = GetCellHeight();
     double fOldCellWidth = GetCellWidth();
 
-    double fNoData = GetNoDataValue();
+    double dNoData = GetNoDataValue();
 
     int nSuccess = 0;
 
@@ -62,7 +62,7 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 
             for (j = 0; j < nNewCols; j++)
             {
-                pOutputLine[j] = fNoData;
+                pOutputLine[j] = dNoData;
                 double fNewX = fNewLeft + (j * fNewCellSize) + (fNewCellSize / 2);
                 double fOldCol = (fNewX - fOldLeft) / fOldCellWidth;
 
@@ -87,9 +87,11 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
                     double Z10 = pBotLine[nOldLeftCol + 1];
 
                     // On some dirty rasters there seems to be a loss of precision in the way they show
-                    // a
+                    // The nodata value from the raster is -3.402823e+38
+                    // The Nodata value extracted from the Z val is -3.4028230607371e+38
+                    // We'll cast everything down to a float just for the comparison
 
-                    static_cast<float>(fNoData);
+                    float fNoData = static_cast<float>(dNoData);
 
                     // Proceed with calculation if the input cells have valid data. this is true if the
                     // input raster does not possess a NoData value or if it does, and all the cells do
@@ -97,10 +99,11 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 
 
 
-                    if (!this->HasNoDataValue() || (Z01 != fNoData)
-                            && (Z11 != fNoData)
-                            && (Z00 != fNoData)
-                            && (Z10 != fNoData))
+                    if (!this->HasNoDataValue() ||
+                               (static_cast<float>(Z01) != fNoData)
+                            && (static_cast<float>(Z11) != fNoData)
+                            && (static_cast<float>(Z00) != fNoData)
+                            && (static_cast<float>(Z10) != fNoData))
                     {
                         double Lx = fOldX;
                         double Z1 = Z01 + (Z11 - Z01) * ((fNewX - Lx) / fOldCellWidth);
@@ -109,16 +112,13 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
                         double Ty = fOldY;
                         double Z = Z1 - (Z1 - Z0) * ((fNewY - Ty) / fOldCellHeight);
 
-                        if (Z > GetNoDataValue() )
-                            double stuff = 1;
-
                         pOutputLine[j] = Z;
                     }
                     else
-                        pOutputLine[j] = fNoData;
+                        pOutputLine[j] = dNoData;
                 }
                 else
-                    pOutputLine[j] = fNoData;
+                    pOutputLine[j] = dNoData;
             }
         }
         else
@@ -126,7 +126,7 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
             // Outside the bounds of the input image. Loop over all cells in current output row and set to NoData.
             for (j=0; j< nNewCols; j++)
             {
-                pOutputLine[j] = fNoData;
+                pOutputLine[j] = dNoData;
             }
         }
         pRBOutput->RasterIO(GF_Write, 0, i, pRBOutput->GetXSize(), 1, pOutputLine, pRBOutput->GetXSize(), 1, GDT_Float64, 0, 0);
