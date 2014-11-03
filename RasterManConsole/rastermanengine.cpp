@@ -240,7 +240,7 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
     try
     {
         QString sRaster1 = GetFile(argc, argv, 2, true);
-        QString sArg2 = GetFile(argc, argv, 3, true);
+        QString sArg2 = argv[3];
         QString sOutputRaster = GetFile(argc, argv, 4, false);
 
         int eResult;
@@ -249,8 +249,9 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
+            QString sRaster2 = GetFile(argc, argv, 3, true);
             eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_ADD,
+                                     sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_ADD,
                                      sOutputRaster.toStdString().c_str());
         }
         else {
@@ -286,7 +287,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
     try
     {
         QString sRaster1 = GetFile(argc, argv, 2, true);
-        QString sArg2 = GetFile(argc, argv, 3, true);
+        QString sArg2 = argv[3];
         QString sOutputRaster = GetFile(argc, argv, 4, false);
         int eResult;
 
@@ -294,6 +295,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
+            QString sRaster2 = GetFile(argc, argv, 3, true);
             eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
                                      sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
                                      sOutputRaster.toStdString().c_str());
@@ -329,7 +331,7 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
     try
     {
         QString sRaster1 = GetFile(argc, argv, 2, true);
-        QString sArg2 = GetFile(argc, argv, 3, true);
+        QString sArg2 = argv[3];
         QString sOutputRaster = GetFile(argc, argv, 4, false);
 
         int eResult;
@@ -338,6 +340,7 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
+            QString sRaster2 = GetFile(argc, argv, 3, true);
             eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
                                      sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
                                      sOutputRaster.toStdString().c_str());
@@ -372,7 +375,7 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
     try
     {
         QString sRaster1 = GetFile(argc, argv, 2, true);
-        QString sArg2 = GetFile(argc, argv, 3, true);
+        QString sArg2 = argv[3];
         QString sOutputRaster = GetFile(argc, argv, 4, false);
 
         int eResult;
@@ -381,6 +384,7 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
+            QString sRaster2 = GetFile(argc, argv, 3, true);
             eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
                                      sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
                                      sOutputRaster.toStdString().c_str());
