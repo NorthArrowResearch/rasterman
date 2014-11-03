@@ -14,7 +14,7 @@ const char * DEFAULT_RASTER_DRIVER = "GTiff";
 
 RasterMeta::RasterMeta() : ExtentRectangle()
 {
-    float fNoDataValue = (float) std::numeric_limits<float>::lowest();
+    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
     Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32, NULL);
 }
 
@@ -85,7 +85,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
 
 void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
-    if (sGDALDriver){
+    if (*sGDALDriver != '\0'){
         m_psGDALDriver = (char *) malloc(std::strlen(sGDALDriver) * sizeof(char)+1);
         std::strcpy(m_psGDALDriver, sGDALDriver);
     }
@@ -93,8 +93,10 @@ void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
 
 void RasterMeta::SetProjectionRef(const char *fProjectionRef)
 {
-    m_psProjection = (char *) malloc(std::strlen(fProjectionRef) * sizeof(char)+1);
-    std::strcpy(m_psProjection, fProjectionRef);
+    if (*fProjectionRef != '\0'){
+        m_psProjection = (char *) malloc(std::strlen(fProjectionRef) * sizeof(char)+1);
+        std::strcpy(m_psProjection, fProjectionRef);
+    }
 }
 
 } // RasterManager

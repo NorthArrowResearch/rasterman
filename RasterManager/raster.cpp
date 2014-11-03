@@ -531,7 +531,6 @@ int  Raster::Copy(const char *pOutputRaster,
 
                 if (nOldCol >=0 && nOldCol < nInputCols)
                 {
-                    float a = pInputLine[nOldCol];
                     pOutputLine[j] = pInputLine[nOldCol];
                 }
                 else
@@ -551,7 +550,7 @@ int  Raster::Copy(const char *pOutputRaster,
             // Outside the bounds of the input image. Loop over all cells in current output row and set to NoData.
             for (j = 0; j < nCols; j++)
             {
-                pOutputLine[j] = (float) GetNoDataValue();
+                pOutputLine[j] = GetNoDataValue();
             }
         }
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0, i,
