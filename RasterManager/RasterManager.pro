@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-VERSION = 6.0.45
+VERSION = 6.0.46
 TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
