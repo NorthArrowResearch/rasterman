@@ -242,21 +242,8 @@ private:
      * @param nNewCols
      * @return int
      */
-    int ReSample_Float64(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
-    /**
-     * @brief
-     *
-     * @param pRBInput
-     * @param pRBOutput
-     * @param fNewCellSize
-     * @param fNewLeft
-     * @param fNewTop
-     * @param nNewRows
-     * @param nNewCols
-     * @return int
-     */
-    int ReSample_Float32(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
-};
+    int ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
+  };
 
 }
 

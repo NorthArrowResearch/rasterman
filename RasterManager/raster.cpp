@@ -623,7 +623,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
         {
             pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
+            //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
         else if (strcmp(pSuffix, ".img") == 0)
             pDR = GetGDALDriverManager()->GetDriverByName("HFA");
@@ -652,33 +652,17 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     newTransform[4] = 0;
     newTransform[5] = -1 * fNewCellSize;
     pDSOutput->SetGeoTransform(newTransform);
-    pDSOutput->SetProjection(pDSOld->GetProjectionRef());
+    pDSOutput->SetProjection(GetProjectionRef());
 
-
-    /* Call the particular version of the resample routine depending on
-     * the type of raster data involved.
-     */
-    switch (GetGDALDataType())
-    {
-    case GDT_Byte:
-    case GDT_Int32:
-
-    case GDT_Int16:
-
-    case GDT_Float32:
-        ReSample_Float32(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
-        break;
-
-    case GDT_Float64:
-        ReSample_Float64(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
-        break;
-
-    default:
-        std::runtime_error("Unhandled raster data type.");
-    };
+    ReSampleRaster(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
+
+    std::cout << "\n\n Input Raster: --------------------\n";
+    PrintRasterProperties(m_sFilePath);
+    std::cout << "\n\n Output Raster: --------------------\n";
+    PrintRasterProperties(pOutputRaster);
 
     return PROCESS_OK;
 }
