@@ -97,7 +97,23 @@ private:
      */
     void Mask(int argc, char *argv[]);
 
-    QString GetFile(int argc, char * argv[], int nIndex, bool bMustExist);
+    /**
+     * @brief GetFile
+     * @param argc
+     * @param argv
+     * @param nIndex
+     * @param bMustExist
+     * @return
+     */
+    QString GetFile(int argc, char *argv[], int nIndex, bool bMustExist);
+
+    /**
+     * @brief GetFile
+     * @param sFile
+     * @param bMustExist
+     * @return
+     */
+    QString GetFile(QString sFile, bool bMustExist);
     /**
      * @brief GetInteger
      * @param argc
@@ -125,6 +141,12 @@ private:
      * @param argv
      */
     void GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[], int nStartArg);
+    /**
+     * @brief MakeConcurrent
+     * @param argc
+     * @param argv
+     */
+    void MakeConcurrent(int argc, char *argv[]);
 
 };
 

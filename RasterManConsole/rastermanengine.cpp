@@ -55,6 +55,9 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         else if (QString::compare(sCommand, "Mosaic", Qt::CaseInsensitive) == 0)
             Mosaic(argc, argv);
 
+        else if (QString::compare(sCommand, "MakeConcurrent", Qt::CaseInsensitive) == 0)
+            MakeConcurrent(argc, argv);
+
         else if (QString::compare(sCommand, "Mask", Qt::CaseInsensitive) == 0)
             Mask(argc, argv);
 
@@ -69,11 +72,12 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n Usage: rasterman <command> [paramters...]\n";
 
         std::cout << "\n Commands (type rasterman followed by the command to retrieve parameter information):\n";
-        std::cout << "\n    raster       Display basic properties (rows, cols etc) for a raster.";
-        std::cout << "\n    bilinear     Bilinear resample of a raster to produce a new raster.";
-        std::cout << "\n    copy         Copy a raster to produce a new raster with the specified extent.";
-        std::cout << "\n    mosaic       Stitch two or more overlappint rasters.";
-        std::cout << "\n    mask         Mask one raster using another.";
+        std::cout << "\n    raster          Display basic properties (rows, cols etc) for a raster.";
+        std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
+        std::cout << "\n    copy            Copy a raster to produce a new raster with the specified extent.";
+        std::cout << "\n    mosaic          Stitch two or more overlappint rasters.";
+        std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
+        std::cout << "\n    mask            Mask one raster using another.";
         std::cout << "\n ";
         std::cout << "\n    add          Add two rasters or a raster and a constant.";
         std::cout << "\n    subtract     Subtract two rasters or a constant from a raster.";
@@ -470,13 +474,13 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
 
 void RasterManEngine::Mosaic(int argc, char * argv[])
 {
-    if (argc < 4)
+    if (argc != 4)
     {
         std::cout << "\n Stitch together two or more overlapping rasters.";
-        std::cout << "\n    Usage: rasterman mosaic <raster_file_path1> <raster_file_path2> ... <output_file_path>";
+        std::cout << "\n    Usage: rasterman mosaic <raster_file_paths> ... <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
-        std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
+        std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
         return;
@@ -484,11 +488,15 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     try
     {
         QString sInputFiles = "";
-        for (int n = 0; n < argc-3; n++){
-            sInputFiles.append(GetFile(argc, argv, n + 2, true)).append(";");
+        QString rasterInputs(argv[2]);
+        QString delimiterPattern(";");
+        QStringList inputFileList = rasterInputs.split(delimiterPattern);
+
+        foreach (QString sFilename, inputFileList) {
+            sInputFiles.append(GetFile(sFilename, true)).append(";");
         }
 
-        QString sOutputRaster = GetFile(argc, argv, argc-1, false);
+        QString sOutputRaster = GetFile(argc, argv, 3, false);
         int eResult;
 
         eResult = RasterManager::Mosaic(sInputFiles.toStdString().c_str(), sOutputRaster.toStdString().c_str());
@@ -500,6 +508,53 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         std::cout <<"Error: " << ex.what() << std::endl;
     }
 }
+
+void RasterManEngine::MakeConcurrent(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Make two or more rasters concurrent with each other.";
+        std::cout << "\n    Usage: rasterman mosaic <raster_input_paths> <raster_output_paths> ... <output_file_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_input_paths: two or more raster file paths; semicolon delimited.";
+        std::cout << "\n    raster_output_paths: two or more raster file paths; semicolon delimited.";
+        std::cout << "\n                         Must match raster_input_paths.";
+        std::cout << "\n ";
+        return;
+    }
+    try
+    {
+        QString sInputFiles = "";
+        QString sOutputFiles = "";
+
+        QString rasterInputs(argv[3]);
+        QString rasterOutputs(argv[4]);
+
+        QString delimiterPattern(";");
+
+        QStringList inputFileList = rasterInputs.split(delimiterPattern);
+        QStringList outputFileList = rasterOutputs.split(delimiterPattern);
+
+        foreach (QString sFilename, inputFileList) {
+            sInputFiles.append(GetFile(sFilename, true)).append(";");
+        }
+        foreach (QString sFilename, outputFileList) {
+            sInputFiles.append(GetFile(sFilename, false)).append(";");
+        }
+
+        int eResult;
+
+        eResult = RasterManager::Mosaic(sInputFiles.toStdString().c_str(), sOutputFiles.toStdString().c_str());
+
+        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    }
+    catch (std::exception & ex)
+    {
+        std::cout <<"Error: " << ex.what() << std::endl;
+    }
+}
+
 
 void RasterManEngine::Mask(int argc, char * argv[])
 {
@@ -610,14 +665,11 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );
     }
-
-
 }
 
 QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMustExist)
 {
     QString sFile;
-
     \
     if (nIndex < argc)
     {
@@ -628,22 +680,7 @@ QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMust
             throw std::runtime_error("Command line missing a file path.");
         else
         {
-            // Check if the directory the file exists in is actually there
-            QDir sFilePath = QFileInfo(sFile).absoluteDir();
-            if (!sFilePath.exists()){
-                throw  std::runtime_error("The directory of the file you specified does not exist.");
-            }
-
-            sFile = sFile.trimmed();
-            sFile = sFile.replace("\"","");
-            if (bMustExist)
-            {
-                if (!QFile::exists(sFile))
-                    throw  std::runtime_error("The specified input file does not exist.");
-            }
-            else
-                if (QFile::exists(sFile))
-                    throw std::runtime_error("The specified output file already exists.");
+            GetFile(sFile, bMustExist);
         }
     }
     else
@@ -651,6 +688,29 @@ QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMust
 
     return sFile;
 }
+
+QString RasterManEngine::GetFile(QString sFile, bool bMustExist)
+{
+    // Check if the directory the file exists in is actually there
+    QDir sFilePath = QFileInfo(sFile).absoluteDir();
+    if (!sFilePath.exists()){
+        throw  std::runtime_error("The directory of the file you specified does not exist.");
+    }
+
+    sFile = sFile.trimmed();
+    sFile = sFile.replace("\"","");
+    if (bMustExist)
+    {
+        if (!QFile::exists(sFile))
+            throw  std::runtime_error("The specified input file does not exist.");
+    }
+    else
+        if (QFile::exists(sFile))
+            throw std::runtime_error("The specified output file already exists.");
+
+    return sFile;
+}
+
 
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
 {

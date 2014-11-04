@@ -657,7 +657,6 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
 
     /*****************************************************************************************
      * Loop over the inputs and then the rows and columns
-     *
      */
     int i,j;
     sInPutFileName = "";
