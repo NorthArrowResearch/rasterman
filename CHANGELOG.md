@@ -9,6 +9,7 @@
 * Mosaic: stitches together multiple rasters
 * Mask: Use one raster to mask out another.
 * Project now compiles on OSX Yosemite which opens up the future for *nix compatibility as well as other compilers like clang, gcc etc.
+* Compiled successfully on 64-bit windows.
 
 
 ### Fixes

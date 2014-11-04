@@ -8,17 +8,17 @@ It does not depend on any of our other git repositories. GDAL 1.11 is required
 
 All commands have in-depth help. Just type `rastermanager <command>`
 
-* `raster` Display basic properties (rows, cols etc) for a raster.$
-* `bilinear` Bilinear resample of a raster to produce a new raster.$
-* `copy` Copy a raster to produce a new raster with the specified extent.$
-* `mosaic` Stitch two or more overlappint rasters.$
-* `mask` Mask one raster using another.$
-* `add` Add two rasters or a raster and a constant.$
-* `subtract` Subtract two rasters or a constant from a raster.$
-* `divide` Divide a raster by a number or another raster.$
-* `multiply` Multiply a raster by a number or another raster.$
-* `power` Raise a raster to a power.$
-* `sqrt` Get the square root of a raster.$
+* `raster` Display basic properties (rows, cols etc) for a raster.
+* `bilinear` Bilinear resample of a raster to produce a new raster.
+* `copy` Copy a raster to produce a new raster with the specified extent.
+* `mosaic` Stitch two or more overlappint rasters.
+* `mask` Mask one raster using another.
+* `add` Add two rasters or a raster and a constant.
+* `subtract` Subtract two rasters or a constant from a raster.
+* `divide` Divide a raster by a number or another raster.
+* `multiply` Multiply a raster by a number or another raster.
+* `power` Raise a raster to a power.
+* `sqrt` Get the square root of a raster.
 
 ## Developer Notes:
 
