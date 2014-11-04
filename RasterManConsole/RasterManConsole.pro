@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 6.0.45
+VERSION = 6.0.46
 TARGET = rasterman
 CONFIG   += console
 CONFIG   -= app_bundle
