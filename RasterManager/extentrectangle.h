@@ -165,7 +165,11 @@ public:
      * @return
      */
     double * GetGeoTransform();
-
+    /**
+     * @brief Intersect
+     * @param aRectangle
+     */
+    void Intersect(ExtentRectangle *aRectangle);
 protected:
     inline void SetRows(int nRows) { rows = nRows; }
     inline void SetCols(int nCols) { cols = nCols; }

@@ -83,6 +83,26 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     //GDALDestroyDriverManager();
 }
 
+int RasterMeta::IsOthogonal(){
+
+    if ( GetCellWidth() > 0 && GetCellHeight() > 0
+         && remainder( GetLeft(), GetCellWidth() ) == 0
+         && remainder( GetTop(), GetCellHeight() ) == 0 ){
+        return true;
+    }
+    return false;
+}
+
+int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
+    if (pCompareMeta->GetTop() == GetTop()
+            && pCompareMeta->GetLeft() == GetLeft()
+            && pCompareMeta->GetRows() == GetRows()
+            && pCompareMeta->GetCols() == GetCols() ){
+        return 1;
+    }
+    return 0;
+}
+
 
 void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
     if (*sGDALDriver != '\0'){

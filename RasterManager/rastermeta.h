@@ -53,9 +53,29 @@ public:
      * @return
      */
     inline char * GetProjectionRef() { return m_psProjection; }
-
+    /**
+     * @brief SetNoDataValue
+     * @param fNoData
+     */
     inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
+
+    /**
+     * @brief SetGDALDataType
+     * @param fDataType
+     */
     inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+
+    /**
+     * @brief IsOthogonal
+     * @return
+     */
+    int IsOthogonal();
+
+    /**
+     * @brief IsConcurrent
+     * @param pCompareMeta
+     */
+    int IsConcurrent(RasterMeta *pCompareMeta);
 
 protected:
 

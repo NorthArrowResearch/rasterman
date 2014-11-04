@@ -89,6 +89,20 @@ void ExtentRectangle::Union(ExtentRectangle * aRectangle){
     SetTransform(top, left, GetCellWidth(), GetCellHeight());
 }
 
+void ExtentRectangle::Intersect(ExtentRectangle * aRectangle){
+
+    // For readability let's set all the values first
+    double right = std::min(GetRight(), aRectangle->GetRight());
+    double bottom = std::max(GetBottom(), aRectangle->GetBottom());
+
+    double left = std::max(GetLeft(), aRectangle->GetLeft());
+    double top = std::min(GetTop(), aRectangle->GetTop());
+
+    cols = (int)((right - left) / fabs(GetCellWidth()));
+    rows = (int)((top - bottom) / fabs(GetCellHeight()));
+
+    SetTransform(top, left, GetCellWidth(), GetCellHeight());
+}
 
 void ExtentRectangle::SetTransform(double dTop, double dLeft, double dCellWidth, double dCellHeight){
     m_GeoTransform[0] = dLeft;

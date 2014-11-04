@@ -601,6 +601,105 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 }
 
 
+extern "C" DLL_API int MakeConcurrent(const char * csRasters)
+{
+    // Loop through the strings, delimited by ;
+    std::string RasterFileName, RasterFilesToken(csRasters);
+
+    // The Master meta is the one we will use to output all the raster files
+    // It will be the boolean intersect of all
+    RasterMeta MasterMeta;
+
+    double dNoDataValue = (double) std::numeric_limits<float>::lowest();
+
+    /*****************************************************************************************
+     * Open all the relevant files and figure out the bounds of the final file.
+     */
+    int counter = 0;
+    while(RasterFilesToken != ""){
+        counter++;
+        RasterFileName = RasterFilesToken.substr(0,RasterFilesToken.find_first_of(";"));
+        RasterFilesToken = RasterFilesToken.substr(RasterFilesToken.find_first_of(";") + 1);
+
+        if (RasterFileName.c_str() == NULL)
+            return INPUT_FILE_ERROR;
+
+        RasterMeta erRasterInput (RasterFileName.c_str());
+
+        // First time round set the bounds to the first raster we give it.
+        if (counter==1){
+            MasterMeta = erRasterInput;
+            MasterMeta.SetNoDataValue(dNoDataValue);
+            MasterMeta.SetGDALDataType(GDT_Float32);
+        }
+        else{
+            if (erRasterInput.IsOthogonal() == 0){
+                throw std::runtime_error("ERROR: All rasters must be orthogonal.");
+            }
+            else if(erRasterInput.GetCellHeight() == MasterMeta.GetCellHeight()
+                    && erRasterInput.GetCellWidth() == MasterMeta.GetCellWidth() ){
+                throw std::runtime_error("ERROR: cell resolutions must be the same for all rasters");
+            }
+            else {
+                MasterMeta.Intersect(&erRasterInput);
+            }
+        }
+    }
+
+    /*****************************************************************************************
+     * Loop over the inputs and then the rows and columns
+     *
+     */
+    int i,j;
+    std::string sRasterFiles(csRasters);
+    RasterFileName = "";
+
+    while(sRasterFiles != ""){
+
+        // Create the output dataset for writing
+        GDALDataset * pDSOutput = CreateOutputDS("FILENAMEHERE.TIFF", &MasterMeta);
+        double * pOutputLine = (double *) CPLMalloc(sizeof(double)*MasterMeta.GetCols());
+
+        RasterFileName = sRasterFiles.substr(0,sRasterFiles.find_first_of(";"));
+        sRasterFiles = sRasterFiles.substr(sRasterFiles.find_first_of(";") + 1);
+
+        GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
+        GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
+
+        RasterMeta inputMeta (RasterFileName.c_str());
+
+        // We need to figure out where in the output the input lives.
+        int trans_i = MasterMeta.GetRowTranslation(&inputMeta);
+        int trans_j = MasterMeta.GetColTranslation(&inputMeta);
+
+        double * pInputLine = (double *) CPLMalloc(sizeof(double)*pRBInput->GetXSize());
+
+        for (i = 0; i < pRBInput->GetYSize(); i++){
+            pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
+            // here's where we need to get the correct row of the output. Replace
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Read, 0,  trans_i+i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
+
+            for (j = 0; j < pRBInput->GetXSize(); j++){
+                // If the input line is empty then do nothing
+                if ( (pInputLine[j] != inputMeta.GetNoDataValue())
+                     && pOutputLine[trans_j+j] ==  MasterMeta.GetNoDataValue())
+                {
+                    pOutputLine[trans_j+j] = pInputLine[j];
+                }
+            }
+            // here's where we need to get the correct row of the output. Replace
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  trans_i+i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
+
+        }
+        CPLFree(pOutputLine);
+        CPLFree(pInputLine);
+        GDALClose(pDSOutput);
+        PrintRasterProperties("FILENAMEHERE.TIFF");
+    }
+
+    return PROCESS_OK;
+}
+
 /*******************************************************************************************************
  *******************************************************************************************************
  * Raster property methods
