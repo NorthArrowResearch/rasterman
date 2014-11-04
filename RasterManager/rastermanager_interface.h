@@ -192,6 +192,15 @@ extern "C" DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 /**
  * @brief
  *
+ * @param psInputRaster
+ * @param psOutput
+ * @return int
+ */
+extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
+
+/**
+ * @brief
+ *
  * @param psFullString
  * @param psEnding
  * @return bool

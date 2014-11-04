@@ -260,21 +260,21 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                         if(dOperator != 0)
                             pOutputLine[j] = pInputLine1[j] / dOperator;
                         else
-                            pOutputLine[j] = (float) fNoDataValue;
+                            pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_POWER){
                         // We're throwing away imaginary numbers
                         if (dOperator >= 0)
                             pOutputLine[j] = pow(pInputLine1[j], dOperator);
                         else
-                            pOutputLine[j] = (float) fNoDataValue;
+                            pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_SQRT){
                         // Throw away imaginary numbers
                         if (pInputLine1[j] >= 0)
                             pOutputLine[j] = sqrt(pInputLine1[j]);
                         else
-                            pOutputLine[j] = (float) fNoDataValue;
+                            pOutputLine[j] = fNoDataValue;
                     }
                     else
                         return MISSING_ARGUMENT;
@@ -294,6 +294,108 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     PrintRasterProperties(psOutput);
 
     return PROCESS_OK;
+}
+
+extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
+{
+
+    // Everything except square root needs at least one other parameter (raster or doube)
+    if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
+        return MISSING_ARGUMENT;
+
+    /*****************************************************************************************
+     * Raster 1
+     */
+    if (psInputRaster == NULL)
+        return INPUT_FILE_ERROR;
+
+    RasterMeta rmRasterMeta1(psInputRaster);
+
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
+    if (pDSInput == NULL)
+        return INPUT_FILE_ERROR;
+
+    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
+
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta1.GetCols());
+
+    /*****************************************************************************************
+     * The default output type is 32 bit floating point.
+     */
+    RasterMeta rmOutputMeta;
+    rmOutputMeta = rmRasterMeta1;
+
+    double fNoDataValue;
+    if (rmRasterMeta1.GetNoDataValue() == NULL){
+        fNoDataValue = (double) std::numeric_limits<float>::lowest();
+    }
+    else {
+        fNoDataValue = rmRasterMeta1.GetNoDataValue();
+    }
+
+    // Create the output dataset for writing
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmRasterMeta1);
+
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
+
+    /*****************************************************************************************
+     * The Mask Raster to be used: psMaskRaster
+     */
+    GDALDataset * pDSMask = (GDALDataset*) GDALOpen(psMaskRaster, GA_ReadOnly);
+    if (pDSInput == NULL)
+        return INPUT_FILE_ERROR;
+
+    RasterMeta rmMaskMeta(psMaskRaster);
+
+    GDALRasterBand * pRBMask = pDSMask->GetRasterBand(1);
+
+    /*****************************************************************************************
+        /* Check that input rasters have the same numbers of rows and columns
+         */
+
+    if (pRBInput->GetXSize() != pRBMask->GetXSize())
+        return COLS_ERROR;
+
+    if (pRBInput->GetYSize() != pRBMask->GetYSize())
+        return ROWS_ERROR;
+
+    if (psOutput == NULL)
+        return OUTPUT_FILE_MISSING;
+
+    double * pMaskline = (double *) CPLMalloc(sizeof(double)*rmMaskMeta.GetCols());
+
+    int i, j;
+    for (i = 0; i < rmOutputMeta.GetRows(); i++)
+    {
+        pRBInput->RasterIO(GF_Read, 0,  i, rmRasterMeta1.GetCols(), 1, pInputLine, rmRasterMeta1.GetCols(), 1, GDT_Float64, 0, 0);
+        pRBMask->RasterIO(GF_Read, 0,  i, rmMaskMeta.GetCols(), 1, pMaskline, rmMaskMeta.GetCols(), 1, GDT_Float64, 0, 0);
+
+        for (j = 0; j < rmOutputMeta.GetCols(); j++)
+        {
+            if ( (pMaskline[j] == rmRasterMeta1.GetNoDataValue()) )
+            {
+                pOutputLine[j] = rmOutputMeta.GetNoDataValue();
+            }
+            else
+            {
+                pOutputLine[j] = pInputLine[j];
+            }
+        }
+
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
+    }
+    CPLFree(pMaskline);
+    CPLFree(pInputLine);
+    CPLFree(pOutputLine);
+
+    GDALClose(pDSInput);
+    GDALClose(pDSOutput);
+    GDALClose(pDSMask);
+
+    PrintRasterProperties(psOutput);
+
+    return PROCESS_OK;
+
 }
 
 extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput)

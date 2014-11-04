@@ -7,6 +7,7 @@
 * RasterManager is now its own repo, separate from GCD.
 * Basic Math functions: add, subtract, divide, multiply, power and sqrt both with other rasters and decimal number constants
 * Mosaic: stitches together multiple rasters
+* Mask: Use one raster to mask out another.
 * Project now compiles on OSX Yosemite which opens up the future for *nix compatibility as well as other compilers like clang, gcc etc.
 
 
