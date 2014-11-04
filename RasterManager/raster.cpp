@@ -519,7 +519,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
     for (i = 0; i < nRows; i++)
     {
-        nOldRow = i + nRowTrans;
+        nOldRow = i - nRowTrans;
 
         if (nOldRow >= 0 && nOldRow < nInputRows)
         {
