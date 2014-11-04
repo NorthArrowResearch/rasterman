@@ -192,6 +192,15 @@ extern "C" DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 /**
  * @brief
  *
+ * @param csRasters
+ * @param csRasterOutputs
+ * @return int
+ */
+extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+
+/**
+ * @brief
+ *
  * @param psInputRaster
  * @param psOutput
  * @return int

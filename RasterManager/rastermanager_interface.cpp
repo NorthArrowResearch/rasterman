@@ -630,7 +630,7 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
         if (sInPutFileName.c_str() == NULL)
             return INPUT_FILE_ERROR;
 
-        if (sRasterOutputFiles == "")
+        if (sOutputFileName == "")
             throw std::runtime_error("ERROR: Number of output filepaths does not match number of input filepaths.");
 
         RasterMeta erRasterInput (sInPutFileName.c_str());
@@ -645,8 +645,8 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
             if (erRasterInput.IsOthogonal() == 0){
                 throw std::runtime_error("ERROR: All rasters must be orthogonal.");
             }
-            else if(erRasterInput.GetCellHeight() == MasterMeta.GetCellHeight()
-                    && erRasterInput.GetCellWidth() == MasterMeta.GetCellWidth() ){
+            else if(erRasterInput.GetCellHeight() != MasterMeta.GetCellHeight()
+                    || erRasterInput.GetCellWidth() != MasterMeta.GetCellWidth() ){
                 throw std::runtime_error("ERROR: cell resolutions must be the same for all rasters");
             }
             else {
@@ -661,6 +661,8 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
     int i,j;
     sInPutFileName = "";
     sOutputFileName = "";
+    sRasterInputFiles = std::string(csRasters);
+    sRasterOutputFiles = std::string(csRasterOutputs);
 
     while(sRasterInputFiles != ""){
 

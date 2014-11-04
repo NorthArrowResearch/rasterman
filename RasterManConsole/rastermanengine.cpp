@@ -493,7 +493,8 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         QStringList inputFileList = rasterInputs.split(delimiterPattern);
 
         foreach (QString sFilename, inputFileList) {
-            sInputFiles.append(GetFile(sFilename, true)).append(";");
+            if (sFilename.compare("") != 0)
+                sInputFiles.append(GetFile(sFilename, true)).append(";");
         }
 
         QString sOutputRaster = GetFile(argc, argv, 3, false);
@@ -528,8 +529,8 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
         QString sInputFiles = "";
         QString sOutputFiles = "";
 
-        QString rasterInputs(argv[3]);
-        QString rasterOutputs(argv[4]);
+        QString rasterInputs(argv[2]);
+        QString rasterOutputs(argv[3]);
 
         QString delimiterPattern(";");
 
@@ -537,15 +538,17 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
         QStringList outputFileList = rasterOutputs.split(delimiterPattern);
 
         foreach (QString sFilename, inputFileList) {
-            sInputFiles.append(GetFile(sFilename, true)).append(";");
+            if (sFilename.compare("") != 0)
+                sInputFiles.append(GetFile(sFilename, true)).append(";");
         }
         foreach (QString sFilename, outputFileList) {
-            sInputFiles.append(GetFile(sFilename, false)).append(";");
+            if (sFilename.compare("") != 0)
+                sOutputFiles.append(GetFile(sFilename, false)).append(";");
         }
 
         int eResult;
 
-        eResult = RasterManager::Mosaic(sInputFiles.toStdString().c_str(), sOutputFiles.toStdString().c_str());
+        eResult = RasterManager::MakeConcurrent(sInputFiles.toStdString().c_str(), sOutputFiles.toStdString().c_str());
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }

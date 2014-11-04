@@ -85,7 +85,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
 int RasterMeta::IsOthogonal(){
 
-    if ( GetCellWidth() > 0 && GetCellHeight() > 0
+    if ( GetCellWidth() != 0 && GetCellHeight() != 0
          && remainder( GetLeft(), GetCellWidth() ) == 0
          && remainder( GetTop(), GetCellHeight() ) == 0 ){
         return true;
