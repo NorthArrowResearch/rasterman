@@ -601,10 +601,13 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 }
 
 
-extern "C" DLL_API int MakeConcurrent(const char * csRasters)
+extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
     // Loop through the strings, delimited by ;
-    std::string RasterFileName, RasterFilesToken(csRasters);
+    std::string sInPutFileName,
+            sOutputFileName,
+            sRasterInputFiles(csRasters),
+            sRasterOutputFiles(csRasterOutputs);
 
     // The Master meta is the one we will use to output all the raster files
     // It will be the boolean intersect of all
@@ -616,15 +619,21 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters)
      * Open all the relevant files and figure out the bounds of the final file.
      */
     int counter = 0;
-    while(RasterFilesToken != ""){
+    while(sRasterInputFiles != ""){
         counter++;
-        RasterFileName = RasterFilesToken.substr(0,RasterFilesToken.find_first_of(";"));
-        RasterFilesToken = RasterFilesToken.substr(RasterFilesToken.find_first_of(";") + 1);
+        sInPutFileName = sRasterInputFiles.substr(0,sRasterInputFiles.find_first_of(";"));
+        sRasterInputFiles = sRasterInputFiles.substr(sRasterInputFiles.find_first_of(";") + 1);
 
-        if (RasterFileName.c_str() == NULL)
+        sOutputFileName = sRasterOutputFiles.substr(0,sRasterOutputFiles.find_first_of(";"));
+        sRasterOutputFiles = sRasterOutputFiles.substr(sRasterOutputFiles.find_first_of(";") + 1);
+
+        if (sInPutFileName.c_str() == NULL)
             return INPUT_FILE_ERROR;
 
-        RasterMeta erRasterInput (RasterFileName.c_str());
+        if (sRasterOutputFiles == "")
+            throw std::runtime_error("ERROR: Number of output filepaths does not match number of input filepaths.");
+
+        RasterMeta erRasterInput (sInPutFileName.c_str());
 
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
@@ -641,7 +650,7 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters)
                 throw std::runtime_error("ERROR: cell resolutions must be the same for all rasters");
             }
             else {
-                MasterMeta.Intersect(&erRasterInput);
+                MasterMeta.Union(&erRasterInput);
             }
         }
     }
@@ -651,22 +660,25 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters)
      *
      */
     int i,j;
-    std::string sRasterFiles(csRasters);
-    RasterFileName = "";
+    sInPutFileName = "";
+    sOutputFileName = "";
 
-    while(sRasterFiles != ""){
+    while(sRasterInputFiles != ""){
+
+        sInPutFileName = sRasterInputFiles.substr(0,sRasterInputFiles.find_first_of(";"));
+        sRasterInputFiles = sRasterInputFiles.substr(sRasterInputFiles.find_first_of(";") + 1);
+
+        sOutputFileName = sRasterOutputFiles.substr(0,sRasterOutputFiles.find_first_of(";"));
+        sRasterOutputFiles = sRasterOutputFiles.substr(sRasterOutputFiles.find_first_of(";") + 1);
 
         // Create the output dataset for writing
-        GDALDataset * pDSOutput = CreateOutputDS("FILENAMEHERE.TIFF", &MasterMeta);
+        GDALDataset * pDSOutput = CreateOutputDS(sOutputFileName.c_str(), &MasterMeta);
         double * pOutputLine = (double *) CPLMalloc(sizeof(double)*MasterMeta.GetCols());
 
-        RasterFileName = sRasterFiles.substr(0,sRasterFiles.find_first_of(";"));
-        sRasterFiles = sRasterFiles.substr(sRasterFiles.find_first_of(";") + 1);
-
-        GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
+        GDALDataset * pDS = (GDALDataset*) GDALOpen(sInPutFileName.c_str(), GA_ReadOnly);
         GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
 
-        RasterMeta inputMeta (RasterFileName.c_str());
+        RasterMeta inputMeta (sInPutFileName.c_str());
 
         // We need to figure out where in the output the input lives.
         int trans_i = MasterMeta.GetRowTranslation(&inputMeta);
@@ -694,7 +706,7 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters)
         CPLFree(pOutputLine);
         CPLFree(pInputLine);
         GDALClose(pDSOutput);
-        PrintRasterProperties("FILENAMEHERE.TIFF");
+        PrintRasterProperties(sOutputFileName.c_str());
     }
 
     return PROCESS_OK;
