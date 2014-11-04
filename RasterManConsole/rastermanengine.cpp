@@ -55,6 +55,9 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         else if (QString::compare(sCommand, "Mosaic", Qt::CaseInsensitive) == 0)
             Mosaic(argc, argv);
 
+        else if (QString::compare(sCommand, "Mask", Qt::CaseInsensitive) == 0)
+            Mask(argc, argv);
+
         else
             bRecognizedCommand = false;
     }
@@ -70,6 +73,7 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n    bilinear     Bilinear resample of a raster to produce a new raster.";
         std::cout << "\n    copy         Copy a raster to produce a new raster with the specified extent.";
         std::cout << "\n    mosaic       Stitch two or more overlappint rasters.";
+        std::cout << "\n    mask         Mask one raster using another.";
         std::cout << "\n ";
         std::cout << "\n    add          Add two rasters or a raster and a constant.";
         std::cout << "\n    subtract     Subtract two rasters or a constant from a raster.";
@@ -496,6 +500,40 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         std::cout <<"Error: " << ex.what() << std::endl;
     }
 }
+
+void RasterManEngine::Mask(int argc, char * argv[])
+{
+    if (argc != 5)
+    {
+        std::cout << "\n Mask one raster using another.";
+        std::cout << "\n    Usage: rasterman mosaic <raster_file_path> <raster_mask_path> ... <output_file_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
+        std::cout << "\n    raster_mask_path: A raster to be used as a mask. Mask will be created from NoDataValues.";
+        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n ";
+        return;
+    }
+    try
+    {
+        QString sRasterInput = GetFile(argc, argv, 2, true);
+        QString sRasterMask = GetFile(argc, argv, 3, true);
+        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        int eResult;
+
+        eResult =  RasterManager::Mask(sRasterInput.toStdString().c_str(),
+                                       sRasterMask.toStdString().c_str(),
+                                       sOutputRaster.toStdString().c_str());
+
+        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    }
+    catch (std::exception & ex)
+    {
+        std::cout <<"Error: " << ex.what() << std::endl;
+    }
+}
+
 
 void RasterManEngine::CSVToRaster(int argc, char * argv[])
 {

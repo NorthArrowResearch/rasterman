@@ -90,6 +90,13 @@ private:
 
     void CSVToRaster(int argc, char * argv[]);
 
+    /**
+     * @brief Mask
+     * @param argc
+     * @param argv
+     */
+    void Mask(int argc, char *argv[]);
+
     QString GetFile(int argc, char * argv[], int nIndex, bool bMustExist);
     /**
      * @brief GetInteger
