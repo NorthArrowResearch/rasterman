@@ -394,6 +394,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     // The output raster info
     RasterMeta OutputMeta;
 
+    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.
@@ -412,12 +413,13 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
             OutputMeta = erRasterInput;
+            OutputMeta.SetNoDataValue(fNoDataValue);
+            OutputMeta.SetGDALDataType(GDT_Float32);
         }
         else{
             OutputMeta.Union(&erRasterInput);
         }
     }
-
 
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
@@ -425,7 +427,6 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, &OutputMeta);
-    double fNoDataValue = OutputMeta.GetNoDataValue();
 
     //projectionRef use from inputs.
 
@@ -457,11 +458,11 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
         GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
         GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
 
-        RasterMeta inputRect (RasterFileName.c_str());
+        RasterMeta inputMeta (RasterFileName.c_str());
 
         // We need to figure out where in the output the input lives.
-        int trans_i = OutputMeta.GetRowTranslation(&inputRect);
-        int trans_j = OutputMeta.GetColTranslation(&inputRect);
+        int trans_i = OutputMeta.GetRowTranslation(&inputMeta);
+        int trans_j = OutputMeta.GetColTranslation(&inputMeta);
 
         double * pInputLine = (double *) CPLMalloc(sizeof(double)*pRBInput->GetXSize());
 
@@ -472,8 +473,8 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
             for (j = 0; j < pRBInput->GetXSize(); j++){
                 // If the input line is empty then do nothing
-                if ( (pInputLine[j] != fNoDataValue)
-                     && pOutputLine[trans_j+j] ==  fNoDataValue)
+                if ( (pInputLine[j] != inputMeta.GetNoDataValue())
+                     && pOutputLine[trans_j+j] ==  OutputMeta.GetNoDataValue())
                 {
                     pOutputLine[trans_j+j] = pInputLine[j];
                 }

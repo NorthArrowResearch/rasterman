@@ -54,9 +54,11 @@ public:
      */
     inline char * GetProjectionRef() { return m_psProjection; }
 
-protected:
     inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
     inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+
+protected:
+
     void SetProjectionRef(const char * fProjectionRef);
     void SetGDALDriver(const char * sGDALDriver);
 
