@@ -680,6 +680,17 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
 
         RasterMeta inputMeta (sInPutFileName.c_str());
 
+        /*****************************************************************************************
+         * Loop over the output file to make sure every cell gets a value of fNoDataValue
+         * Every line is the same so we can have the for loops adjacent
+         */
+        for (int outj = 0; outj < MasterMeta.GetCols(); outj++){
+            pOutputLine[outj] = dNoDataValue;
+        }
+        for (int outi = 0; outi < MasterMeta.GetRows(); outi++){
+            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  outi, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
+        }
+
         // We need to figure out where in the output the input lives.
         int trans_i = MasterMeta.GetRowTranslation(&inputMeta);
         int trans_j = MasterMeta.GetColTranslation(&inputMeta);
