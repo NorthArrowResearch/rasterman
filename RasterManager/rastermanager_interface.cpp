@@ -309,7 +309,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
     if (psInputRaster == NULL)
         return INPUT_FILE_ERROR;
 
-    RasterMeta rmRasterMeta1(psInputRaster);
+    RasterMeta rmInputMeta(psInputRaster);
 
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
     if (pDSInput == NULL)
@@ -317,24 +317,24 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
 
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
-    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta1.GetCols());
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmInputMeta.GetCols());
 
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
     RasterMeta rmOutputMeta;
-    rmOutputMeta = rmRasterMeta1;
+    rmOutputMeta = rmInputMeta;
 
     double fNoDataValue;
-    if (rmRasterMeta1.GetNoDataValue() == NULL){
+    if (rmInputMeta.GetNoDataValue() == NULL){
         fNoDataValue = (double) std::numeric_limits<float>::lowest();
     }
     else {
-        fNoDataValue = rmRasterMeta1.GetNoDataValue();
+        fNoDataValue = rmInputMeta.GetNoDataValue();
     }
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmRasterMeta1);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmInputMeta);
 
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
 
@@ -367,12 +367,12 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
     int i, j;
     for (i = 0; i < rmOutputMeta.GetRows(); i++)
     {
-        pRBInput->RasterIO(GF_Read, 0,  i, rmRasterMeta1.GetCols(), 1, pInputLine, rmRasterMeta1.GetCols(), 1, GDT_Float64, 0, 0);
+        pRBInput->RasterIO(GF_Read, 0,  i, rmInputMeta.GetCols(), 1, pInputLine, rmInputMeta.GetCols(), 1, GDT_Float64, 0, 0);
         pRBMask->RasterIO(GF_Read, 0,  i, rmMaskMeta.GetCols(), 1, pMaskline, rmMaskMeta.GetCols(), 1, GDT_Float64, 0, 0);
 
         for (j = 0; j < rmOutputMeta.GetCols(); j++)
         {
-            if ( (pMaskline[j] == rmRasterMeta1.GetNoDataValue()) )
+            if ( (pMaskline[j] == rmMaskMeta.GetNoDataValue()) )
             {
                 pOutputLine[j] = rmOutputMeta.GetNoDataValue();
             }
