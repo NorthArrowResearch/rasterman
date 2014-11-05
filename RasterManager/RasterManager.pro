@@ -54,8 +54,6 @@ win32 {
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
 
-    message("GDALWIN = $$GDALWIN")
-
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 }

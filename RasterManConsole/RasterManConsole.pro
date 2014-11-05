@@ -43,6 +43,7 @@ win32 {
         message("x86_64 build (64 bit) ")
         ARCH = "64"
     }
+
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
     LIBS += -L$$GDALWIN/lib/ -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
