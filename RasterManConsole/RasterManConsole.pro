@@ -50,10 +50,6 @@ win32 {
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
-
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$DESTDIR -lRasterManager
-
 }
 macx{
     ## OSX common build here
@@ -67,10 +63,10 @@ macx{
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$DESTDIR -lRasterManager
 }
+
+# Tell it where to find compiled RasterManager.dll
+LIBS += -L$$DESTDIR -lRasterManager
 
 message("Building to: $$DESTDIR")
 
