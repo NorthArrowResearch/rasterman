@@ -2,7 +2,6 @@
 
 #include "rastermeta.h"
 #include "rastermanager_interface.h"
-//#include "raster.h"
 
 #include "gdal_priv.h"
 #include "ogrsf_frmts.h"
@@ -86,8 +85,8 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 int RasterMeta::IsOthogonal(){
 
     if ( GetCellWidth() != 0 && GetCellHeight() != 0
-         && remainder( GetLeft(), GetCellWidth() ) == 0
-         && remainder( GetTop(), GetCellHeight() ) == 0 ){
+         && fmod( GetLeft(), GetCellWidth() ) == 0
+         && fmod( GetTop(), GetCellHeight() ) == 0 ){
         return true;
     }
     return false;
