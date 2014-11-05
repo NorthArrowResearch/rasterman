@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 6.1.0
+VERSION = 6.1.1
 TARGET = rasterman
 CONFIG   += console
 CONFIG   -= app_bundle
@@ -31,48 +31,46 @@ DEPENDPATH += $$PWD/../RasterManager
 
 Libs += -L$$PWD/../RasterManager
 
+CONFIG(release, debug|release): BUILD_TYPE = Release
+else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+
 win32 {
-    ## Windows common build here
+    ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
-        message("x86 build")
-        LIBS += -L$$PWD/../Libraries/gdalwin32-1.10.1/lib/ -lgdal_i
-        INCLUDEPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
-        DEPENDPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
+        ARCH = "32"
+        message("x86 build (32 bit) ")
     } else {
-        message("x86_64 build")
-        LIBS += -L$$PWD/../Libraries/gdalwin64-1.10.1/lib/ -lgdal_i
-        INCLUDEPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
-        DEPENDPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
+        message("x86_64 build (64 bit) ")
+        ARCH = "64"
     }
+    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    LIBS += -L$$GDALWIN/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
 
     # Compile to a central location
-    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release32
-    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug32
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 
     # Tell it where to find compiled RasterManager.dll
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release32 -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug32 -lRasterManager
+    LIBS += -L$$DESTDIR -lRasterManager
 
 }
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
 
+    # GDAL is required
+    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    LIBS += -L$$GDALNIX/lib -lgdal
+    INCLUDEPATH += $$GDALNIX/include
+    DEPENDPATH  += $$GDALNIX/include
+
     # Compile to a central location
-    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
-    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     # Tell it where to find compiled RasterManager.dll
-    CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Release -lRasterManager
-    else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../Deploy/Debug -lRasterManager
-
-    # Find GDAL on OSX
-    LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
-    INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
-    DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
-
-    message("Building to: $$DESTDIR")
-
+    LIBS += -L$$DESTDIR -lRasterManager
 }
 
+message("Building to: $$DESTDIR")
 
