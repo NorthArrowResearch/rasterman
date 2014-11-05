@@ -85,6 +85,9 @@ void Raster::Init(bool bFullImage)
     double transform[6];
     ds->GetGeoTransform(transform);
 
+    m_dRasterMax = band->GetMaximum();
+    m_dRasterMin = band->GetMinimum();
+
     SetTransform(transform[3], transform[0], transform[1], transform[5]);
 
     SetProjectionRef(ds->GetProjectionRef());
@@ -157,6 +160,8 @@ void Raster::CSVCellClean(std::string & value){
 
 
 }
+
+
 
 /**
  * Open up the CSV meta file and read the top, left, rows, cols etc....

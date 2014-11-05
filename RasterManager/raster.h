@@ -110,6 +110,18 @@ public:
     inline bool HasNoDataValue() const {return !(hasNoData == 0);}
 
     /**
+     * @brief GetMaximum
+     * @return
+     */
+    inline double GetMaximum() { return m_dRasterMax; }
+
+    /**
+     * @brief GetMinimum
+     * @return
+     */
+    inline double GetMinimum() { return m_dRasterMin; }
+
+    /**
      * @brief ReSample
      * @param pOutputRaster
      * @param fNewCellSize
@@ -223,6 +235,9 @@ private:
     int xBlockSize; /**< TODO */
     int yBlockSize; /**< TODO */
     int hasNoData; /**< TODO */
+
+    double m_dRasterMax;
+    double m_dRasterMin;
 
     double m_fXOrigin; /**< TODO */
     double m_fYOrigin; /**< TODO */

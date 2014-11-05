@@ -761,10 +761,16 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     int nRows = 0;
     int nCols = 0;
     double fNoData = 0;
+    double dRasterMax = 0;
+    double dRasterMin = 0;
     int bHasNoData = 0;
+    int orthogonal = 0;
     int nDataType;
 
     RasterManager::Raster r(ppszRaster);
+
+    std::string projection =  r.GetProjectionRef();
+
     fCellHeight = r.GetCellHeight();
     fCellWidth = r.GetCellWidth();
     fLeft = r.GetLeft();
@@ -773,40 +779,50 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     fBottom = r.GetBottom();
     nRows = r.GetRows();
     nCols = r.GetCols();
+    dRasterMax = r.GetMaximum();
+    dRasterMin = r.GetMinimum();
+    orthogonal = r.IsOthogonal();
     fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
     nDataType = (int) r.GetGDALDataType();
 
+
     std::cout << "\n     Raster: " << ppszRaster;
     std::printf( "\n       Left: %.8lf      Right: %.8lf", fLeft, fRight);
     std::printf( "\n        Top: %.8lf     Bottom: %.8lf", fTop, fBottom);
-    std::cout << "\n       Rows: " << nRows;
-    std::cout << "\n       Cols: " << nCols;
-    std::cout << "\n";
+    std::cout << "\n       Rows: " << nRows << "    Cols: " << nCols;
+    std::cout << "\n      ";
     std::printf( "\n     Cell Width: %.1lf", fCellWidth);
+    std::printf( "\n     Min: %.3lf     Max: %.3lf", dRasterMin, dRasterMax);
+    if (orthogonal == 1 ){
+        std::printf( "\n     Orthogonal: True");
+    }
+    else {
+        std::printf( "\n     Orthogonal: False");
+    }
     std::cout << "\n";
-
-
     switch (nDataType)
     {
     // Note 0 = unknown;
-    case  1: std::cout << "      Data Type: 1, GDT_Byte, Eight bit unsigned integer"; break;
-    case  2: std::cout << "      Data Type: 2, GDT_UInt16, Sixteen bit unsigned integer"; break;
-    case  3: std::cout << "      Data Type: 3, GDT_Int16, Sixteen bit signed integer"; break;
-    case  4: std::cout << "      Data Type: 4, GDT_UInt32, Thirty two bit unsigned integer"; break;
-    case  5: std::cout << "      Data Type: 5, GDT_Int32, Thirty two bit signed integer"; break;
-    case  6: std::cout << "      Data Type: 6, GDT_Float32, Thirty two bit floating point"; break;
-    case  7: std::cout << "      Data Type: 7, GDT_Float64, Sixty four bit floating point"; break;
-    case  8: std::cout << "      Data Type: 8, GDT_CInt16, Complex Int16"; break;
-    case  9: std::cout << "      Data Type: 9, GDT_CInt32, Complex Int32"; break;
-    case 10: std::cout << "      Data Type: 10, GDT_CFloat32, Complex Float32"; break;
-    case 11: std::cout << "      Data Type: 11, GDT_CFloat64, Complex Float64"; break;
-    default: std::cout << "      Data Type: Unknown"; break;
+    case  1: std::cout << "\n      Data Type: 1, GDT_Byte, Eight bit unsigned integer"; break;
+    case  2: std::cout << "\n      Data Type: 2, GDT_UInt16, Sixteen bit unsigned integer"; break;
+    case  3: std::cout << "\n      Data Type: 3, GDT_Int16, Sixteen bit signed integer"; break;
+    case  4: std::cout << "\n      Data Type: 4, GDT_UInt32, Thirty two bit unsigned integer"; break;
+    case  5: std::cout << "\n      Data Type: 5, GDT_Int32, Thirty two bit signed integer"; break;
+    case  6: std::cout << "\n      Data Type: 6, GDT_Float32, Thirty two bit floating point"; break;
+    case  7: std::cout << "\n      Data Type: 7, GDT_Float64, Sixty four bit floating point"; break;
+    case  8: std::cout << "\n      Data Type: 8, GDT_CInt16, Complex Int16"; break;
+    case  9: std::cout << "\n      Data Type: 9, GDT_CInt32, Complex Int32"; break;
+    case 10: std::cout << "\n      Data Type: 10, GDT_CFloat32, Complex Float32"; break;
+    case 11: std::cout << "\n      Data Type: 11, GDT_CFloat64, Complex Float64"; break;
+    default: std::cout << "\n      Data Type: Unknown"; break;
     }
     if (bHasNoData)
         std::cout << "\n        No Data: " << fNoData;
     else
         std::cout << "\n        No Data: none";
+
+    std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
 }
 
 
