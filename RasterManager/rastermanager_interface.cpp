@@ -699,20 +699,23 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
         double * pInputLine = (double *) CPLMalloc(sizeof(double)*pRBInput->GetXSize());
 
         for (i = 0; i < pRBInput->GetYSize(); i++){
-            pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
-            // here's where we need to get the correct row of the output. Replace
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Read, 0,  trans_i+i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
+            if (i - trans_i <= MasterMeta.GetRows() ){
+                pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
+                // here's where we need to get the correct row of the output. Replace
+                pDSOutput->GetRasterBand(1)->RasterIO(GF_Read, 0,  i- trans_i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
 
-            for (j = 0; j < pRBInput->GetXSize(); j++){
-                // If the input line is empty then do nothing
-                if ( (pInputLine[j] != inputMeta.GetNoDataValue())
-                     && pOutputLine[trans_j+j] ==  MasterMeta.GetNoDataValue())
-                {
-                    pOutputLine[trans_j+j] = pInputLine[j];
+                for (j = 0; j < pRBInput->GetXSize(); j++){
+                    // If the input line is empty then do nothing
+                    if ( trans_j+j <= MasterMeta.GetCols()
+                         && pInputLine[j] != inputMeta.GetNoDataValue()
+                         && pOutputLine[trans_j+j] ==  MasterMeta.GetNoDataValue() )
+                    {
+                        pOutputLine[trans_j+j] = pInputLine[j];
+                    }
                 }
+                // here's where we need to get the correct row of the output. Replace
+                pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i - trans_i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
             }
-            // here's where we need to get the correct row of the output. Replace
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  trans_i+i, MasterMeta.GetCols(), 1, pOutputLine, MasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
 
         }
         CPLFree(pOutputLine);
