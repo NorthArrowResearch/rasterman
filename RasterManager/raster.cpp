@@ -256,7 +256,6 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
 }
 
-
 void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * psOutput,
                          const char * sXField,
@@ -266,20 +265,6 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, p_rastermeta);
-
-    /*****************************************************************************************
-     * Loop over the output file to make sure every cell gets a value of fNoDataValue
-     * Every line is the same so we can have the for loops adjacent
-     */
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*p_rastermeta->GetCols());
-    for (int outj = 0; outj < p_rastermeta->GetCols(); outj++){
-        pOutputLine[outj] = p_rastermeta->GetNoDataValue();
-    }
-    for (int outi = 0; outi < p_rastermeta->GetRows(); outi++){
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  outi, p_rastermeta->GetCols(), 1, pOutputLine, p_rastermeta->GetCols(), 1, GDT_Float64, 0, 0);
-    }
-    CPLFree(pOutputLine);
-
 
     // open the csv file and count the lines
     int csvNumLines = 0;
@@ -671,16 +656,4 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     return PROCESS_OK;
 }
 
-
-int Raster::Slope(const char *pOutputRaster, bool bDegrees)
-{
-    // TODO: James to put slope implementation here.
-
-    // Remember that the DEM raster is the raster object itself.
-
-
-    // Determine appropriate return values if needed.
-    return 1;
 }
-
-} // Namespace

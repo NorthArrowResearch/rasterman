@@ -39,10 +39,10 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
     GDALDriver * pDR = NULL;
 
     if (pTemplateRastermeta->GetGDALDriver()){
-        pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
+        pDR = GetGDALDriverManager()->GetDriverByName(pTemplateRastermeta->GetGDALDriver());
     }
     else {
-        pDR = GetGDALDriverManager()->GetDriverByName(pTemplateRastermeta->GetGDALDriver());
+        pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
     }
 
     if (strcmp( pDR->GetDescription() , "GTiff") == 0){
@@ -67,6 +67,9 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
 
     double * newTransform = pTemplateRastermeta->GetGeoTransform();
     char * projectionRef = pTemplateRastermeta->GetProjectionRef();
+
+    // Fill the new raster set with nodatavalue
+    pDSOutput->GetRasterBand(1)->Fill(pTemplateRastermeta->GetNoDataValue());
 
     if (newTransform != NULL)
         pDSOutput->SetGeoTransform(newTransform);
@@ -298,12 +301,16 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
+    Raster pDemRaster (psInputRaster);
+    pDemRaster.Hillshade(psOutputHillshade);
+
     return PROCESS_OK;
 }
 
-extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputHillshade, int nSlopeType){
+extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
-
+    Raster pDemRaster (psInputRaster);
+    pDemRaster.Slope(psOutputSlope, nSlopeType);
 
     return PROCESS_OK;
 }
@@ -545,17 +552,6 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     //projectionRef use from inputs.
 
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*OutputMeta.GetCols());
-
-    /*****************************************************************************************
-     * Loop over the output file to make sure every cell gets a value of fNoDataValue
-     * Every line is the same so we can have the for loops adjacent
-     */
-    for (int outj = 0; outj < OutputMeta.GetCols(); outj++){
-        pOutputLine[outj] = fNoDataValue;
-    }
-    for (int outi = 0; outi < OutputMeta.GetRows(); outi++){
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  outi, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
-    }
 
     /*****************************************************************************************
      * Loop over the inputs and then the rows and columns

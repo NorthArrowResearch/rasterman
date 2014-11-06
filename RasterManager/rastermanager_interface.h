@@ -209,7 +209,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster
 
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
 
-extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputHillshade, int nSlopeType);
+extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
 
 
 /**

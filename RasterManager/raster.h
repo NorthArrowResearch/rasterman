@@ -147,14 +147,6 @@ public:
     int Copy(const char * pOutputRaster, double fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
 
     /**
-     * @brief Slope
-     * @param pOutputRaster
-     * @param bDegrees
-     * @return
-     */
-    int Slope(const char * pOutputRaster, bool bDegrees);
-
-    /**
      * @brief CSVCellClean
      * @param value
      */
@@ -210,14 +202,14 @@ public:
      * @brief Hillshade
      * @return
      */
-    static int Hillshade(const char *sOutputHillshade);
+    int Hillshade(const char *psOutputHillshade);
 
     /**
      * @brief Slope
      * @param type
      * @return
      */
-    int Slope(int type);
+    int Slope(const char *psOutputSlope, int nSlpType);
 
 protected:
 
