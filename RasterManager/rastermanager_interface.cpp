@@ -64,6 +64,9 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
         if (er == CE_Failure || er == CE_Fatal)
             return NULL;
     }
+    else{
+        CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(0);
+    }
 
     double * newTransform = pTemplateRastermeta->GetGeoTransform();
     char * projectionRef = pTemplateRastermeta->GetProjectionRef();

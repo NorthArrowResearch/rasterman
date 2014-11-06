@@ -625,8 +625,6 @@ void RasterManEngine::Hillshade(int argc, char * argv[])
         QString sOriginal = GetFile(argc, argv, 2, true);
         QString sOutput = GetFile(argc, argv, 3, false);
 
-        int nSlopeType = GetInteger(argc, argv, 4);
-
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         int eResult = rOriginal.Hillshade(sOutput.toStdString().c_str());
 

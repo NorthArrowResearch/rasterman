@@ -11,8 +11,14 @@ namespace RasterManager {
 int Raster::Hillshade(const char * psOutputHillshade){
 
     GDALAllRegister();
+
+    // This is a byte Raster so the nodataval must be 0
+    RasterMeta OutputRasterMeta(m_sFilePath);
+    OutputRasterMeta.SetNoDataValue(0);
+    OutputRasterMeta.SetGDALDataType(GDT_Byte);
+
     GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
-    GDALDataset * pHsDS = CreateOutputDS(psOutputHillshade, this);
+    GDALDataset * pHsDS = CreateOutputDS(psOutputHillshade, &OutputRasterMeta);
 
     const double PI = 3.14159265;
     double dzdx, dzdy, azimuthRad, slopeRad, aspectRad;
@@ -39,7 +45,7 @@ int Raster::Hillshade(const char * psOutputHillshade){
     for (int i=1; i < GetRows() - 1; i++)
     {
         //assign no data for first and last positions in the row
-        hlsd[0] = 0, hlsd[ GetCols() - 1 ] = 0;
+        hlsd[0] = GetNoDataValue(), hlsd[ GetCols() - 1 ] = GetNoDataValue();
         for (int j=1; j < GetCols() - 1; j++)
         {
             //read 3x3 from DEM dataset
@@ -88,7 +94,7 @@ int Raster::Hillshade(const char * psOutputHillshade){
             }
             else
             {
-                hlsd[j] = 0;
+                hlsd[j] = OutputRasterMeta.GetNoDataValue();
             }
         }
         pHsDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,GetCols(),1,hlsd,GetCols(),1,GDT_Byte,0,0);
