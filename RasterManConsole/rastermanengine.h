@@ -72,22 +72,25 @@ private:
      */
 
     void BiLinearResample(int argc, char * argv[]);
+
     /**
-     * @brief DoDMinLoD
+     * @brief Slope
      * @param argc
      * @param argv
      */
-
     void Slope(int argc, char * argv[]);
     /**
-     * @brief GetFile
+     * @brief Hillshade
      * @param argc
      * @param argv
-     * @param nIndex
-     * @param bMustExist
-     * @return
      */
+    void Hillshade(int argc, char *argv[]);
 
+    /**
+     * @brief CSVToRaster
+     * @param argc
+     * @param argv
+     */
     void CSVToRaster(int argc, char * argv[]);
 
     /**

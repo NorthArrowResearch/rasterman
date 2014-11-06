@@ -1,6 +1,19 @@
 --------------------------------
 
-## 6.0.46 
+## 6.1.1
+
+### New Features
+
+* Hillshade
+* Slope
+
+### Fixes
+
+* Fixed a bug with how the GDAL driver is found for raster inputs.
+
+--------------------------------
+
+## 6.1.0
 
 ### New Features
 

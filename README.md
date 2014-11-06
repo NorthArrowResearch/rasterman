@@ -13,6 +13,10 @@ All commands have in-depth help. Just type `rastermanager <command>`
 * `copy` Copy a raster to produce a new raster with the specified extent.
 * `mosaic` Stitch two or more overlappint rasters.
 * `mask` Mask one raster using another.
+
+* `hillshade` Create a hillshade raster
+* `slope` Create a slope raster
+
 * `add` Add two rasters or a raster and a constant.
 * `subtract` Subtract two rasters or a constant from a raster.
 * `divide` Divide a raster by a number or another raster.

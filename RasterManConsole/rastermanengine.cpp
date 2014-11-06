@@ -52,6 +52,9 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         else if (QString::compare(sCommand, "Slope", Qt::CaseInsensitive) == 0)
             Slope(argc, argv);
 
+        else if (QString::compare(sCommand, "Hillshade", Qt::CaseInsensitive) == 0)
+            Hillshade(argc, argv);
+
         else if (QString::compare(sCommand, "Mosaic", Qt::CaseInsensitive) == 0)
             Mosaic(argc, argv);
 
@@ -85,9 +88,10 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n    multiply     Multiply a raster by a number or another raster.";
         std::cout << "\n    power        Raise a raster to a power.";
         std::cout << "\n    sqrt         Get the square root of a raster.";
-        //std::cout << "\n ";
-        //std::cout << "\n    slope        Calculate a slope raster from a DEM raster.";
         std::cout << "\n";
+        std::cout << "\n    hillshade       Create a hillshade raster.";
+        std::cout << "\n    mask            Create a slope raster.";
+        std::cout << "\n ";
         return;
     }
 }
@@ -162,34 +166,6 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
     }
 }
 
-void RasterManEngine::Slope(int argc, char * argv[])
-{
-    if (argc != 5)
-    {
-        std::cout << "\nSlope Usage:";
-        std::cout << "\n    Usage: rasterman slope <degrees | percent> <dem_file_path> <slope_file_path>";
-        std::cout << "\n   Command: slopedegrees";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    type: degrees or percent";
-        std::cout << "\n    dem_file_path: Absolute full path to existing DEM raster file.";
-        std::cout << "\n    slope_file_path: Absolute full path to output slope degrees raster file.";
-        std::cout << "\n";
-        return;
-    }
-    else
-    {
-        QString sDEM = GetFile(argc, argv, 3, true);
-        QString sSlope = GetFile(argc, argv, 4, false);
-
-        bool bDegrees = true;
-        QString sType(argv[2]);
-        if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
-            bDegrees = false;
-
-        RasterManager::Raster r(sDEM.toStdString().c_str());
-        r.Slope(sSlope.toStdString().c_str(), bDegrees);
-    }
-}
 void RasterManEngine::RasterCopy(int argc, char * argv[])
 {
     if (argc != 9)
@@ -564,7 +540,7 @@ void RasterManEngine::Mask(int argc, char * argv[])
     if (argc != 5)
     {
         std::cout << "\n Mask one raster using another.";
-        std::cout << "\n    Usage: rasterman mosaic <raster_file_path> <raster_mask_path> ... <output_file_path>";
+        std::cout << "\n    Usage: rasterman mask <raster_file_path> <raster_mask_path> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
@@ -585,6 +561,75 @@ void RasterManEngine::Mask(int argc, char * argv[])
                                        sOutputRaster.toStdString().c_str());
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    }
+    catch (std::exception & ex)
+    {
+        std::cout <<"Error: " << ex.what() << std::endl;
+    }
+}
+
+
+void RasterManEngine::Slope(int argc, char * argv[])
+{
+    if (argc != 5)
+    {
+        std::cout << "\n Bilinear Resample Usage:";
+        std::cout << "\n    Syntax: rasterman slope <raster_file_path> <output_file_path> <slope_type>";
+        std::cout << "\n   Command: slope";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
+        std::cout << "\n    output_file_path: Absolute full path to output, slope raster.";
+        std::cout << "\n    slope_type: 0=degrees, 1= percent.";
+        std::cout << "\n";
+        return;
+    }
+
+    try
+    {
+        QString sOriginal = GetFile(argc, argv, 2, true);
+        QString sOutput = GetFile(argc, argv, 3, false);
+
+        int nSlopeType = GetInteger(argc, argv, 4);
+
+        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
+        int eResult = rOriginal.Slope(sOutput.toStdString().c_str(), nSlopeType);
+
+        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+    }
+    catch (std::exception & ex)
+    {
+        std::cout <<"Error: " << ex.what() << std::endl;
+    }
+}
+
+
+void RasterManEngine::Hillshade(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Create Hillshade:";
+        std::cout << "\n    Syntax: rasterman hillshade <raster_file_path> <output_file_path>";
+        std::cout << "\n   Command: bilinear";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
+        std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
+        std::cout << "\n";
+        return;
+    }
+
+    try
+    {
+        QString sOriginal = GetFile(argc, argv, 2, true);
+        QString sOutput = GetFile(argc, argv, 3, false);
+
+        int nSlopeType = GetInteger(argc, argv, 4);
+
+        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
+        int eResult = rOriginal.Hillshade(sOutput.toStdString().c_str());
+
+        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
     }
     catch (std::exception & ex)
     {
