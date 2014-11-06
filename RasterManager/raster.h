@@ -205,6 +205,20 @@ public:
      * @param sFieldName
      */
     static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sCSVMeta, const char *sXField, const char *sYField, const char *sDataField);
+
+    /**
+     * @brief Hillshade
+     * @return
+     */
+    static int Hillshade(const char *sOutputHillshade);
+
+    /**
+     * @brief Slope
+     * @param type
+     * @return
+     */
+    int Slope(int type);
+
 protected:
 
     /**

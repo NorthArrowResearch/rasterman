@@ -24,7 +24,9 @@ SOURCES += \
     dodraster.cpp \
     rastermanager_interface.cpp \
     extentrectangle.cpp \
-    rastermeta.cpp
+    rastermeta.cpp \
+    raster_hillshade.cpp \
+    raster_slope.cpp
 
 HEADERS +=\
     rastermanager_global.h \

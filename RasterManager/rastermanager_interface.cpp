@@ -296,6 +296,18 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     return PROCESS_OK;
 }
 
+extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
+
+    return PROCESS_OK;
+}
+
+extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputHillshade, int nSlopeType){
+
+
+
+    return PROCESS_OK;
+}
+
 extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
 

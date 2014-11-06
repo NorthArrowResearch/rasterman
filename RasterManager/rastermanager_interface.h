@@ -207,6 +207,11 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
  */
 extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
 
+extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
+
+extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputHillshade, int nSlopeType);
+
+
 /**
  * @brief
  *
