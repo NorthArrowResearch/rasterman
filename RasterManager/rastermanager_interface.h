@@ -21,6 +21,11 @@ namespace RasterManager {
  * @brief
  *
  */
+enum RasterManagerInputCodes {
+    SLOPE_DEGREES = 0,
+    SLOPE_PERCENT = 1
+};
+
 enum RasterManagerOutputCodes {
     PROCESS_OK = 0
     , INPUT_FILE_ERROR = 1

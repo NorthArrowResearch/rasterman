@@ -568,29 +568,31 @@ void RasterManEngine::Mask(int argc, char * argv[])
     }
 }
 
-
 void RasterManEngine::Slope(int argc, char * argv[])
 {
     if (argc != 5)
     {
         std::cout << "\n Bilinear Resample Usage:";
-        std::cout << "\n    Syntax: rasterman slope <raster_file_path> <output_file_path> <slope_type>";
+        std::cout << "\n    Usage: rasterman slope <degrees | percent> <dem_file_path> <slope_file_path>";
         std::cout << "\n   Command: slope";
-        std::cout << "\n";
+        std::cout << "\n ";
         std::cout << "\n Arguments:";
+        std::cout << "\n    type: degrees or percent";
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
         std::cout << "\n    output_file_path: Absolute full path to output, slope raster.";
-        std::cout << "\n    slope_type: 0=degrees, 1= percent.";
         std::cout << "\n";
         return;
     }
 
     try
     {
-        QString sOriginal = GetFile(argc, argv, 2, true);
-        QString sOutput = GetFile(argc, argv, 3, false);
+        QString sOriginal = GetFile(argc, argv, 3, true);
+        QString sOutput = GetFile(argc, argv, 4, false);
 
-        int nSlopeType = GetInteger(argc, argv, 4);
+        int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
+        QString sType(argv[2]);
+        if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
+            nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_PERCENT;
 
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         int eResult = rOriginal.Slope(sOutput.toStdString().c_str(), nSlopeType);
@@ -602,7 +604,6 @@ void RasterManEngine::Slope(int argc, char * argv[])
         std::cout <<"Error: " << ex.what() << std::endl;
     }
 }
-
 
 void RasterManEngine::Hillshade(int argc, char * argv[])
 {

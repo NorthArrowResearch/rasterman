@@ -50,11 +50,11 @@ int Raster::Slope(const char *psOutputSlope, int nSlpType){
                  dzdy = ((fElev[0]-fElev[6]) + ((2*fElev[1])-(2*fElev[7])) + (fElev[2]-fElev[8])) / (8* GetCellWidth());
                  dzxy = pow(dzdx, 2.0) + pow(dzdy, 2.0);
                  riseRun = pow(dzxy, 0.5);
-                 if (nSlpType == 0)
+                 if (nSlpType == SLOPE_DEGREES)
                  {
                      fSlope[j] = atan(riseRun) * (180.0/PI);
                  }
-                 else if (nSlpType == 1)
+                 else if (nSlpType == SLOPE_PERCENT)
                  {
                      fSlope[j] = riseRun*100.0;
                  }
