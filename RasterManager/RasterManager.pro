@@ -37,36 +37,40 @@ HEADERS +=\
     extentrectangle.h \
     rastermeta.h
 
+CONFIG(release, debug|release): BUILD_TYPE = Release
+else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+
 win32 {
-
-    # Compile to a central location
-    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release32
-    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug32
-
-    ## Windows common build here
+    ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
+        ARCH = "32"
         message("x86 build (32 bit) ")
-        LIBS += -L$$PWD/../Libraries/gdalwin32-1.10.1/lib/ -lgdal_i
-        INCLUDEPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
-        DEPENDPATH += $$PWD/../Libraries/gdalwin32-1.10.1/include
     } else {
         message("x86_64 build (64 bit) ")
-        LIBS += -L$$PWD/../Libraries/gdalwin64-1.10.1/lib/ -lgdal_i
-        INCLUDEPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
-        DEPENDPATH += $$PWD/../Libraries/gdalwin64-1.10.1/include
+        ARCH = "64"
     }
+
+    # GDAL is required
+    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    LIBS += -L$$GDALWIN/lib -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
+
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 }
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
 
     # Compile to a central location
-    CONFIG(release, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Release
-    else:CONFIG(debug, debug|release): DESTDIR = $$OUT_PWD/../../../Deploy/Debug
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
-    LIBS += -L/Library/Frameworks/GDAL.framework/Versions/1.11/unix/lib -lgdal
-    INCLUDEPATH += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
-    DEPENDPATH  += /Library/Frameworks/GDAL.framework/Versions/1.11/unix/include
-
-    message("Building to: $$DESTDIR")
+    # GDAL is required
+    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    LIBS += -L$$GDALNIX/lib -lgdal
+    INCLUDEPATH += $$GDALNIX/include
+    DEPENDPATH  += $$GDALNIX/include
 }
+
+message("Building to: $$DESTDIR")
