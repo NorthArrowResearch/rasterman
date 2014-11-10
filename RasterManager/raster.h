@@ -161,7 +161,12 @@ public:
      * @param sFieldName
      * @param p_rastermeta
      */
-    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sXField, const char *sYField, const char *sDataField, RasterMeta *p_rastermeta);
+    static void CSVtoRaster(const char * sCSVSourcePath,
+                            const char * psOutput,
+                            const char * sXField,
+                            const char * sYField,
+                            const char * sDataField,
+                            RasterMeta * p_rastermeta );
     /**
      * @brief CSVtoRaster when you don't have a meta file
      * @param sCSVSourcePath
@@ -196,7 +201,12 @@ public:
      * @param sYField
      * @param sFieldName
      */
-    static void CSVtoRaster(const char *sCSVSourcePath, const char *psOutput, const char *sCSVMeta, const char *sXField, const char *sYField, const char *sDataField);
+    static void CSVtoRaster(const char * sCSVSourcePath,
+                            const char * psOutput,
+                            const char * sCSVMeta,
+                            const char * sXField,
+                            const char * sYField,
+                            const char * sDataField );
 
     /**
      * @brief Hillshade

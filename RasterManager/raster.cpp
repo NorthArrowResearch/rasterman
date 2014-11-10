@@ -161,8 +161,6 @@ void Raster::CSVCellClean(std::string & value){
 
 }
 
-
-
 /**
  * Open up the CSV meta file and read the top, left, rows, cols etc....
  */
