@@ -648,26 +648,28 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
-        std::cout << "\n    csv_file_path: Absolute full path to existing .csv file.";
+        std::cout << "\n       csv_file_path: Absolute full path to existing .csv file.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
-
-        std::cout << "\n    XField: Name of the field to use for the x values";
-        std::cout << "\n    YField: Name of the field to use for the x values";
-        std::cout << "\n    DataField: Name of the field to use for the raster data.";
-
-
-        std::cout << "\n    top: Top coordinate of the output raster extent.";
-        std::cout << "\n    left: Left coordinate of the output raster extent.";
-        std::cout << "\n    rows: Number of rows in the output raster.";
-        std::cout << "\n    cols: Number of columns in the output raster.";
-        std::cout << "\n    cell_size: Cell size for the output raster.";
+        std::cout << "\n";
+        std::cout << "\n         XField: Name of the field to use for the x values";
+        std::cout << "\n         YField: Name of the field to use for the y values";
+        std::cout << "\n      DataField: Name of the field to use for the raster data.";
+        std::cout << "\n";
+        std::cout << "\n      Either specify the command line values of the output raster:";
+        std::cout << "\n";
+        std::cout << "\n            top: Top coordinate of the output raster extent.";
+        std::cout << "\n           left: Left coordinate of the output raster extent.";
+        std::cout << "\n           rows: Number of rows in the output raster.";
+        std::cout << "\n           cols: Number of columns in the output raster.";
+        std::cout << "\n      cell_size: Cell size for the output raster.";
         std::cout << "\n    no_data_val: number to use for no data val (use \"min\" for minimum float)";
-        std::cout << "\n    EPSG_Proj: EPSG Coordinate projection (integer).";
-
+        std::cout << "\n      EPSG_Proj: EPSG Coordinate projection (integer).";
+        std::cout << "\n";
+        std::cout << "\n      Or pass in another.csv file with a single line specifying these parameters";
+        std::cout << "\n";
         std::cout << "\n    output_file_path: (optional) csv file with single line:";
-        std::cout << "\n       Structure:  top, left, rows, cols, cell_size, EPSG_Proj";
-
-        std::cout << "\n ";
+        std::cout << "\n                Structure:  top, left, rows, cols, cell_size, EPSG_Proj";
+        std::cout << "\n\n";
         return;
     }
 
