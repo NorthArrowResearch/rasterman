@@ -161,70 +161,6 @@ void Raster::CSVCellClean(std::string & value){
 
 }
 
-/**
- * Open up the CSV meta file and read the top, left, rows, cols etc....
- */
-void Raster::CSVtoRaster(const char * sCSVSourcePath,
-                         const char * psOutput,
-                         const char * sCSVMeta,
-                         const char * sXField,
-                         const char * sYField,
-                         const char * sDataField){
-
-    std::ifstream CSVMEtaFile(sCSVMeta);
-    if (!CSVMEtaFile)
-    {
-        throw std::runtime_error("ERROR: couldn't open the meta csv file.");
-    }
-
-    double dLeft, dTop, dCellSize, dNoDataVal;
-    int nRows, nCols;
-    std::string sProjection;
-
-    // Read CSV file into 3 different arrays
-    std::string fsLine;
-    getline(CSVMEtaFile,fsLine);
-
-    std::istringstream isLine (fsLine);
-
-    std::string uncleanCell;
-    int ncolnumber = 0;
-    while(getline(isLine, uncleanCell, ',')){
-
-        ncolnumber++;
-        std::string csvItem = uncleanCell;
-        Raster::CSVCellClean(csvItem);
-
-        switch (ncolnumber) {
-        case 1: dTop = std::stod(csvItem); break;
-        case 2: dLeft = std::stod(csvItem); break;
-        case 3: nRows = std::stoi(csvItem); break;
-        case 4: nCols = std::stoi(csvItem); break;
-        case 5: dCellSize = std::stod(csvItem); break;
-        case 6:
-            // "min" is the convention for minimum float
-            if (std::strcmp(csvItem.c_str(), "min") == 0)
-                dNoDataVal = (double) std::numeric_limits<float>::lowest();
-            else
-                dNoDataVal = std::stod(csvItem);
-            break;
-        case 7: sProjection = csvItem; break;
-        default: break;
-        }
-
-    }
-    CSVMEtaFile.close();
-
-    CSVtoRaster(sCSVSourcePath, psOutput,
-                dTop, dLeft, nRows, nCols, dCellSize, dNoDataVal,
-                sProjection.c_str(),
-                sXField,
-                sYField,
-                sDataField);
-
-
-}
-
 void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * sOutput,
                          double dTop,
@@ -233,7 +169,6 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          int nCols,
                          double dCellWidth,
                          double dNoDataVal,
-                         const char * sProj,
                          const char * sXField,
                          const char * sYField,
                          const char * sDataField){
@@ -241,16 +176,24 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     double dCellHeight = dCellWidth * -1;
     const char * psDriver = GetDriverFromFileName(sOutput);
 
-    OGRSpatialReference oSRS;
-    oSRS.SetFromUserInput( sProj );
-
-    char * sProjection = NULL;
-    oSRS.exportToWkt(&sProjection);
-
     RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeight, dCellWidth,
-                               dNoDataVal, psDriver, GDT_Float32, sProjection);
+                               dNoDataVal, psDriver, GDT_Float32, NULL);
 
     CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sDataField, &inputRasterMeta);
+
+}
+
+void Raster::CSVtoRaster(const char * sCSVSourcePath,
+                         const char * psOutput,
+                         const char * sRasterTemplate,
+                         const char * sXField,
+                         const char * sYField,
+                         const char * sDataField ){
+
+    RasterMeta inputRasterMeta(sRasterTemplate);
+
+    CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sDataField, &inputRasterMeta);
+
 
 }
 

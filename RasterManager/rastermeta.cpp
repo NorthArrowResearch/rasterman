@@ -48,6 +48,10 @@ void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType e
 
     if (psProjection != NULL)
         SetProjectionRef(psProjection);
+    else{
+        SetProjectionRef("");
+    }
+
 }
 
 void RasterMeta::operator=(RasterMeta &source)
@@ -116,6 +120,10 @@ void RasterMeta::SetProjectionRef(const char *fProjectionRef)
         m_psProjection = (char *) malloc(std::strlen(fProjectionRef) * sizeof(char)+1);
         std::strcpy(m_psProjection, fProjectionRef);
     }
+    else {
+        m_psProjection = "";
+    }
+
 }
 
 } // RasterManager

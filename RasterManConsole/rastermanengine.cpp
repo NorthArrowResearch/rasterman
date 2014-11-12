@@ -645,7 +645,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <Projection>] | <csv_meta_file_path>";
+        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       csv_file_path: Absolute full path to existing .csv file.";
@@ -665,10 +665,9 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n    no_data_val: number to use for no data val (use \"min\" for minimum float)";
         std::cout << "\n     Projection: Spatial reference from various text formats. eg: \"NAD83\", \"WGS84\" etc.";
         std::cout << "\n";
-        std::cout << "\n      Or pass in another.csv file with a single line specifying these parameters";
+        std::cout << "\n      Or pass in a raster file with extent, cellsize and projection set correctly.";
         std::cout << "\n";
-        std::cout << "\n    output_file_path: (optional) csv file with single line:";
-        std::cout << "\n                Structure:  top, left, rows, cols, cell_size, WGS_PROJ";
+        std::cout << "\n    raster_template: Path to template raster file.";
         std::cout << "\n\n";
         return;
     }
@@ -682,7 +681,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 
     // Either all
-    if (argc == 14){
+    if (argc == 13){
 
         double dLeft, dTop, dCellSize, dNoDataVal;
         int nRows, nCols;
@@ -700,17 +699,16 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
                                            sOutput.toStdString().c_str(),
                                            dTop, dLeft, nRows, nCols,
                                            dCellSize, dNoDataVal,
-                                           sProj.toStdString().c_str(),
                                            sXField.toStdString().c_str(),
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );
     }
     // Otherwise a csv file is used
     else if (argc == 8){
-        QString sCSVMetaFile = GetFile(argc, argv, 7, true);
+        QString sRasterTemplate = GetFile(argc, argv, 7, true);
         RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
                                            sOutput.toStdString().c_str(),
-                                           sCSVMetaFile.toStdString().c_str(),
+                                           sRasterTemplate.toStdString().c_str(),
                                            sXField.toStdString().c_str(),
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );

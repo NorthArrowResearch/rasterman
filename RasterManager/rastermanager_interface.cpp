@@ -779,8 +779,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     int nDataType;
 
     RasterManager::Raster r(ppszRaster);
-
-    std::string projection =  r.GetProjectionRef();
+    std::string projection = r.GetProjectionRef();
 
     fCellHeight = r.GetCellHeight();
     fCellWidth = r.GetCellWidth();
@@ -834,6 +833,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
         std::cout << "\n        No Data: none";
 
     std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
+    std::cout << "\n ";
 }
 
 

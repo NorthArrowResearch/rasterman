@@ -153,12 +153,12 @@ public:
     static void CSVCellClean(std::string &value);
 
     /**
-     * @brief CSVtoRaster This is the actual csv import function
+     * @brief CSVtoRaster
      * @param sCSVSourcePath
      * @param psOutput
      * @param sXField
      * @param sYField
-     * @param sFieldName
+     * @param sDataField
      * @param p_rastermeta
      */
     static void CSVtoRaster(const char * sCSVSourcePath,
@@ -167,20 +167,36 @@ public:
                             const char * sYField,
                             const char * sDataField,
                             RasterMeta * p_rastermeta );
+
     /**
-     * @brief CSVtoRaster when you don't have a meta file
+     * @brief CSVtoRaster
      * @param sCSVSourcePath
      * @param psOutput
+     * @param sRasterTemplate
+     * @param sXField
+     * @param sYField
+     * @param sDataField
+     */
+    static void CSVtoRaster(const char * sCSVSourcePath,
+                            const char * psOutput,
+                            const char * sRasterTemplate,
+                            const char * sXField,
+                            const char * sYField,
+                            const char * sDataField );
+
+    /**
+     * @brief CSVtoRaster
+     * @param sCSVSourcePath
+     * @param sOutput
      * @param dTop
      * @param dLeft
      * @param nRows
      * @param nCols
      * @param dCellWidth
-     * @param sProj
+     * @param dNoDataVal
      * @param sXField
      * @param sYField
-     * @param sFieldName
-     * @param p_rastermeta
+     * @param sDataField
      */
     static void CSVtoRaster(const char * sCSVSourcePath,
                                     const char * sOutput,
@@ -189,24 +205,9 @@ public:
                                     int nRows,
                                     int nCols,
                                     double dCellWidth, double dNoDataVal,
-                                    const char *sProj,
                                     const char * sXField,
                                     const char * sYField,
                                     const char * sDataField);
-    /**
-     * @brief CSVtoRaster This is when you are passing in a CSV meta file with top,left,rows,cols etc.
-     * @param sCSVSourcePath
-     * @param psOutput
-     * @param sXField
-     * @param sYField
-     * @param sFieldName
-     */
-    static void CSVtoRaster(const char * sCSVSourcePath,
-                            const char * psOutput,
-                            const char * sCSVMeta,
-                            const char * sXField,
-                            const char * sYField,
-                            const char * sDataField );
 
     /**
      * @brief Hillshade
