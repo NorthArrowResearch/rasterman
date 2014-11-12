@@ -645,7 +645,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
+        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <Projection>] | <csv_meta_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       csv_file_path: Absolute full path to existing .csv file.";
@@ -663,12 +663,12 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n           cols: Number of columns in the output raster.";
         std::cout << "\n      cell_size: Cell size for the output raster.";
         std::cout << "\n    no_data_val: number to use for no data val (use \"min\" for minimum float)";
-        std::cout << "\n      EPSG_Proj: EPSG Coordinate projection (integer).";
+        std::cout << "\n     Projection: Spatial reference from various text formats. eg: \"NAD83\", \"WGS84\" etc.";
         std::cout << "\n";
         std::cout << "\n      Or pass in another.csv file with a single line specifying these parameters";
         std::cout << "\n";
         std::cout << "\n    output_file_path: (optional) csv file with single line:";
-        std::cout << "\n                Structure:  top, left, rows, cols, cell_size, EPSG_Proj";
+        std::cout << "\n                Structure:  top, left, rows, cols, cell_size, WGS_PROJ";
         std::cout << "\n\n";
         return;
     }
@@ -686,11 +686,9 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 
         double dLeft, dTop, dCellSize, dNoDataVal;
         int nRows, nCols;
-        int nEPSGproj;
+        QString sProj = argv[13];
 
         GetOutputRasterProperties(dTop, dLeft, nRows, nCols, dCellSize, argc, argv, 7);
-
-        nEPSGproj = GetInteger(argc, argv, 13);
 
         QString sNoDataVal = argv[12];
         if (sNoDataVal.compare("min", Qt::CaseInsensitive) == 0)
@@ -702,7 +700,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
                                            sOutput.toStdString().c_str(),
                                            dTop, dLeft, nRows, nCols,
                                            dCellSize, dNoDataVal,
-                                           nEPSGproj,
+                                           sProj.toStdString().c_str(),
                                            sXField.toStdString().c_str(),
                                            sYField.toStdString().c_str(),
                                            sDataField.toStdString().c_str() );

@@ -176,7 +176,7 @@ public:
      * @param nRows
      * @param nCols
      * @param dCellWidth
-     * @param sEPSGProj
+     * @param sProj
      * @param sXField
      * @param sYField
      * @param sFieldName
@@ -189,7 +189,7 @@ public:
                                     int nRows,
                                     int nCols,
                                     double dCellWidth, double dNoDataVal,
-                                    int nEPSGProj,
+                                    const char *sProj,
                                     const char * sXField,
                                     const char * sYField,
                                     const char * sDataField);

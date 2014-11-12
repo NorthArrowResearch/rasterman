@@ -179,7 +179,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     double dLeft, dTop, dCellSize, dNoDataVal;
     int nRows, nCols;
-    int nEPSGproj;
+    std::string sProjection;
 
     // Read CSV file into 3 different arrays
     std::string fsLine;
@@ -208,7 +208,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
             else
                 dNoDataVal = std::stod(csvItem);
             break;
-        case 7: nEPSGproj = std::stoi(csvItem); break;
+        case 7: sProjection = csvItem; break;
         default: break;
         }
 
@@ -217,7 +217,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     CSVtoRaster(sCSVSourcePath, psOutput,
                 dTop, dLeft, nRows, nCols, dCellSize, dNoDataVal,
-                nEPSGproj,
+                sProjection.c_str(),
                 sXField,
                 sYField,
                 sDataField);
@@ -233,7 +233,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
                          int nCols,
                          double dCellWidth,
                          double dNoDataVal,
-                         int nEPSGProj,
+                         const char * sProj,
                          const char * sXField,
                          const char * sYField,
                          const char * sDataField){
@@ -242,7 +242,7 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     const char * psDriver = GetDriverFromFileName(sOutput);
 
     OGRSpatialReference oSRS;
-    oSRS.importFromEPSG( nEPSGProj );
+    oSRS.SetFromUserInput( sProj );
 
     char * sProjection = NULL;
     oSRS.exportToWkt(&sProjection);
