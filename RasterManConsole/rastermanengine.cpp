@@ -80,7 +80,8 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n    copy            Copy a raster to produce a new raster with the specified extent.";
         std::cout << "\n    mosaic          Stitch two or more overlappint rasters.";
         std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
-        std::cout << "\n    mask            Mask one raster using another.";
+        std::cout << "\n    mask            Mask one raster using another raster or a vector.";
+        std::cout << "\n    setnull         Set a NoDataValue in a raster based on thesholding.";
         std::cout << "\n ";
         std::cout << "\n    add          Add two rasters or a raster and a constant.";
         std::cout << "\n    subtract     Subtract two rasters or a constant from a raster.";
@@ -90,7 +91,9 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n    sqrt         Get the square root of a raster.";
         std::cout << "\n";
         std::cout << "\n    hillshade       Create a hillshade raster.";
-        std::cout << "\n    mask            Create a slope raster.";
+        std::cout << "\n    slope           Create a slope raster.";
+        std::cout << "\n ";
+        std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n ";
         return;
     }
@@ -642,7 +645,7 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd power <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
+        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val> <EPSG_Proj>] | <csv_meta_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    csv_file_path: Absolute full path to existing .csv file.";
