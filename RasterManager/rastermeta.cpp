@@ -35,6 +35,13 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
     Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
+RasterMeta::~RasterMeta()
+{
+    CPLFree(m_psGDALDriver);
+    CPLFree(m_psProjection);
+}
+
+
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
     if (psDriver != NULL)

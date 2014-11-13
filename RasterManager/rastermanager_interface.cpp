@@ -46,6 +46,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
     }
 
     if (strcmp( pDR->GetDescription() , "GTiff") == 0){
+        //MEMLEAK!!
         papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
     }
 

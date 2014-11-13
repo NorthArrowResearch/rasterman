@@ -16,6 +16,8 @@ public:
     // Build an empty rastermeta object
     RasterMeta();
 
+    ~RasterMeta();
+
     // Build a RasterMeta from first principles
     RasterMeta(double fTop, double fLeft, int nRows, int nCols,
                double dCellHeight, double dCellWidth, double fNoData,
@@ -76,6 +78,7 @@ public:
      * @param pCompareMeta
      */
     int IsConcurrent(RasterMeta *pCompareMeta);
+
 
 protected:
 

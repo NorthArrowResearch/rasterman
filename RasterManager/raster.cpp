@@ -123,9 +123,10 @@ void Raster::Init(bool bFullImage)
         ring.closeRings();
     }
     GDALClose(ds);
-    OGRPolygon* tmp = new OGRPolygon();
-    tmp->addRingDirectly(&ring);
+//    OGRPolygon* tmp = new OGRPolygon();
+//    tmp->addRingDirectly(&ring);
     //pExtent = (OGRPolygon*)tmp->clone();
+//    delete tmp;
 }
 
 void Raster::CSVCellClean(std::string & value){
