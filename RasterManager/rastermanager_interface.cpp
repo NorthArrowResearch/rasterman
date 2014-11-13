@@ -873,7 +873,7 @@ extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
             Len--;
         else
         {
-            char *Ext = new char[s.length()-Len+1];
+            char *Ext = new char[s.length()-Len+1]; //MEMORYLEAK!!
             for(unsigned int a=0; a < s.length()-Len; a++)
                 Ext[a] = FileName[s.length()-(s.length()-Len)+a];
             Ext[s.length()-Len] = '\0';

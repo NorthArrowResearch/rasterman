@@ -93,7 +93,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
         SetNoDataValue(DEFAULT_NO_DATA);
 
     GDALClose(pDS);
-    //GDALDestroyDriverManager();
+
 }
 
 int RasterMeta::IsOthogonal(){
@@ -119,21 +119,15 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 
 void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
     if (*sGDALDriver != '\0'){
-        m_psGDALDriver = (char *) malloc(std::strlen(sGDALDriver) * sizeof(char)+1);
-        std::strcpy(m_psGDALDriver, sGDALDriver);
+        m_psGDALDriver = strdup(sGDALDriver);
     }
 }
 
 void RasterMeta::SetProjectionRef(const char *fProjectionRef)
 {
     if (*fProjectionRef != '\0'){
-        m_psProjection = (char *) malloc(std::strlen(fProjectionRef) * sizeof(char)+1);
-        std::strcpy(m_psProjection, fProjectionRef);
+        m_psProjection = strdup(fProjectionRef);
     }
-    else {
-        m_psProjection = "";
-    }
-
 }
 
 } // RasterManager
