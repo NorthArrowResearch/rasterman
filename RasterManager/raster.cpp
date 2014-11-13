@@ -415,6 +415,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
     //const char * pC = pDR->GetDescription();
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);
+    CSLDestroy( papszOptions );
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
@@ -563,6 +564,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     }
 
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1,  GetGDALDataType(), papszOptions);
+    CSLDestroy( papszOptions );
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 

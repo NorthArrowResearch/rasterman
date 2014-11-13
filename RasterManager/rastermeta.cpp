@@ -37,8 +37,11 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 
 RasterMeta::~RasterMeta()
 {
-    CPLFree(m_psGDALDriver);
-    CPLFree(m_psProjection);
+    if (m_psGDALDriver)
+        free(m_psGDALDriver);
+
+    if (m_psProjection)
+        free(m_psProjection);
 }
 
 
