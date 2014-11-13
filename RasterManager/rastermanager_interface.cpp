@@ -865,20 +865,18 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
 
 extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
 {
-    std::string s = FileName;
-    int Len = s.length();
-    while(TRUE)
+    std::string filename(FileName);
+    std::string::size_type idx;
+
+    idx = filename.rfind('.');
+
+    if(idx != std::string::npos)
     {
-        if(FileName[Len] != '.')
-            Len--;
-        else
-        {
-            char *Ext = new char[s.length()-Len+1]; //MEMORYLEAK!!
-            for(unsigned int a=0; a < s.length()-Len; a++)
-                Ext[a] = FileName[s.length()-(s.length()-Len)+a];
-            Ext[s.length()-Len] = '\0';
-            return Ext;
-        }
+        return filename.substr(idx+1).c_str();
+    }
+    else
+    {
+        return "";
     }
 }
 
