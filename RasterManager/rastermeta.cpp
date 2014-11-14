@@ -112,23 +112,33 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 }
 
 
-void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
-    if (sGDALDriver){
-        m_psGDALDriver = strdup(sGDALDriver);
-    }
-    else {
+void RasterMeta::SetGDALDriver(const char * sGDALDriver)
+{
+    // First nullify everything
+    if (m_psGDALDriver)
+        free(m_psGDALDriver);
+    else
         m_psGDALDriver = NULL;
-    }
+
+    // Now set it if necessary
+    if (sGDALDriver)
+        m_psGDALDriver = strdup(sGDALDriver);
+
 }
 
-void RasterMeta::SetProjectionRef(const char *fProjectionRef)
+void RasterMeta::SetProjectionRef(const char * fProjectionRef)
 {
-    if (fProjectionRef){
+    // First nullify everything
+    if (m_psProjection)
+        free(m_psProjection);
+    else
+        m_psProjection = NULL;
+
+    // Now set it if necessary
+    if (fProjectionRef)
         m_psProjection = strdup(fProjectionRef);
-    }
-    else {
-        m_psGDALDriver = NULL;
-    }
+
+
 }
 
 } // RasterManager
