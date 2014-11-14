@@ -494,7 +494,7 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
     if (argc != 4)
     {
         std::cout << "\n Make two or more rasters concurrent with each other.";
-        std::cout << "\n    Usage: rasterman mosaic <raster_input_paths> <raster_output_paths> ... <output_file_path>";
+        std::cout << "\n    Usage: rasterman makeconcurrent <raster_input_paths> <raster_output_paths>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_input_paths: two or more raster file paths; semicolon delimited.";

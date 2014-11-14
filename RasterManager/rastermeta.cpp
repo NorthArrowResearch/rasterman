@@ -47,8 +47,7 @@ RasterMeta::~RasterMeta()
 
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
-    if (psDriver != NULL)
-        SetGDALDriver(psDriver);
+    SetGDALDriver(psDriver);
 
     if (fNoDataValue != 0)
         SetNoDataValue(fNoDataValue);
@@ -56,11 +55,7 @@ void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType e
     if (eDataType != NULL)
         SetGDALDataType(eDataType);
 
-    if (psProjection != NULL)
-        SetProjectionRef(psProjection);
-    else{
-        SetProjectionRef("");
-    }
+    SetProjectionRef(psProjection);
 
 }
 
@@ -118,15 +113,21 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 
 
 void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
-    if (*sGDALDriver != '\0'){
+    if (sGDALDriver){
         m_psGDALDriver = strdup(sGDALDriver);
+    }
+    else {
+        m_psProjection = strdup("");
     }
 }
 
 void RasterMeta::SetProjectionRef(const char *fProjectionRef)
 {
-    if (*fProjectionRef != '\0'){
+    if (fProjectionRef){
         m_psProjection = strdup(fProjectionRef);
+    }
+    else {
+        m_psProjection = strdup("");
     }
 }
 
