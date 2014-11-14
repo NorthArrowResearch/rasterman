@@ -115,11 +115,11 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
         std::cout << "\n";
         return;
     }
-    QString sRaster = GetFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 2, true);
 
     try
     {
-        RasterManager::PrintRasterProperties(sRaster.toStdString().c_str());
+        RasterManager::PrintRasterProperties(argv[2]);
 
         std::cout << "\n\n completed successfully.\n";
     }
@@ -151,10 +151,10 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
 
     try
     {
-        QString sOriginal = GetFile(argc, argv, 2, true);
-        QString sOutput = GetFile(argc, argv, 3, false);
+        CheckFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 3, false);
 
-        std::cout << "\n\n** Bilinear Resampling **";
+        std::cout << "\n\n --  Bilinear Resampling --";
 
         double fLeft, fTop, fCellSize;
         int nRows, nCols;
@@ -162,8 +162,8 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
 
         GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
-        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
-        eResult = rOriginal.ReSample(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
+        RasterManager::Raster rOriginal(argv[2]);
+        eResult = rOriginal.ReSample(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
 
         std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
     }
@@ -231,9 +231,9 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
 
     try
     {
-        QString sRaster1 = GetFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 2, true);
         QString sArg2 = argv[3];
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 4, false);
 
         int eResult;
 
@@ -241,15 +241,15 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
-            QString sRaster2 = GetFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     sRaster2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_ADD,
-                                     sOutputRaster.toStdString().c_str());
+            CheckFile(argc, argv, 3, true);
+            eResult =  RasterManager::BasicMath(argv[2],
+                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
+                                     argv[4]);
         }
         else {
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
+            eResult =  RasterManager::BasicMath(argv[2],
                                      NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                                     sOutputRaster.toStdString().c_str());
+                                     argv[4]);
         }
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
@@ -278,9 +278,10 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
 
     try
     {
-        QString sRaster1 = GetFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 2, true);
         QString sArg2 = argv[3];
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 4, false);
+
         int eResult;
 
         bool FileisNumeric;
@@ -288,14 +289,14 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
 
         if (!FileisNumeric){
             QString sRaster2 = GetFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
-                                     sOutputRaster.toStdString().c_str());
+            eResult =  RasterManager::BasicMath(argv[2],
+                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
+                                     argv[4]);
         }
         else {
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_SUBTRACT,
-                                     sOutputRaster.toStdString().c_str());
+            eResult =  RasterManager::BasicMath(argv[2],
+                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                                     argv[4]);
         }
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
@@ -322,9 +323,9 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
 
     try
     {
-        QString sRaster1 = GetFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 2, true);
         QString sArg2 = argv[3];
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 4, false);
 
         int eResult;
 
@@ -332,15 +333,15 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
-            QString sRaster2 = GetFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
-                                     sOutputRaster.toStdString().c_str());
+            CheckFile(argc, argv, 3, true);
+            eResult =  RasterManager::BasicMath(argv[2],
+                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
+                                     argv[4]);
         }
         else {
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
+            eResult =  RasterManager::BasicMath(argv[2],
                                      NULL, dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
-                                     sOutputRaster.toStdString().c_str());
+                                     argv[4]);
         }
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -366,9 +367,9 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
 
     try
     {
-        QString sRaster1 = GetFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 2, true);
         QString sArg2 = argv[3];
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 4, false);
 
         int eResult;
 
@@ -376,16 +377,17 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
-            QString sRaster2 = GetFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
-                                     sArg2.toStdString().c_str(), NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                                     sOutputRaster.toStdString().c_str());
+            CheckFile(argc, argv, 3, true);
+            eResult =  RasterManager::BasicMath(argv[2],
+                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
+                                     argv[4]);
         }
         else {
-            eResult =  RasterManager::BasicMath(sRaster1.toStdString().c_str(),
+            eResult =  RasterManager::BasicMath(argv[2],
                                      NULL, dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                                     sOutputRaster.toStdString().c_str());
+                                     argv[4]);
         }
+
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
@@ -410,13 +412,13 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
 
     try
     {
-        QString sRaster = GetFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 2, true);
         double dPower = GetDouble(argc, argv, 3);
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 4, true);
         int eResult;
 
-        eResult = RasterManager::BasicMath(sRaster.toStdString().c_str(), NULL, dPower, RasterManager::RM_BASIC_MATH_POWER,
-                                           sOutputRaster.toStdString().c_str());
+        eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER,
+                                           argv[4]);
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -441,12 +443,12 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
 
     try
     {
-        QString sRaster = GetFile(argc, argv, 2, true);
-        QString sOutputRaster = GetFile(argc, argv, 3, false);
+        CheckFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 3, false);
         int eResult;
 
-        eResult = RasterManager::BasicMath(sRaster.toStdString().c_str(), NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
-                                           sOutputRaster.toStdString().c_str());
+        eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
+                                           argv[3]);
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -471,20 +473,20 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     }
     try
     {
-        QString sInputFiles = "";
+        std::string sInputFiles = "";
+        std::string delimiterPattern(";");
         QString rasterInputs(argv[2]);
-        QString delimiterPattern(";");
-        QStringList inputFileList = rasterInputs.split(delimiterPattern);
+        QStringList inputFileList = rasterInputs.split(";");
 
         foreach (QString sFilename, inputFileList) {
             if (sFilename.compare("") != 0)
-                sInputFiles.append(GetFile(sFilename, true)).append(";");
+                sInputFiles.append(GetFile(sFilename, true)).append(delimiterPattern);
         }
 
-        QString sOutputRaster = GetFile(argc, argv, 3, false);
+        CheckFile(argc, argv, 3, false);
         int eResult;
 
-        eResult = RasterManager::Mosaic(sInputFiles.toStdString().c_str(), sOutputRaster.toStdString().c_str());
+        eResult = RasterManager::Mosaic(sInputFiles.c_str(), argv[3]);
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
