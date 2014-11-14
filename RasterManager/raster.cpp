@@ -502,6 +502,8 @@ int  Raster::Copy(const char *pOutputRaster,
     GDALDumpOpenDatasets(stderr);
     GDALDestroyDriverManager();
 
+    PrintRasterProperties(pOutputRaster);
+
     return PROCESS_OK;
 }
 

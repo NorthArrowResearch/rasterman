@@ -47,6 +47,9 @@ RasterMeta::~RasterMeta()
 
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
+
     SetGDALDriver(psDriver);
 
     if (fNoDataValue != 0)
@@ -76,18 +79,20 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
     int nSuccess;
 
-    SetGDALDataType(pDS->GetRasterBand(1)->GetRasterDataType());
+    GDALDataType gdDataType =  pDS->GetRasterBand(1)->GetRasterDataType();
 
-    SetNoDataValue(pDS->GetRasterBand(1)->GetNoDataValue(&nSuccess));
+    double dNoData =  pDS->GetRasterBand(1)->GetNoDataValue(&nSuccess);
 
-    SetGDALDriver(pDS->GetDriver()->GetDescription());
+    const char * psDriver = pDS->GetDriver()->GetDescription();
 
-    SetProjectionRef(pDS->GetProjectionRef());
+    const char * psProjection = pDS->GetProjectionRef();
 
     if (nSuccess == 0)
-        SetNoDataValue(DEFAULT_NO_DATA);
+        dNoData = DEFAULT_NO_DATA;
 
     GDALClose(pDS);
+
+    Init(dNoData, psDriver, gdDataType, psProjection);
 
 }
 
@@ -114,12 +119,6 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 
 void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 {
-    // First nullify everything
-    if (m_psGDALDriver)
-        free(m_psGDALDriver);
-    else
-        m_psGDALDriver = NULL;
-
     // Now set it if necessary
     if (sGDALDriver)
         m_psGDALDriver = strdup(sGDALDriver);
@@ -128,17 +127,9 @@ void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 
 void RasterMeta::SetProjectionRef(const char * fProjectionRef)
 {
-    // First nullify everything
-    if (m_psProjection)
-        free(m_psProjection);
-    else
-        m_psProjection = NULL;
-
     // Now set it if necessary
     if (fProjectionRef)
         m_psProjection = strdup(fProjectionRef);
-
-
 }
 
 } // RasterManager

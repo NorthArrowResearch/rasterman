@@ -600,7 +600,7 @@ void RasterManEngine::Slope(int argc, char * argv[])
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         int eResult = rOriginal.Slope(sOutput.toStdString().c_str(), nSlopeType);
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -631,7 +631,7 @@ void RasterManEngine::Hillshade(int argc, char * argv[])
         RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
         int eResult = rOriginal.Hillshade(sOutput.toStdString().c_str());
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
+        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
     catch (std::exception & ex)
     {
@@ -742,7 +742,7 @@ QString RasterManEngine::GetFile(QString sFile, bool bMustExist)
     // Check if the directory the file exists in is actually there
     QDir sFilePath = QFileInfo(sFile).absoluteDir();
     if (!sFilePath.exists()){
-        throw  std::runtime_error("The directory of the file you specified does not exist.");
+        throw  std::runtime_error("The directory of the file you specified does not exist: " + sFilePath.absolutePath().toStdString() );
     }
 
     sFile = sFile.trimmed();
@@ -750,11 +750,11 @@ QString RasterManEngine::GetFile(QString sFile, bool bMustExist)
     if (bMustExist)
     {
         if (!QFile::exists(sFile))
-            throw  std::runtime_error("The specified input file does not exist.");
+            throw  std::runtime_error("The specified input file does not exist: " + sFile.toStdString() );
     }
     else
         if (QFile::exists(sFile))
-            throw std::runtime_error("The specified output file already exists.");
+            throw std::runtime_error("The specified output file already exists: " + sFile.toStdString());
 
     return sFile;
 }

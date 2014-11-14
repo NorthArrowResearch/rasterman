@@ -866,19 +866,12 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
 
 extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
 {
-    std::string filename(FileName);
-    std::string::size_type idx;
-
-    idx = filename.rfind('.');
-
-    if(idx != std::string::npos)
-    {
-        return filename.substr(idx+1).c_str();
+    for (int i = strlen(FileName); i >= 0; i--) {
+        if (FileName[i] == '.' ){
+            return &FileName[i];
+        }
     }
-    else
-    {
-        return "";
-    }
+    return NULL;
 }
 
 extern "C" DLL_API const char * GetDriverFromFilename(const char * FileName)
