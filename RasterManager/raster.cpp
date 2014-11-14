@@ -59,8 +59,6 @@ Raster::~Raster()
 void Raster::Init(void)
 {
     GDALAllRegister();
-
-    //pExtent = NULL;
 }
 
 /*
@@ -373,7 +371,6 @@ int  Raster::Copy(const char *pOutputRaster,
     if (nCols <=0)
         return COLS_ERROR;
 
-    GDALAllRegister();
 
     // Open the original dataset
     GDALDataset * pDSOld = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
@@ -500,7 +497,6 @@ int  Raster::Copy(const char *pOutputRaster,
     GDALClose(pDSOutput);
 
     GDALDumpOpenDatasets(stderr);
-    GDALDestroyDriverManager();
 
     PrintRasterProperties(pOutputRaster);
 
@@ -530,7 +526,6 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
     if (nNewCols <=0)
         return COLS_ERROR;
 
-    GDALAllRegister();
 
     /*************************************************************************************************
     * Open the original dataset and retrieve its basic properties
@@ -593,7 +588,6 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
-
     std::cout << "\n\n Input Raster: --------------------\n";
     PrintRasterProperties(m_sFilePath);
     std::cout << "\n\n Output Raster: --------------------\n";

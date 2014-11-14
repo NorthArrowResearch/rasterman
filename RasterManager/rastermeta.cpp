@@ -13,6 +13,8 @@ const char * DEFAULT_RASTER_DRIVER = "GTiff";
 
 RasterMeta::RasterMeta() : ExtentRectangle()
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
     Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32, NULL);
 }
@@ -22,16 +24,22 @@ RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
                        const char * psDriver, GDALDataType eDataType, const char * psProjection)
     : ExtentRectangle(fTop, fLeft,  nRows, nCols, dCellHeight, dCellWidth)
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
     Init(fNoData, psDriver, eDataType, psProjection);
 }
 
 RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
     GetPropertiesFromExistingRaster(psFilePath);
 }
 
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
     Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
@@ -47,10 +55,6 @@ RasterMeta::~RasterMeta()
 
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
-    m_psGDALDriver = NULL;
-    m_psProjection = NULL;
-
-    SetGDALDriver(psDriver);
 
     if (fNoDataValue != 0)
         SetNoDataValue(fNoDataValue);
@@ -58,6 +62,7 @@ void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType e
     if (eDataType != NULL)
         SetGDALDataType(eDataType);
 
+    SetGDALDriver(psDriver);
     SetProjectionRef(psProjection);
 
 }
@@ -71,7 +76,6 @@ void RasterMeta::operator=(RasterMeta &source)
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
     GDALAllRegister();
-
     // Open the original dataset
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS  == NULL)
@@ -93,8 +97,6 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     Init(dNoData, psDriver, gdDataType, psProjection);
 
     GDALClose(pDS);
-
-
 
 }
 
@@ -121,6 +123,9 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 
 void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 {
+    if (m_psGDALDriver){
+        free(m_psGDALDriver);
+    }
     // Now set it if necessary
     if (sGDALDriver)
         m_psGDALDriver = strdup(sGDALDriver);
@@ -129,6 +134,9 @@ void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 
 void RasterMeta::SetProjectionRef(const char * fProjectionRef)
 {
+    if (m_psProjection){
+        free(m_psProjection);
+    }
     // Now set it if necessary
     if (fProjectionRef)
         m_psProjection = strdup(fProjectionRef);

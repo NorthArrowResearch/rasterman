@@ -58,6 +58,8 @@ ExtentRectangle::ExtentRectangle(const char * psFilePath)
     pDS->GetGeoTransform(m_GeoTransform);
 
     GDALClose(pDS);
+
+    GDALDestroyDriverManager();
 }
 
 void ExtentRectangle::Init(double fTop,

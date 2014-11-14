@@ -35,6 +35,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
      * Enforce LZW compression for TIFs. The predictor 3 is used for floating point prediction.
      * Not using this value defaults the LZW to prediction to 1 which causes striping.
      */
+
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
 
@@ -120,6 +121,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                                  const int iOperation,
                                  const char * psOutput)
 {
+    GDALAllRegister();
 
     if (iOperation == NULL)
         return NO_OPERATION_SPECIFIED;
@@ -301,6 +303,8 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     GDALClose(pDS1);
     GDALClose(pDSOutput);
 
+    GDALDestroyDriverManager();
+
     PrintRasterProperties(psOutput);
 
     return PROCESS_OK;
@@ -308,22 +312,31 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
+    GDALAllRegister();
+
     Raster pDemRaster (psInputRaster);
     pDemRaster.Hillshade(psOutputHillshade);
+
+    GDALDestroyDriverManager();
 
     return PROCESS_OK;
 }
 
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
+    GDALAllRegister();
+
     Raster pDemRaster (psInputRaster);
     pDemRaster.Slope(psOutputSlope, nSlopeType);
+
+    GDALDestroyDriverManager();
 
     return PROCESS_OK;
 }
 
 extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
+    GDALAllRegister();
 
     // Everything except square root needs at least one other parameter (raster or doube)
     if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
@@ -419,6 +432,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
     GDALClose(pDSMask);
 
     PrintRasterProperties(psOutput);
+    GDALDestroyDriverManager();
 
     return PROCESS_OK;
 
@@ -426,6 +440,8 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
 
 extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput)
 {
+    GDALAllRegister();
+
     /*****************************************************************************************
      * Raster 1
      */
@@ -510,12 +526,16 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
     GDALClose(pDS2);
     GDALClose(pDSOutput);
 
+    GDALDestroyDriverManager();
+
     return PROCESS_OK;
 }
 
 
 extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
+    GDALAllRegister();
+
     // Loop through the strings, delimited by ;
     std::string RasterFileName, RasterFilesToken(csRasters);
 
@@ -609,7 +629,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
      */
     CPLFree(pOutputLine);
     GDALClose(pDSOutput);
-
+    GDALDestroyDriverManager();
     PrintRasterProperties(psOutput);
 
     return PROCESS_OK;
@@ -618,6 +638,8 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
+
+    GDALAllRegister();
     // Loop through the strings, delimited by ;
     std::string sInPutFileName,
             sOutputFileName,
@@ -736,6 +758,7 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
         CPLFree(pOutputLine);
         CPLFree(pInputLine);
         GDALClose(pDSOutput);
+        GDALDestroyDriverManager();
         PrintRasterProperties(sOutputFileName.c_str());
     }
 
@@ -752,6 +775,8 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType)
 {
+    GDALAllRegister();
+
     RasterManager::Raster r(ppszRaster);
     fCellHeight = r.GetCellHeight();
     fCellWidth = r.GetCellWidth();
@@ -762,6 +787,8 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
     fNoData = r.GetNoDataValue();
     bHasNoData = (int) r.HasNoDataValue();
     nDataType = (int) r.GetGDALDataType();
+
+    GDALDestroyDriverManager();
 }
 
 
@@ -781,6 +808,8 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     int bHasNoData = 0;
     int orthogonal = 0;
     int nDataType;
+
+    GDALAllRegister();
 
     RasterManager::Raster r(ppszRaster);
     std::string projection = r.GetProjectionRef();
@@ -838,6 +867,8 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
 
     std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
     std::cout << "\n ";
+
+    GDALDestroyDriverManager();
 }
 
 
@@ -851,8 +882,12 @@ extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
                                           double fNewCellSize,
                                           double fLeft, double fTop, int nRows, int nCols)
 {
+    GDALAllRegister();
+
     RasterManager::Raster ra(ppszOriginalRaster);
     return ra.Copy(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
+
+    GDALDestroyDriverManager();
 }
 
 extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
@@ -860,8 +895,12 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                                       double fNewCellSize,
                                                       double fLeft, double fTop, int nRows, int nCols)
 {
+    GDALAllRegister();
+
     RasterManager::Raster ra(ppszOriginalRaster);
     return ra.ReSample(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
+
+    GDALDestroyDriverManager();
 }
 
 extern "C" DLL_API const char * ExtractFileExt(const char * FileName)

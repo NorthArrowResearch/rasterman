@@ -77,6 +77,8 @@ int Raster::Slope(const char *psOutputSlope, int nSlpType){
     fElev = NULL;
     fSlope = NULL;
 
+    GDALDestroyDriverManager();
+
     return 0;
 
 
