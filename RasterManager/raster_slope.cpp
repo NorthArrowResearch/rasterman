@@ -10,7 +10,6 @@ namespace RasterManager {
 
 int Raster::Slope(const char *psOutputSlope, int nSlpType){
 
-    GDALAllRegister();
     GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
     GDALDataset * pSlopeDS = CreateOutputDS(psOutputSlope, this);
 

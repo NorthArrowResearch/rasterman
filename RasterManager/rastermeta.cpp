@@ -75,7 +75,6 @@ void RasterMeta::operator=(RasterMeta &source)
 
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
-    GDALAllRegister();
     // Open the original dataset
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS  == NULL)

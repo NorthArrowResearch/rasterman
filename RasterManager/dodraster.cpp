@@ -18,8 +18,6 @@ void DoDRaster::GetChangeStats(double & fAreaErosion, double & fAreaDeposition, 
             fVolErosion = 0;
     fVolDeposition = 0;
 
-    GDALAllRegister();
-
     GDALDataset * ds = (GDALDataset*) GDALOpen(this->FilePath(), GA_ReadOnly);
     if (ds == NULL)
         return;
@@ -85,8 +83,6 @@ void DoDRaster::GetChangeStats(Raster & pPropagatedError, double & fVolErosion, 
     // Set the output values to zero
     fVolErosion = 0;
     fVolDeposition = 0;
-
-    GDALAllRegister();
 
     GDALDataset * ds = (GDALDataset*) GDALOpen(this->FilePath(), GA_ReadOnly);
     if (ds == NULL)
@@ -188,7 +184,6 @@ extern "C" __declspec(dllexport) void GetDoDMinLoDStats(const char * ppszRawDoD,
     long nThrErosionCount = 0;
     long nThrDepositionCount = 0;
 
-    GDALAllRegister();
 
     GDALDataset * ds = (GDALDataset*) GDALOpen(ppszRawDoD, GA_ReadOnly);
     if (ds == NULL)
@@ -301,8 +296,6 @@ extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, c
     long nRawDepositionCount = 0;
     long nThrErosionCount = 0;
     long nThrDepositionCount = 0;
-
-    GDALAllRegister();
 
     // Open the raw DoD raster and determine it's size.
     GDALDataset * dsDod = (GDALDataset*) GDALOpen(ppszRawDoD, GA_ReadOnly);

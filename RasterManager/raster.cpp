@@ -58,7 +58,7 @@ Raster::~Raster()
      */
 void Raster::Init(void)
 {
-    GDALAllRegister();
+
 }
 
 /*

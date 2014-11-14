@@ -10,8 +10,6 @@ namespace RasterManager {
 
 int Raster::Hillshade(const char * psOutputHillshade){
 
-    GDALAllRegister();
-
     // This is a byte Raster so the nodataval must be 0
     RasterMeta OutputRasterMeta(m_sFilePath);
     OutputRasterMeta.SetNoDataValue(0);

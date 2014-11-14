@@ -14,6 +14,8 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
 {
     bool bRecognizedCommand = true;
 
+
+
     if (argc > 1)
     {
         RasterManager::RegisterGDAL();
@@ -66,6 +68,8 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
 
         else
             bRecognizedCommand = false;
+
+        RasterManager::DestroyGDAL();
     }
     else
         bRecognizedCommand = false;

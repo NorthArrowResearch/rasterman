@@ -44,7 +44,6 @@ void ExtentRectangle::operator=(ExtentRectangle &source)
 
 ExtentRectangle::ExtentRectangle(const char * psFilePath)
 {
-    GDALAllRegister();
 
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS == NULL)
@@ -59,7 +58,6 @@ ExtentRectangle::ExtentRectangle(const char * psFilePath)
 
     GDALClose(pDS);
 
-    GDALDestroyDriverManager();
 }
 
 void ExtentRectangle::Init(double fTop,

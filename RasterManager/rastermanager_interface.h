@@ -87,6 +87,7 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode);
  *
  */
 extern "C" DLL_API void inline RegisterGDAL() { GDALAllRegister();}
+extern "C" DLL_API void inline DestroyGDAL() { GDALDestroyDriverManager();}
 
 /**
  * @brief GetRasterProperties
