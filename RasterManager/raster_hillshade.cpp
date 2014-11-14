@@ -106,8 +106,6 @@ int Raster::Hillshade(const char * psOutputHillshade){
     fElev = NULL;
     hlsd = NULL;
 
-    GDALDestroyDriverManager();
-
     return 0;
 }
 

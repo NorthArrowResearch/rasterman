@@ -68,7 +68,6 @@ void DoDRaster::GetChangeStats(double & fAreaErosion, double & fAreaDeposition, 
     CPLFree(pafScanline);
     GDALClose(ds);
 
-    GDALDestroyDriverManager();
 }
 
 /*
@@ -155,12 +154,11 @@ void DoDRaster::GetChangeStats(Raster & pPropagatedError, double & fVolErosion, 
     GDALClose(ds);
     GDALClose(dsMask);
 
-    GDALDestroyDriverManager();
 }
 
 } // Namespace
 
-extern "C" __declspec(dllexport) void GetDoDMinLoDStats(const char * ppszRawDoD, double fThreshold,
+extern "C" DLL_API void GetDoDMinLoDStats(const char * ppszRawDoD, double fThreshold,
                                                      double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                      double * fAreaErosionThr, double * fAreaDepositionThr,
                                                      double * fVolErosionRaw, double * fVolDepositionRaw,
@@ -270,10 +268,9 @@ extern "C" __declspec(dllexport) void GetDoDMinLoDStats(const char * ppszRawDoD,
 
     GDALClose(ds);
 
-    GDALDestroyDriverManager();
 }
 
-extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, const char * ppszPropError,
+extern "C" DLL_API void GetDoDPropStats(const char * ppszRawDoD, const char * ppszPropError,
                                                      double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                      double * fAreaErosionThr, double * fAreaDepositionThr,
                                                      double * fVolErosionRaw, double * fVolDepositionRaw,
@@ -403,10 +400,9 @@ extern "C" __declspec(dllexport) void GetDoDPropStats(const char * ppszRawDoD, c
     GDALClose(dsDod);
     GDALClose(dsErr);
 
-    GDALDestroyDriverManager();
 }
 
-extern "C" __declspec(dllexport) void GetDoDProbStats(const char * ppszRawDoD, const char * ppszThrDod,
+extern "C" DLL_API void GetDoDProbStats(const char * ppszRawDoD, const char * ppszThrDod,
                                                       const char * ppszPropError,
                                                       double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                       double * fAreaErosionThr, double * fAreaDepositionThr,
