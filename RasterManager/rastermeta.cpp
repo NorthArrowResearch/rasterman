@@ -117,7 +117,7 @@ void RasterMeta::SetGDALDriver(const char *sGDALDriver) {
         m_psGDALDriver = strdup(sGDALDriver);
     }
     else {
-        m_psProjection = strdup("");
+        m_psGDALDriver = NULL;
     }
 }
 
@@ -127,7 +127,7 @@ void RasterMeta::SetProjectionRef(const char *fProjectionRef)
         m_psProjection = strdup(fProjectionRef);
     }
     else {
-        m_psProjection = strdup("");
+        m_psGDALDriver = NULL;
     }
 }
 

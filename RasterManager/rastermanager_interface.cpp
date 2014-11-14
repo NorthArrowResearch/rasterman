@@ -38,7 +38,8 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
 
-    if ( strcmp(pTemplateRastermeta->GetGDALDriver(), "") != 0 ){
+
+    if ( pTemplateRastermeta->GetGDALDriver() ){
         pDR = GetGDALDriverManager()->GetDriverByName(pTemplateRastermeta->GetGDALDriver());
     }
     else {
