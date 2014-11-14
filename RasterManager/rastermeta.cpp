@@ -90,9 +90,11 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     if (nSuccess == 0)
         dNoData = DEFAULT_NO_DATA;
 
+    Init(dNoData, psDriver, gdDataType, psProjection);
+
     GDALClose(pDS);
 
-    Init(dNoData, psDriver, gdDataType, psProjection);
+
 
 }
 
