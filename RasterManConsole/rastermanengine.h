@@ -10,6 +10,7 @@ class RasterManEngine
 public:
     RasterManEngine(int argc, char * argv[]);
 
+
 private:
     /**
      * @brief RasterProperties
@@ -109,7 +110,7 @@ private:
      * @return
      */
     QString GetFile(int argc, char *argv[], int nIndex, bool bMustExist);
-
+    void CheckFile(int argc, char * argv[], int nIndex, bool bMustExist);
     /**
      * @brief GetFile
      * @param sFile

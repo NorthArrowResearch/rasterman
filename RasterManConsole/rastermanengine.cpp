@@ -194,16 +194,17 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
 
     try
     {
-        QString sOriginal = GetFile(argc, argv, 2, true);
-        QString sOutput = GetFile(argc, argv, 3, false);
+        // Check that the files exist (or not)
+        CheckFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 3, false);
 
         double fLeft, fTop, fCellSize;
         int nRows, nCols;
         GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
         int eResult;
-        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
-        eResult = rOriginal.Copy(sOutput.toStdString().c_str(), fCellSize, fLeft, fTop, nRows, nCols);
+        RasterManager::Raster rOriginal(argv[2]);
+        eResult = rOriginal.Copy(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
 
         std::cout << "\n\n" << GetReturnCodeAsString(eResult) << "\n";
     }
@@ -763,6 +764,42 @@ QString RasterManEngine::GetFile(QString sFile, bool bMustExist)
     return sFile;
 }
 
+
+void RasterManEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
+{
+    QString sFile;
+
+    if (nIndex < argc)
+    {
+        // Enough arguments
+        sFile = argv[nIndex];
+
+        if (sFile.isNull() || sFile.isEmpty())
+            throw std::runtime_error("Command line missing a file path.");
+        else
+        {
+            // Check if the directory the file exists in is actually there
+            QDir sFilePath = QFileInfo(sFile).absoluteDir();
+            if (!sFilePath.exists()){
+                throw  std::runtime_error("The directory of the file you specified does not exist.");
+            }
+
+            sFile = sFile.trimmed();
+            sFile = sFile.replace("\"","");
+            if (bMustExist)
+            {
+                if (!QFile::exists(sFile))
+                    throw  std::runtime_error("The specified input file does not exist.");
+            }
+            else
+                if (QFile::exists(sFile))
+                    throw std::runtime_error("The specified output file already exists.");
+        }
+    }
+    else
+        throw std::runtime_error("Insufficient command line arguments for operation.");
+
+}
 
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
 {
