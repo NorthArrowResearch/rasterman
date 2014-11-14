@@ -775,7 +775,6 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fNoData, int & bHasNoData, int & nDataType)
 {
 
-
     RasterManager::Raster r(ppszRaster);
     fCellHeight = r.GetCellHeight();
     fCellWidth = r.GetCellWidth();
