@@ -288,7 +288,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
         double dOperator = sArg2.toDouble(&FileisNumeric);
 
         if (!FileisNumeric){
-            QString sRaster2 = GetFile(argc, argv, 3, true);
+            CheckFile(argc, argv, 3, true);
             eResult =  RasterManager::BasicMath(argv[2],
                                      argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
                                      argv[4]);
@@ -479,8 +479,11 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         QStringList inputFileList = rasterInputs.split(";");
 
         foreach (QString sFilename, inputFileList) {
-            if (sFilename.compare("") != 0)
-                sInputFiles.append(GetFile(sFilename, true)).append(delimiterPattern);
+            if (sFilename.compare("") != 0){
+                CheckFile(sFilename.toStdString().c_str(), true);
+                sInputFiles.append(sFilename.toStdString()).append(delimiterPattern);
+            }
+
         }
 
         CheckFile(argc, argv, 3, false);
@@ -512,8 +515,8 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
     }
     try
     {
-        QString sInputFiles = "";
-        QString sOutputFiles = "";
+        std::string sInputFiles = "";
+        std::string sOutputFiles = "";
 
         QString rasterInputs(argv[2]);
         QString rasterOutputs(argv[3]);
@@ -524,17 +527,21 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
         QStringList outputFileList = rasterOutputs.split(delimiterPattern);
 
         foreach (QString sFilename, inputFileList) {
-            if (sFilename.compare("") != 0)
-                sInputFiles.append(GetFile(sFilename, true)).append(";");
+            if (sFilename.compare("") != 0) {
+                CheckFile(sFilename.toStdString().c_str(), true);
+                sInputFiles.append(sFilename.toStdString()).append(";");
+               }
         }
         foreach (QString sFilename, outputFileList) {
-            if (sFilename.compare("") != 0)
-                sOutputFiles.append(GetFile(sFilename, false)).append(";");
+            if (sFilename.compare("") != 0){
+                CheckFile(sFilename.toStdString().c_str(), false);
+                sOutputFiles.append(sFilename.toStdString()).append(";");
+            }
         }
 
         int eResult;
 
-        eResult = RasterManager::MakeConcurrent(sInputFiles.toStdString().c_str(), sOutputFiles.toStdString().c_str());
+        eResult = RasterManager::MakeConcurrent(sInputFiles.c_str(), sOutputFiles.c_str());
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -561,14 +568,15 @@ void RasterManEngine::Mask(int argc, char * argv[])
     }
     try
     {
-        QString sRasterInput = GetFile(argc, argv, 2, true);
-        QString sRasterMask = GetFile(argc, argv, 3, true);
-        QString sOutputRaster = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 3, true);
+        CheckFile(argc, argv, 4, false);
+
         int eResult;
 
-        eResult =  RasterManager::Mask(sRasterInput.toStdString().c_str(),
-                                       sRasterMask.toStdString().c_str(),
-                                       sOutputRaster.toStdString().c_str());
+        eResult =  RasterManager::Mask(argv[2],
+                                       argv[3],
+                                       argv[4]);
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -596,16 +604,16 @@ void RasterManEngine::Slope(int argc, char * argv[])
 
     try
     {
-        QString sOriginal = GetFile(argc, argv, 3, true);
-        QString sOutput = GetFile(argc, argv, 4, false);
+        CheckFile(argc, argv, 3, true);
+        CheckFile(argc, argv, 4, false);
 
         int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
         QString sType(argv[2]);
         if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
             nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_PERCENT;
 
-        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
-        int eResult = rOriginal.Slope(sOutput.toStdString().c_str(), nSlopeType);
+        RasterManager::Raster rOriginal(argv[3]);
+        int eResult = rOriginal.Slope(argv[4], nSlopeType);
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -632,11 +640,11 @@ void RasterManEngine::Hillshade(int argc, char * argv[])
 
     try
     {
-        QString sOriginal = GetFile(argc, argv, 2, true);
-        QString sOutput = GetFile(argc, argv, 3, false);
+        CheckFile(argc, argv, 2, true);
+        CheckFile(argc, argv, 3, false);
 
-        RasterManager::Raster rOriginal(sOriginal.toStdString().c_str());
-        int eResult = rOriginal.Hillshade(sOutput.toStdString().c_str());
+        RasterManager::Raster rOriginal(argv[2]);
+        int eResult = rOriginal.Hillshade(argv[3]);
 
         std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -679,20 +687,14 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         return;
     }
 
-    QString sCSVDataFile = GetFile(argc, argv, 2, true);
-    QString sOutput = GetFile(argc, argv, 3, false);
-
-    QString sXField = argv[4];
-    QString sYField = argv[5];
-    QString sDataField = argv[6];
-
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, false);
 
     // Either all
     if (argc == 13){
 
         double dLeft, dTop, dCellSize, dNoDataVal;
         int nRows, nCols;
-        QString sProj = argv[13];
 
         GetOutputRasterProperties(dTop, dLeft, nRows, nCols, dCellSize, argc, argv, 7);
 
@@ -702,101 +704,64 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         else
             dNoDataVal = sNoDataVal.toDouble();
 
-        RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
-                                           sOutput.toStdString().c_str(),
+        RasterManager::Raster::CSVtoRaster(argv[2],
+                                           argv[3],
                                            dTop, dLeft, nRows, nCols,
                                            dCellSize, dNoDataVal,
-                                           sXField.toStdString().c_str(),
-                                           sYField.toStdString().c_str(),
-                                           sDataField.toStdString().c_str() );
+                                           argv[4],
+                                           argv[5],
+                                           argv[6] );
     }
     // Otherwise a csv file is used
     else if (argc == 8){
-        QString sRasterTemplate = GetFile(argc, argv, 7, true);
-        RasterManager::Raster::CSVtoRaster(sCSVDataFile.toStdString().c_str(),
-                                           sOutput.toStdString().c_str(),
-                                           sRasterTemplate.toStdString().c_str(),
-                                           sXField.toStdString().c_str(),
-                                           sYField.toStdString().c_str(),
-                                           sDataField.toStdString().c_str() );
+        CheckFile(argc, argv, 7, true);
+        RasterManager::Raster::CSVtoRaster(argv[2],
+                                           argv[3],
+                                           argv[7],
+                                           argv[4],
+                                           argv[5],
+                                           argv[6] );
     }
 }
 
-QString RasterManEngine::GetFile(int argc, char * argv[], int nIndex, bool bMustExist)
-{
-    QString sFile;
-    \
-    if (nIndex < argc)
-    {
-        // Enough arguments
-        sFile = argv[nIndex];
 
-        if (sFile.isNull() || sFile.isEmpty())
-            throw std::runtime_error("Command line missing a file path.");
-        else
-        {
-            GetFile(sFile, bMustExist);
+void RasterManEngine::CheckFile(const char * sFilename, bool bMustExist)
+{
+    // Enough arguments
+    QString sFile = sFilename;
+
+    if (sFile.isNull() || sFile.isEmpty())
+        throw std::runtime_error("Command line missing a file path.");
+    else
+    {
+        // Check if the directory the file exists in is actually there
+        QDir sFilePath = QFileInfo(sFile).absoluteDir();
+        if (!sFilePath.exists()){
+            throw  std::runtime_error("The directory of the file you specified does not exist.");
         }
-    }
-    else
-        throw std::runtime_error("Insufficient command line arguments for operation.");
 
-    return sFile;
-}
-
-QString RasterManEngine::GetFile(QString sFile, bool bMustExist)
-{
-    // Check if the directory the file exists in is actually there
-    QDir sFilePath = QFileInfo(sFile).absoluteDir();
-    if (!sFilePath.exists()){
-        throw  std::runtime_error("The directory of the file you specified does not exist: " + sFilePath.absolutePath().toStdString() );
+        sFile = sFile.trimmed();
+        sFile = sFile.replace("\"","");
+        if (bMustExist)
+        {
+            if (!QFile::exists(sFile))
+                throw  std::runtime_error("The specified input file does not exist.");
+        }
+        else
+            if (QFile::exists(sFile))
+                throw std::runtime_error("The specified output file already exists.");
     }
 
-    sFile = sFile.trimmed();
-    sFile = sFile.replace("\"","");
-    if (bMustExist)
-    {
-        if (!QFile::exists(sFile))
-            throw  std::runtime_error("The specified input file does not exist: " + sFile.toStdString() );
-    }
-    else
-        if (QFile::exists(sFile))
-            throw std::runtime_error("The specified output file already exists: " + sFile.toStdString());
 
-    return sFile;
 }
 
 
 void RasterManEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
 {
-    QString sFile;
 
     if (nIndex < argc)
     {
-        // Enough arguments
-        sFile = argv[nIndex];
-
-        if (sFile.isNull() || sFile.isEmpty())
-            throw std::runtime_error("Command line missing a file path.");
-        else
-        {
-            // Check if the directory the file exists in is actually there
-            QDir sFilePath = QFileInfo(sFile).absoluteDir();
-            if (!sFilePath.exists()){
-                throw  std::runtime_error("The directory of the file you specified does not exist.");
-            }
-
-            sFile = sFile.trimmed();
-            sFile = sFile.replace("\"","");
-            if (bMustExist)
-            {
-                if (!QFile::exists(sFile))
-                    throw  std::runtime_error("The specified input file does not exist.");
-            }
-            else
-                if (QFile::exists(sFile))
-                    throw std::runtime_error("The specified output file already exists.");
-        }
+        CheckFile(argv[nIndex], bMustExist);
     }
     else
         throw std::runtime_error("Insufficient command line arguments for operation.");

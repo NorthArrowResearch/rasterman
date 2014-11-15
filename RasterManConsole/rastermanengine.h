@@ -102,22 +102,20 @@ private:
     void Mask(int argc, char *argv[]);
 
     /**
-     * @brief GetFile
+     * @brief CheckFile
+     * @param sFilename
+     * @param bMustExist
+     */
+    void CheckFile(const char *sFilename, bool bMustExist);
+    /**
+     * @brief CheckFile
      * @param argc
      * @param argv
      * @param nIndex
      * @param bMustExist
-     * @return
      */
-    QString GetFile(int argc, char *argv[], int nIndex, bool bMustExist);
-    void CheckFile(int argc, char * argv[], int nIndex, bool bMustExist);
-    /**
-     * @brief GetFile
-     * @param sFile
-     * @param bMustExist
-     * @return
-     */
-    QString GetFile(QString sFile, bool bMustExist);
+    void CheckFile(int argc, char *argv[], int nIndex, bool bMustExist);
+
     /**
      * @brief GetInteger
      * @param argc
