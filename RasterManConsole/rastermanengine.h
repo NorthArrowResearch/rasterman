@@ -106,7 +106,7 @@ private:
      * @param sFilename
      * @param bMustExist
      */
-    void CheckFile(const char *sFilename, bool bMustExist);
+    void CheckFile(QString sFile, bool bMustExist);
     /**
      * @brief CheckFile
      * @param argc

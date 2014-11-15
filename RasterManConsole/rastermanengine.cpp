@@ -473,15 +473,12 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     }
     try
     {
-        std::string sInputFiles = "";
-        std::string delimiterPattern(";");
         QString rasterInputs(argv[2]);
         QStringList inputFileList = rasterInputs.split(";");
 
         foreach (QString sFilename, inputFileList) {
             if (sFilename.compare("") != 0){
-                CheckFile(sFilename.toStdString().c_str(), true);
-                sInputFiles.append(sFilename.toStdString()).append(delimiterPattern);
+                CheckFile(sFilename, true);
             }
 
         }
@@ -489,7 +486,7 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         CheckFile(argc, argv, 3, false);
         int eResult;
 
-        eResult = RasterManager::Mosaic(sInputFiles.c_str(), argv[3]);
+        eResult = RasterManager::Mosaic(argv[2], argv[3]);
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -515,8 +512,6 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
     }
     try
     {
-        std::string sInputFiles = "";
-        std::string sOutputFiles = "";
 
         QString rasterInputs(argv[2]);
         QString rasterOutputs(argv[3]);
@@ -528,20 +523,18 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
 
         foreach (QString sFilename, inputFileList) {
             if (sFilename.compare("") != 0) {
-                CheckFile(sFilename.toStdString().c_str(), true);
-                sInputFiles.append(sFilename.toStdString()).append(";");
+                CheckFile(sFilename, true);
                }
         }
         foreach (QString sFilename, outputFileList) {
             if (sFilename.compare("") != 0){
-                CheckFile(sFilename.toStdString().c_str(), false);
-                sOutputFiles.append(sFilename.toStdString()).append(";");
+                CheckFile(sFilename, false);
             }
         }
 
         int eResult;
 
-        eResult = RasterManager::MakeConcurrent(sInputFiles.c_str(), sOutputFiles.c_str());
+        eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
 
         std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
@@ -725,11 +718,9 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
 }
 
 
-void RasterManEngine::CheckFile(const char * sFilename, bool bMustExist)
+void RasterManEngine::CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments
-    QString sFile = sFilename;
-
     if (sFile.isNull() || sFile.isEmpty())
         throw std::runtime_error("Command line missing a file path.");
     else
@@ -761,7 +752,8 @@ void RasterManEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustE
 
     if (nIndex < argc)
     {
-        CheckFile(argv[nIndex], bMustExist);
+        QString filename = argv[nIndex];
+        CheckFile(filename, bMustExist);
     }
     else
         throw std::runtime_error("Insufficient command line arguments for operation.");

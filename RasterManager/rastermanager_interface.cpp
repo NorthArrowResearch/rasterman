@@ -533,10 +533,14 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
 
 extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
-
-
     // Loop through the strings, delimited by ;
-    std::string RasterFileName, RasterFilesToken(csRasters);
+    std::string RasterFileName, RasterFiles(csRasters), RasterFilesToken;
+
+    // Terminate with a semicolon if it hasn't already been done
+    if (!EndsWith(psOutput, ";")){
+        RasterFiles.append(";");
+    }
+    RasterFilesToken = RasterFiles;
 
     // The output raster info
     RasterMeta OutputMeta;
@@ -584,12 +588,12 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
      *
      */
     int i,j;
-    std::string sRasterFiles(csRasters);
+    RasterFilesToken = RasterFiles;
     RasterFileName = "";
 
-    while(sRasterFiles != ""){
-        RasterFileName = sRasterFiles.substr(0,sRasterFiles.find_first_of(";"));
-        sRasterFiles = sRasterFiles.substr(sRasterFiles.find_first_of(";") + 1);
+    while(RasterFilesToken != ""){
+        RasterFileName = RasterFilesToken.substr(0,RasterFilesToken.find_first_of(";"));
+        RasterFilesToken = RasterFilesToken.substr(RasterFilesToken.find_first_of(";") + 1);
 
         GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
         GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
@@ -637,14 +641,23 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
-
-
     // Loop through the strings, delimited by ;
     std::string sInPutFileName,
             sOutputFileName,
-            sRasterInputFiles(csRasters),
-            sRasterOutputFiles(csRasterOutputs);
+            sRasterInputFiles(csRasters), sRasterInputTokens,
+            sRasterOutputFiles(csRasterOutputs), sRasterOutputTokens;
 
+    // Terminate with a semicolon if it hasn't already been done
+    if (!EndsWith(csRasters, ";")){
+        sRasterInputFiles.append(";");
+    }
+
+    sRasterInputTokens = sRasterInputFiles;
+    if (!EndsWith(csRasterOutputs, ";")){
+        sRasterOutputFiles.append(";");
+    }
+
+    sRasterOutputTokens = sRasterOutputFiles;
     // The Master meta is the one we will use to output all the raster files
     // It will be the boolean intersect of all
     RasterMeta MasterMeta;
@@ -655,13 +668,13 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
      * Open all the relevant files and figure out the bounds of the final file.
      */
     int counter = 0;
-    while(sRasterInputFiles != ""){
+    while(sRasterInputTokens != ""){
         counter++;
-        sInPutFileName = sRasterInputFiles.substr(0,sRasterInputFiles.find_first_of(";"));
-        sRasterInputFiles = sRasterInputFiles.substr(sRasterInputFiles.find_first_of(";") + 1);
+        sInPutFileName = sRasterInputTokens.substr(0,sRasterInputTokens.find_first_of(";"));
+        sRasterInputTokens = sRasterInputTokens.substr(sRasterInputTokens.find_first_of(";") + 1);
 
-        sOutputFileName = sRasterOutputFiles.substr(0,sRasterOutputFiles.find_first_of(";"));
-        sRasterOutputFiles = sRasterOutputFiles.substr(sRasterOutputFiles.find_first_of(";") + 1);
+        sOutputFileName = sRasterOutputTokens.substr(0,sRasterOutputTokens.find_first_of(";"));
+        sRasterOutputTokens = sRasterOutputTokens.substr(sRasterOutputTokens.find_first_of(";") + 1);
 
         if (sInPutFileName.c_str() == NULL)
             return INPUT_FILE_ERROR;
@@ -697,16 +710,16 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
     int i,j;
     sInPutFileName = "";
     sOutputFileName = "";
-    sRasterInputFiles = std::string(csRasters);
-    sRasterOutputFiles = std::string(csRasterOutputs);
+    sRasterInputTokens = sRasterInputFiles;
+    sRasterOutputTokens = sRasterOutputFiles;
 
-    while(sRasterInputFiles != ""){
+    while(sRasterInputTokens != ""){
 
-        sInPutFileName = sRasterInputFiles.substr(0,sRasterInputFiles.find_first_of(";"));
-        sRasterInputFiles = sRasterInputFiles.substr(sRasterInputFiles.find_first_of(";") + 1);
+        sInPutFileName = sRasterInputTokens.substr(0,sRasterInputTokens.find_first_of(";"));
+        sRasterInputTokens = sRasterInputTokens.substr(sRasterInputTokens.find_first_of(";") + 1);
 
-        sOutputFileName = sRasterOutputFiles.substr(0,sRasterOutputFiles.find_first_of(";"));
-        sRasterOutputFiles = sRasterOutputFiles.substr(sRasterOutputFiles.find_first_of(";") + 1);
+        sOutputFileName = sRasterOutputTokens.substr(0,sRasterOutputTokens.find_first_of(";"));
+        sRasterOutputTokens = sRasterOutputTokens.substr(sRasterOutputTokens.find_first_of(";") + 1);
 
         // Create the output dataset for writing
         GDALDataset * pDSOutput = CreateOutputDS(sOutputFileName.c_str(), &MasterMeta);
