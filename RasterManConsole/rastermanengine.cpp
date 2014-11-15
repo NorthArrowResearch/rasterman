@@ -414,7 +414,7 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
     {
         CheckFile(argc, argv, 2, true);
         double dPower = GetDouble(argc, argv, 3);
-        CheckFile(argc, argv, 4, true);
+        CheckFile(argc, argv, 4, false);
         int eResult;
 
         eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER,
