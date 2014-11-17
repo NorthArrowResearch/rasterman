@@ -6,10 +6,12 @@
 
 QT       -= core gui
 
-VERSION = 6.1.2
+VERSION = 6.1.3
 TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
+
+CONFIG += static
 
 QMAKE_CXXFLAGS += -stdlib=libc++
 QMAKE_CXXFLAGS += -std=c++11
