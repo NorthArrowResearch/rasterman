@@ -4,6 +4,9 @@
 *.o
 *.obj
 
+# Makefiles should be generated at build
+Makefile
+
 # Compiled Dynamic libraries
 *.so
 *.dylib

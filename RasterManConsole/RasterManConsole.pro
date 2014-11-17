@@ -11,15 +11,13 @@ QT       -= gui
 
 VERSION = 6.1.3
 TARGET = rasterman
-CONFIG   += console
-CONFIG   += static
-CONFIG   -= app_bundle
+
+CONFIG += console
+# CONFIG += static
+CONFIG -= app_bundle
+CONFIG += c++11
 
 TEMPLATE = app
-
-QMAKE_CXXFLAGS += -stdlib=libc++
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
 
 SOURCES += main.cpp \
     rastermanengine.cpp
@@ -52,10 +50,15 @@ win32 {
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L$$DESTDIR -lRasterManager
+
 }
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
 
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
@@ -65,10 +68,22 @@ macx{
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-}
 
-# Tell it where to find compiled RasterManager.dll
-LIBS += -L$$DESTDIR -lRasterManager
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L$$DESTDIR -lRasterManager
+}
+unix:!macx {
+    message("Unix")
+    # Compile to a central location
+    DESTDIR = /usr/bin
+
+    # GDAL is required
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
+
+    LIBS += -L$$DESTDIR/../lib -lRasterManager
+}
 
 message("Building to: $$DESTDIR")
 

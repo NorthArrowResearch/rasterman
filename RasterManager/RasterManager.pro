@@ -11,11 +11,7 @@ TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-CONFIG += static
-
-QMAKE_CXXFLAGS += -stdlib=libc++
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2
+CONFIG += c++11
 
 DEFINES += RASTERMANAGER_LIBRARY
 
@@ -64,6 +60,7 @@ win32 {
 macx{
     ## OSX common build here
     message("Mac OSX x86_64 build (64bit)")
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
@@ -73,6 +70,16 @@ macx{
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
+}
+unix:!macx {
+    message("Unix")
+    # Compile to a central location
+    DESTDIR = /usr/lib
+
+    # GDAL is required
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 }
 
 message("Building to: $$DESTDIR")
