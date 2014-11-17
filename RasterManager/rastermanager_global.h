@@ -31,11 +31,15 @@
 #else
 #  define RASTERMANAGERSHARED_EXPORT Q_DECL_IMPORT
 #endif
-
-#ifdef MY_DLL_EXPORT
-#  define DLL_API __declspec(dllexport)
+ 
+#if defined(_WIN32) || defined(_WIN64)
+#   ifdef MY_DLL_EXPORT
+#       define DLL_API __declspec(dllexport)
+#   else
+#       define DLL_API __declspec(dllimport)
+#   endif
 #else
-#  define DLL_API __declspec(dllimport)
+#   define DLL_API
 #endif
 
 #endif // RASTERMANAGER_GLOBAL_H
