@@ -15,6 +15,7 @@ TARGET = rasterman
 CONFIG += console
 # CONFIG += static
 CONFIG -= app_bundle
+
 CONFIG += c++11
 
 TEMPLATE = app

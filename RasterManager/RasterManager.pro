@@ -11,6 +11,7 @@ TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
+# CONFIG += static
 CONFIG += c++11
 
 DEFINES += RASTERMANAGER_LIBRARY
@@ -35,8 +36,8 @@ HEADERS +=\
     extentrectangle.h \
     rastermeta.h
 
-CONFIG(release, debug|release): BUILD_TYPE = Release
-else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
