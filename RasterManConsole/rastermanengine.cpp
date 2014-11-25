@@ -125,7 +125,7 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -169,7 +169,7 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -210,7 +210,7 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -257,7 +257,7 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -303,7 +303,7 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 void RasterManEngine::RasterDivide(int argc, char * argv[])
@@ -347,7 +347,7 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 void RasterManEngine::RasterMultiply(int argc, char * argv[])
@@ -392,7 +392,7 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 void RasterManEngine::RasterPower(int argc, char * argv[])
@@ -424,7 +424,7 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 void RasterManEngine::RasterSqrt(int argc, char * argv[])
@@ -454,7 +454,7 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -492,7 +492,7 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -540,7 +540,7 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -575,7 +575,7 @@ void RasterManEngine::Mask(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -612,7 +612,7 @@ void RasterManEngine::Slope(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 
@@ -643,7 +643,7 @@ void RasterManEngine::Hillshade(int argc, char * argv[])
     }
     catch (std::exception & ex)
     {
-        std::cout <<"Error: " << ex.what() << std::endl;
+        std::cerr <<"Error: " << ex.what() << std::endl;
     }
 }
 

@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     }
     catch (std::exception& e)
     {
-        std::cout << e.what();
+        std::cerr << e.what();
     }
 
     //return a.exec();
