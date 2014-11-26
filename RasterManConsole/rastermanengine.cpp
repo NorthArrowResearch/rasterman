@@ -639,19 +639,25 @@ void RasterManEngine::CheckFile(QString sFile, bool bMustExist)
         // Check if the directory the file exists in is actually there
         QDir sFilePath = QFileInfo(sFile).absoluteDir();
         if (!sFilePath.exists()){
-            throw  std::runtime_error("The directory of the file you specified does not exist.");
+            QString sErr = "The directory of the file you specified does not exist: " + sFilePath.absolutePath();
+            throw  std::runtime_error(sErr.toStdString());
         }
 
         sFile = sFile.trimmed();
         sFile = sFile.replace("\"","");
         if (bMustExist)
         {
-            if (!QFile::exists(sFile))
-                throw  std::runtime_error("The specified input file does not exist.");
+            if (!QFile::exists(sFile)){
+                QString sErr = "The specified input file does not exist: " + sFile;
+                throw  std::runtime_error(sErr.toStdString());
+            }
         }
-        else
-            if (QFile::exists(sFile))
-                throw std::runtime_error("The specified output file already exists.");
+        else {
+            if (QFile::exists(sFile)){
+                QString sErr = "The specified output file already exists." + sFile;
+                throw  std::runtime_error(sErr.toStdString());
+            }
+        }
     }
 
 
