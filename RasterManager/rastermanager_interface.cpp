@@ -309,24 +309,16 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
-
-
     Raster pDemRaster (psInputRaster);
     pDemRaster.Hillshade(psOutputHillshade);
-
-
 
     return PROCESS_OK;
 }
 
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
-
-
     Raster pDemRaster (psInputRaster);
     pDemRaster.Slope(psOutputSlope, nSlopeType);
-
-
 
     return PROCESS_OK;
 }

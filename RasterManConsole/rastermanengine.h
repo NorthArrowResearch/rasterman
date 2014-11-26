@@ -8,98 +8,98 @@ namespace RasterManager {
 class RasterManEngine
 {
 public:
-    RasterManEngine(int argc, char * argv[]);
+    RasterManEngine();
 
-
+    int Run(int argc, char *argv[]);
 private:
     /**
      * @brief RasterProperties
      * @param argc
      * @param argv
      */
-    void RasterProperties(int argc, char *argv[]);
+    int RasterProperties(int argc, char *argv[]);
     /**
      * @brief RasterCopy
      * @param argc
      * @param argv
      */
-    void RasterCopy(int argc, char * argv[]);
+    int RasterCopy(int argc, char * argv[]);
     /**
      * @brief RasterAdd
      * @param argc
      * @param argv
      */
-    void RasterAdd(int argc, char * argv[]);
+    int RasterAdd(int argc, char * argv[]);
     /**
      * @brief RasterSubtract
      * @param argc
      * @param argv
      */
-    void RasterSubtract(int argc, char * argv[]);
+    int RasterSubtract(int argc, char * argv[]);
     /**
      * @brief RasterDivide
      * @param argc
      * @param argv
      */
-    void RasterDivide(int argc, char * argv[]);
+    int RasterDivide(int argc, char * argv[]);
     /**
      * @brief RasterMultiply
      * @param argc
      * @param argv
      */
-    void RasterMultiply(int argc, char * argv[]);
+    int RasterMultiply(int argc, char * argv[]);
     /**
      * @brief RasterPower
      * @param argc
      * @param argv
      */
-    void RasterPower(int argc, char * argv[]);
+    int RasterPower(int argc, char * argv[]);
     /**
      * @brief RasterSqrt
      * @param argc
      * @param argv
      */
-    void RasterSqrt(int argc, char * argv[]);
+    int RasterSqrt(int argc, char * argv[]);
     /**
      * @brief Mosaic
      * @param argc
      * @param argv
      */
-    void Mosaic(int argc, char *argv[]);
+    int Mosaic(int argc, char *argv[]);
     /**
      * @brief DoDThresholdPropError
      * @param argc
      * @param argv
      */
 
-    void BiLinearResample(int argc, char * argv[]);
+    int BiLinearResample(int argc, char * argv[]);
 
     /**
      * @brief Slope
      * @param argc
      * @param argv
      */
-    void Slope(int argc, char * argv[]);
+    int Slope(int argc, char * argv[]);
     /**
      * @brief Hillshade
      * @param argc
      * @param argv
      */
-    void Hillshade(int argc, char *argv[]);
+    int Hillshade(int argc, char *argv[]);
 
     /**
      * @brief CSVToRaster
      * @param argc
      * @param argv
      */
-    void CSVToRaster(int argc, char * argv[]);
+    int CSVToRaster(int argc, char * argv[]);
 
     /**
      * @brief Mask
      * @param argc
      * @param argv
      */
-    void Mask(int argc, char *argv[]);
+    int Mask(int argc, char *argv[]);
 
     /**
      * @brief CheckFile
@@ -148,7 +148,7 @@ private:
      * @param argc
      * @param argv
      */
-    void MakeConcurrent(int argc, char *argv[]);
+    int MakeConcurrent(int argc, char *argv[]);
     /**
      * @brief isNumeric
      * @param pszInput

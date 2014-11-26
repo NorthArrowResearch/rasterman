@@ -161,7 +161,7 @@ void Raster::CSVCellClean(std::string & value){
 
 }
 
-void Raster::CSVtoRaster(const char * sCSVSourcePath,
+int Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * sOutput,
                          double dTop,
                          double dLeft,
@@ -181,9 +181,10 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sDataField, &inputRasterMeta);
 
+    return PROCESS_OK;
 }
 
-void Raster::CSVtoRaster(const char * sCSVSourcePath,
+int Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * psOutput,
                          const char * sRasterTemplate,
                          const char * sXField,
@@ -194,10 +195,11 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sDataField, &inputRasterMeta);
 
+    return PROCESS_OK;
 
 }
 
-void Raster::CSVtoRaster(const char * sCSVSourcePath,
+int Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * psOutput,
                          const char * sXField,
                          const char * sYField,
@@ -290,6 +292,8 @@ void Raster::CSVtoRaster(const char * sCSVSourcePath,
     GDALClose(pDSOutput);
 
     PrintRasterProperties(psOutput);
+
+    return PROCESS_OK;
 
 }
 

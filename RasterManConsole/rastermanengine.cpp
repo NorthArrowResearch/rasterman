@@ -10,66 +10,72 @@
 
 namespace RasterManager {
 
-RasterManEngine::RasterManEngine(int argc, char * argv[])
+RasterManEngine::RasterManEngine()
+{ }
+
+int RasterManEngine::Run(int argc, char * argv[])
 {
+
     bool bRecognizedCommand = true;
-
-
 
     if (argc > 1)
     {
+        int eResult;
+
         RasterManager::RegisterGDAL();
         QString sCommand(argv[1]);
 
         if (QString::compare(sCommand, "Raster", Qt::CaseInsensitive) == 0)
-            RasterProperties(argc, argv);
+            eResult = RasterProperties(argc, argv);
 
         else if (QString::compare(sCommand, "BiLinear", Qt::CaseInsensitive) == 0)
-            BiLinearResample(argc, argv);
+            eResult = BiLinearResample(argc, argv);
 
         else if (QString::compare(sCommand, "Copy", Qt::CaseInsensitive) == 0)
-            RasterCopy(argc, argv);
+            eResult = RasterCopy(argc, argv);
 
         else if (QString::compare(sCommand, "Add", Qt::CaseInsensitive) == 0)
-            RasterAdd(argc, argv);
+            eResult = RasterAdd(argc, argv);
 
         else if (QString::compare(sCommand, "Subtract", Qt::CaseInsensitive) == 0)
-            RasterSubtract(argc, argv);
+            eResult = RasterSubtract(argc, argv);
 
         else if (QString::compare(sCommand, "Divide", Qt::CaseInsensitive) == 0)
-            RasterDivide(argc, argv);
+            eResult = RasterDivide(argc, argv);
 
         else if (QString::compare(sCommand, "Multiply", Qt::CaseInsensitive) == 0)
-            RasterMultiply(argc, argv);
+            eResult = RasterMultiply(argc, argv);
 
         else if (QString::compare(sCommand, "Power", Qt::CaseInsensitive) == 0)
-            RasterPower(argc, argv);
+            eResult = RasterPower(argc, argv);
 
         else if (QString::compare(sCommand, "Sqrt", Qt::CaseInsensitive) == 0)
-            RasterSqrt(argc, argv);
+            eResult = RasterSqrt(argc, argv);
 
         else if (QString::compare(sCommand, "csv2raster", Qt::CaseInsensitive) == 0)
-            CSVToRaster(argc, argv);
+            eResult = CSVToRaster(argc, argv);
 
         else if (QString::compare(sCommand, "Slope", Qt::CaseInsensitive) == 0)
-            Slope(argc, argv);
+            eResult = Slope(argc, argv);
 
         else if (QString::compare(sCommand, "Hillshade", Qt::CaseInsensitive) == 0)
-            Hillshade(argc, argv);
+            eResult = Hillshade(argc, argv);
 
         else if (QString::compare(sCommand, "Mosaic", Qt::CaseInsensitive) == 0)
-            Mosaic(argc, argv);
+            eResult = Mosaic(argc, argv);
 
         else if (QString::compare(sCommand, "MakeConcurrent", Qt::CaseInsensitive) == 0)
-            MakeConcurrent(argc, argv);
+            eResult = MakeConcurrent(argc, argv);
 
         else if (QString::compare(sCommand, "Mask", Qt::CaseInsensitive) == 0)
-            Mask(argc, argv);
+            eResult = Mask(argc, argv);
 
         else
             bRecognizedCommand = false;
 
         RasterManager::DestroyGDAL();
+
+        return eResult;
     }
     else
         bRecognizedCommand = false;
@@ -99,11 +105,11 @@ RasterManEngine::RasterManEngine(int argc, char * argv[])
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
 }
 
-void RasterManEngine::RasterProperties(int argc, char * argv[])
+int RasterManEngine::RasterProperties(int argc, char * argv[])
 {
     if (argc != 3)
     {
@@ -113,23 +119,16 @@ void RasterManEngine::RasterProperties(int argc, char * argv[])
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
     CheckFile(argc, argv, 2, true);
 
-    try
-    {
-        RasterManager::PrintRasterProperties(argv[2]);
 
-        std::cout << "\n\n completed successfully.\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+    RasterManager::PrintRasterProperties(argv[2]);
+    return PROCESS_OK;
 }
 
-void RasterManEngine::BiLinearResample(int argc, char * argv[])
+int RasterManEngine::BiLinearResample(int argc, char * argv[])
 {
     if (argc != 9)
     {
@@ -146,34 +145,28 @@ void RasterManEngine::BiLinearResample(int argc, char * argv[])
         std::cout << "\n    cols: Number of columns in the output raster.";
         std::cout << "\n    cell_size: Cell size for the output raster.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        CheckFile(argc, argv, 3, false);
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, false);
 
-        std::cout << "\n\n --  Bilinear Resampling --";
+    std::cout << "\n\n --  Bilinear Resampling --";
 
-        double fLeft, fTop, fCellSize;
-        int nRows, nCols;
-        int eResult;
+    double fLeft, fTop, fCellSize;
+    int nRows, nCols;
+    int eResult;
 
-        GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
+    GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
-        RasterManager::Raster rOriginal(argv[2]);
-        eResult = rOriginal.ReSample(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
+    RasterManager::Raster rOriginal(argv[2]);
+    eResult = rOriginal.ReSample(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
+    return eResult;
 
-        std::cout << "\n" << RasterManager::GetReturnCodeAsString(eResult);
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+
 }
 
-void RasterManEngine::RasterCopy(int argc, char * argv[])
+int RasterManEngine::RasterCopy(int argc, char * argv[])
 {
     if (argc != 9)
     {
@@ -189,11 +182,9 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
         std::cout << "\n               cols: Number of columns in the output raster.";
         std::cout << "\n          cell_size: Cell size for the output raster.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
         // Check that the files exist (or not)
         CheckFile(argc, argv, 2, true);
         CheckFile(argc, argv, 3, false);
@@ -205,16 +196,10 @@ void RasterManEngine::RasterCopy(int argc, char * argv[])
         int eResult;
         RasterManager::Raster rOriginal(argv[2]);
         eResult = rOriginal.Copy(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
-
-        std::cout << "\n\n" << GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+        return eResult;
 }
 
-void RasterManEngine::RasterAdd(int argc, char * argv[])
+int RasterManEngine::RasterAdd(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -226,42 +211,33 @@ void RasterManEngine::RasterAdd(int argc, char * argv[])
         std::cout << "\n    raster2_file_path: Absolute full path to existing second raster.";
         std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        QString sArg2 = argv[3];
-        CheckFile(argc, argv, 4, false);
+    CheckFile(argc, argv, 2, true);
+    QString sArg2 = argv[3];
+    CheckFile(argc, argv, 4, false);
 
-        int eResult;
+    int eResult;
 
-        bool FileisNumeric;
-        double dOperator = sArg2.toDouble(&FileisNumeric);
+    bool FileisNumeric;
+    double dOperator = sArg2.toDouble(&FileisNumeric);
 
-        if (!FileisNumeric){
-            CheckFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
-                                     argv[4]);
-        }
-        else {
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                                     argv[4]);
-        }
-
-        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
-
+    if (!FileisNumeric){
+        CheckFile(argc, argv, 3, true);
+        eResult =  RasterManager::BasicMath(argv[2],
+                argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
+                argv[4]);
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
+    else {
+        eResult =  RasterManager::BasicMath(argv[2],
+                NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                argv[4]);
     }
+    return eResult;
 }
 
-void RasterManEngine::RasterSubtract(int argc, char * argv[])
+int RasterManEngine::RasterSubtract(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -273,40 +249,34 @@ void RasterManEngine::RasterSubtract(int argc, char * argv[])
         std::cout << "\n    raster2_file_path: Absolute full path to existing second raster.";
         std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        QString sArg2 = argv[3];
-        CheckFile(argc, argv, 4, false);
 
-        int eResult;
+    CheckFile(argc, argv, 2, true);
+    QString sArg2 = argv[3];
+    CheckFile(argc, argv, 4, false);
 
-        bool FileisNumeric;
-        double dOperator = sArg2.toDouble(&FileisNumeric);
+    int eResult;
 
-        if (!FileisNumeric){
-            CheckFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
-                                     argv[4]);
-        }
-        else {
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                                     argv[4]);
-        }
+    bool FileisNumeric;
+    double dOperator = sArg2.toDouble(&FileisNumeric);
 
-        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    if (!FileisNumeric){
+        CheckFile(argc, argv, 3, true);
+        eResult =  RasterManager::BasicMath(argv[2],
+                argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
+                argv[4]);
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
+    else {
+        eResult =  RasterManager::BasicMath(argv[2],
+                NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                argv[4]);
     }
+    return eResult;
+
 }
-void RasterManEngine::RasterDivide(int argc, char * argv[])
+int RasterManEngine::RasterDivide(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -318,39 +288,34 @@ void RasterManEngine::RasterDivide(int argc, char * argv[])
         std::cout << "\n    raster2_file_path:  Absolute full path to existing second raster.";
         std::cout << "\n     output_file_path:  Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        QString sArg2 = argv[3];
-        CheckFile(argc, argv, 4, false);
+    CheckFile(argc, argv, 2, true);
+    QString sArg2 = argv[3];
+    CheckFile(argc, argv, 4, false);
 
-        int eResult;
+    int eResult;
 
-        bool FileisNumeric;
-        double dOperator = sArg2.toDouble(&FileisNumeric);
+    bool FileisNumeric;
+    double dOperator = sArg2.toDouble(&FileisNumeric);
 
-        if (!FileisNumeric){
-            CheckFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
-                                     argv[4]);
-        }
-        else {
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
-                                     argv[4]);
-        }
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    if (!FileisNumeric){
+        CheckFile(argc, argv, 3, true);
+        eResult =  RasterManager::BasicMath(argv[2],
+                argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
+                argv[4]);
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
+    else {
+        eResult =  RasterManager::BasicMath(argv[2],
+                NULL, dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
+                argv[4]);
     }
+    return eResult;
+
 }
-void RasterManEngine::RasterMultiply(int argc, char * argv[])
+
+int RasterManEngine::RasterMultiply(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -362,40 +327,33 @@ void RasterManEngine::RasterMultiply(int argc, char * argv[])
         std::cout << "\n    raster2_file_path:  Absolute full path to existing second raster.";
         std::cout << "\n     output_file_path:   Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        QString sArg2 = argv[3];
-        CheckFile(argc, argv, 4, false);
+    CheckFile(argc, argv, 2, true);
+    QString sArg2 = argv[3];
+    CheckFile(argc, argv, 4, false);
 
-        int eResult;
+    int eResult;
 
-        bool FileisNumeric;
-        double dOperator = sArg2.toDouble(&FileisNumeric);
+    bool FileisNumeric;
+    double dOperator = sArg2.toDouble(&FileisNumeric);
 
-        if (!FileisNumeric){
-            CheckFile(argc, argv, 3, true);
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                                     argv[4]);
-        }
-        else {
-            eResult =  RasterManager::BasicMath(argv[2],
-                                     NULL, dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                                     argv[4]);
-        }
-
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
+    if (!FileisNumeric){
+        CheckFile(argc, argv, 3, true);
+        eResult =  RasterManager::BasicMath(argv[2],
+                argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
+                argv[4]);
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
+    else {
+        eResult =  RasterManager::BasicMath(argv[2],
+                NULL, dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
+                argv[4]);
     }
+    return eResult;
+
 }
-void RasterManEngine::RasterPower(int argc, char * argv[])
+int RasterManEngine::RasterPower(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -407,27 +365,18 @@ void RasterManEngine::RasterPower(int argc, char * argv[])
         std::cout << "\n         power_value: Value to be used as the power.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        double dPower = GetDouble(argc, argv, 3);
-        CheckFile(argc, argv, 4, false);
-        int eResult;
+    CheckFile(argc, argv, 2, true);
+    double dPower = GetDouble(argc, argv, 3);
+    CheckFile(argc, argv, 4, false);
+    int eResult;
 
-        eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER,
-                                           argv[4]);
-
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+    eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
+    return eResult;
 }
-void RasterManEngine::RasterSqrt(int argc, char * argv[])
+int RasterManEngine::RasterSqrt(int argc, char * argv[])
 {
     if (argc != 4)
     {
@@ -438,27 +387,20 @@ void RasterManEngine::RasterSqrt(int argc, char * argv[])
         std::cout << "\n    raster_file_path: Absolute full path to existing first raster.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        CheckFile(argc, argv, 3, false);
-        int eResult;
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, false);
+    int eResult;
 
-        eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
-                                           argv[3]);
+    eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
+            argv[3]);
+    return eResult;
 
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
 }
 
-void RasterManEngine::Mosaic(int argc, char * argv[])
+int RasterManEngine::Mosaic(int argc, char * argv[])
 {
     if (argc != 4)
     {
@@ -469,34 +411,28 @@ void RasterManEngine::Mosaic(int argc, char * argv[])
         std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
-    try
-    {
-        QString rasterInputs(argv[2]);
-        QStringList inputFileList = rasterInputs.split(";");
 
-        foreach (QString sFilename, inputFileList) {
-            if (sFilename.compare("") != 0){
-                CheckFile(sFilename, true);
-            }
+    QString rasterInputs(argv[2]);
+    QStringList inputFileList = rasterInputs.split(";");
 
+    foreach (QString sFilename, inputFileList) {
+        if (sFilename.compare("") != 0){
+            CheckFile(sFilename, true);
         }
 
-        CheckFile(argc, argv, 3, false);
-        int eResult;
-
-        eResult = RasterManager::Mosaic(argv[2], argv[3]);
-
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+
+    CheckFile(argc, argv, 3, false);
+    int eResult;
+
+    eResult = RasterManager::Mosaic(argv[2], argv[3]);
+    return eResult;
+
 }
 
-void RasterManEngine::MakeConcurrent(int argc, char * argv[])
+int RasterManEngine::MakeConcurrent(int argc, char * argv[])
 {
     if (argc != 4)
     {
@@ -508,44 +444,36 @@ void RasterManEngine::MakeConcurrent(int argc, char * argv[])
         std::cout << "\n    raster_output_paths: two or more raster file paths; semicolon delimited.";
         std::cout << "\n                         Must match raster_input_paths.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
-    try
-    {
 
-        QString rasterInputs(argv[2]);
-        QString rasterOutputs(argv[3]);
 
-        QString delimiterPattern(";");
+    QString rasterInputs(argv[2]);
+    QString rasterOutputs(argv[3]);
 
-        QStringList inputFileList = rasterInputs.split(delimiterPattern);
-        QStringList outputFileList = rasterOutputs.split(delimiterPattern);
+    QString delimiterPattern(";");
 
-        foreach (QString sFilename, inputFileList) {
-            if (sFilename.compare("") != 0) {
-                CheckFile(sFilename, true);
-               }
+    QStringList inputFileList = rasterInputs.split(delimiterPattern);
+    QStringList outputFileList = rasterOutputs.split(delimiterPattern);
+
+    foreach (QString sFilename, inputFileList) {
+        if (sFilename.compare("") != 0) {
+            CheckFile(sFilename, true);
         }
-        foreach (QString sFilename, outputFileList) {
-            if (sFilename.compare("") != 0){
-                CheckFile(sFilename, false);
-            }
+    }
+    foreach (QString sFilename, outputFileList) {
+        if (sFilename.compare("") != 0){
+            CheckFile(sFilename, false);
         }
-
-        int eResult;
-
-        eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
-
-        std::cout << "\n\n" << RasterManager::GetReturnCodeAsString(eResult) << "\n";
     }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+
+    int eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
+
+    return eResult;
 }
 
 
-void RasterManEngine::Mask(int argc, char * argv[])
+int RasterManEngine::Mask(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -557,29 +485,22 @@ void RasterManEngine::Mask(int argc, char * argv[])
         std::cout << "\n    raster_mask_path: A raster to be used as a mask. Mask will be created from NoDataValues.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
-        return;
+        return PROCESS_OK;
     }
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        CheckFile(argc, argv, 3, true);
-        CheckFile(argc, argv, 4, false);
 
-        int eResult;
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, true);
+    CheckFile(argc, argv, 4, false);
 
-        eResult =  RasterManager::Mask(argv[2],
-                                       argv[3],
-                                       argv[4]);
+    int eResult =  RasterManager::Mask(argv[2],
+            argv[3],
+            argv[4]);
 
-        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+    return eResult;
+
 }
 
-void RasterManEngine::Slope(int argc, char * argv[])
+int RasterManEngine::Slope(int argc, char * argv[])
 {
     if (argc != 5)
     {
@@ -592,31 +513,24 @@ void RasterManEngine::Slope(int argc, char * argv[])
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
         std::cout << "\n    output_file_path: Absolute full path to output, slope raster.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 3, true);
-        CheckFile(argc, argv, 4, false);
+    CheckFile(argc, argv, 3, true);
+    CheckFile(argc, argv, 4, false);
 
-        int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
-        QString sType(argv[2]);
-        if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
-            nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_PERCENT;
+    int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
+    QString sType(argv[2]);
+    if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
+        nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_PERCENT;
 
-        RasterManager::Raster rOriginal(argv[3]);
-        int eResult = rOriginal.Slope(argv[4], nSlopeType);
+    RasterManager::Raster rOriginal(argv[3]);
+    int eResult = rOriginal.Slope(argv[4], nSlopeType);
 
-        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+    return eResult;
 }
 
-void RasterManEngine::Hillshade(int argc, char * argv[])
+int RasterManEngine::Hillshade(int argc, char * argv[])
 {
     if (argc != 4)
     {
@@ -628,27 +542,20 @@ void RasterManEngine::Hillshade(int argc, char * argv[])
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
         std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
         std::cout << "\n";
-        return;
+        return PROCESS_OK;
     }
 
-    try
-    {
-        CheckFile(argc, argv, 2, true);
-        CheckFile(argc, argv, 3, false);
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, false);
 
-        RasterManager::Raster rOriginal(argv[2]);
-        int eResult = rOriginal.Hillshade(argv[3]);
+    RasterManager::Raster rOriginal(argv[2]);
+    int eResult = rOriginal.Hillshade(argv[3]);
 
-        std::cout << "\n\n" <<  RasterManager::GetReturnCodeAsString(eResult) << "\n";
-    }
-    catch (std::exception & ex)
-    {
-        std::cerr <<"Error: " << ex.what() << std::endl;
-    }
+    return eResult;
 }
 
 
-void RasterManEngine::CSVToRaster(int argc, char * argv[])
+int RasterManEngine::CSVToRaster(int argc, char * argv[])
 {
     if (argc < 8)
     {
@@ -677,8 +584,9 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n";
         std::cout << "\n    raster_template: Path to template raster file.";
         std::cout << "\n\n";
-        return;
+        return PROCESS_OK;
     }
+    int eResult;
 
     CheckFile(argc, argv, 2, true);
     CheckFile(argc, argv, 3, false);
@@ -697,24 +605,27 @@ void RasterManEngine::CSVToRaster(int argc, char * argv[])
         else
             dNoDataVal = sNoDataVal.toDouble();
 
-        RasterManager::Raster::CSVtoRaster(argv[2],
-                                           argv[3],
-                                           dTop, dLeft, nRows, nCols,
-                                           dCellSize, dNoDataVal,
-                                           argv[4],
-                                           argv[5],
-                                           argv[6] );
+        eResult = RasterManager::Raster::CSVtoRaster(argv[2],
+                argv[3],
+                dTop, dLeft, nRows, nCols,
+                dCellSize, dNoDataVal,
+                argv[4],
+                argv[5],
+                argv[6] );
     }
     // Otherwise a csv file is used
     else if (argc == 8){
         CheckFile(argc, argv, 7, true);
-        RasterManager::Raster::CSVtoRaster(argv[2],
-                                           argv[3],
-                                           argv[7],
-                                           argv[4],
-                                           argv[5],
-                                           argv[6] );
+        eResult = RasterManager::Raster::CSVtoRaster(argv[2],
+                argv[3],
+                argv[7],
+                argv[4],
+                argv[5],
+                argv[6] );
     }
+
+    return eResult;
+
 }
 
 

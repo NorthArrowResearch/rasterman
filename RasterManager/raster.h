@@ -161,7 +161,7 @@ public:
      * @param sDataField
      * @param p_rastermeta
      */
-    static void CSVtoRaster(const char * sCSVSourcePath,
+    static int CSVtoRaster(const char * sCSVSourcePath,
                             const char * psOutput,
                             const char * sXField,
                             const char * sYField,
@@ -177,7 +177,7 @@ public:
      * @param sYField
      * @param sDataField
      */
-    static void CSVtoRaster(const char * sCSVSourcePath,
+    static int CSVtoRaster(const char * sCSVSourcePath,
                             const char * psOutput,
                             const char * sRasterTemplate,
                             const char * sXField,
@@ -198,7 +198,7 @@ public:
      * @param sYField
      * @param sDataField
      */
-    static void CSVtoRaster(const char * sCSVSourcePath,
+    static int CSVtoRaster(const char * sCSVSourcePath,
                                     const char * sOutput,
                                     double dTop,
                                     double dLeft,
