@@ -193,9 +193,9 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     RasterMeta inputRasterMeta(sRasterTemplate);
 
-    CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sDataField, &inputRasterMeta);
+    int eResult = CSVtoRaster(sCSVSourcePath, psOutput, sXField, sYField, sDataField, &inputRasterMeta);
 
-    return PROCESS_OK;
+    return eResult;
 
 }
 
@@ -225,7 +225,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
     inputCSVFile.clear();
     inputCSVFile.seekg(0);
 
-    int xcol, ycol, zcol;
+    int xcol=-1, ycol=-1, zcol=-1;
 
     // Read CSV file into 3 different arrays
     std::string fsLine;
@@ -241,7 +241,6 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
             int csvX = -1;
             int csvY = -1;
             double csvDataVal = p_rastermeta->GetNoDataValue();
-
 
             std::istringstream isLine (fsLine);
             int ncolnumber = 0;
@@ -266,6 +265,24 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                 }
                 // Not the first line read values if they apply
                 else{
+                    // Basic checking to make sure we have parameters
+                    if (xcol == -1){
+                        char sErr [128];
+                        sprintf(sErr, "X Field '%s' not found", sXField);
+                        throw std::runtime_error(sErr);
+                    }
+                    else if (ycol == -1){
+                        char sErr [128];
+                        sprintf(sErr, "Y Column '%s' not found", sYField);
+                        throw std::runtime_error(sErr);
+                    }
+                    else if (zcol == -1){
+                        char sErr [128];
+                        sprintf(sErr, "Data Column '%s' not found", sDataField);
+                        throw std::runtime_error(sErr);
+                    }
+
+                    // Assign our CSV values to an appropriate place in the raster
                     double dVal = std::stod(csvItem);
                     if (xcol == ncolnumber){
                         csvX = (int) floor((dVal - p_rastermeta->GetLeft() ) / p_rastermeta->GetCellWidth());
@@ -276,6 +293,8 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                     else if (zcol == ncolnumber){
                         csvDataVal = dVal;
                     }
+
+
                 }
 
             }
