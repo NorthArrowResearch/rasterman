@@ -16,13 +16,12 @@ int main(int argc, char *argv[])
         RasterManager::RasterManEngine * rm = new RasterManager::RasterManEngine();
         int eResult = rm->Run(argc, argv);
         if (eResult <= 0) {
-            std::cout << "\n" <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
+            std::cout << std::endl <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
         }
         else {
-            std::cerr << "\n" <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
+            std::cerr << std::endl << "Error: " <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
             exit (EXIT_FAILURE);
         }
-
         exit (EXIT_SUCCESS);
     }
     catch (std::exception& e)
