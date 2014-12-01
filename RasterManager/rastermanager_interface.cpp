@@ -3,6 +3,8 @@
 #include "rastermanager_interface.h"
 #include "extentrectangle.h"
 
+#include <stdio.h>
+
 #include "extentrectangle.h"
 #include "rastermeta.h"
 
@@ -1017,7 +1019,8 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
         return "Unspecified error.";
 
     default:
-        return "Unhandled Raster Manager return code.";
+        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string(eErrorCode);
+        return errMsg.c_str();
     }
 
 }
