@@ -178,7 +178,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
         GDALRasterBand * pRBInput2 = pDS2->GetRasterBand(1);
 
         /*****************************************************************************************
-        /* Check that input rasters have the same numbers of rows and columns
+         * Check that input rasters have the same numbers of rows and columns
          */
 
         if (pRBInput1->GetXSize() != pRBInput2->GetXSize())
@@ -251,7 +251,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 
             for (j = 0; j < pRBInput1->GetXSize(); j++)
             {
-                if ( (pInputLine1[j] == fNoDataValue))
+                if (pInputLine1[j] == fNoDataValue)
                 {
                     pOutputLine[j] = fNoDataValue;
                 }
@@ -380,8 +380,8 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
 
 
     /*****************************************************************************************
-        /* Check that input rasters have the same numbers of rows and columns
-         */
+     * Check that input rasters have the same numbers of rows and columns
+     */
 
     if (pRBInput->GetXSize() != pRBMask->GetXSize())
         return COLS_ERROR;
@@ -402,7 +402,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
 
         for (j = 0; j < rmOutputMeta.GetCols(); j++)
         {
-            if ( (pMaskline[j] == rmMaskMeta.GetNoDataValue()) )
+            if (pMaskline[j] == rmMaskMeta.GetNoDataValue())
             {
                 pOutputLine[j] = rmOutputMeta.GetNoDataValue();
             }
@@ -462,7 +462,7 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
     double fNoDataValue2 = pRBInput2->GetNoDataValue(&nHasNoData2);
 
     /*****************************************************************************************
-    /* Check that input rasters have the same numbers of rows and columns
+     * Check that input rasters have the same numbers of rows and columns
      */
     if (pRBInput1->GetXSize() != pRBInput2->GetXSize())
         return COLS_ERROR;

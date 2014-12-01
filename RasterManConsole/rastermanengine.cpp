@@ -20,7 +20,7 @@ int RasterManEngine::Run(int argc, char * argv[])
 
     if (argc > 1)
     {
-        int eResult;
+        int eResult = PROCESS_OK;
 
         RasterManager::RegisterGDAL();
         QString sCommand(argv[1]);
@@ -105,8 +105,8 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n ";
-        return PROCESS_OK;
     }
+    return PROCESS_OK;
 }
 
 int RasterManEngine::RasterProperties(int argc, char * argv[])
@@ -155,7 +155,7 @@ int RasterManEngine::BiLinearResample(int argc, char * argv[])
 
     double fLeft, fTop, fCellSize;
     int nRows, nCols;
-    int eResult;
+    int eResult = PROCESS_OK;
 
     GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
@@ -193,7 +193,7 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
         int nRows, nCols;
         GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
 
-        int eResult;
+        int eResult = PROCESS_OK;
         RasterManager::Raster rOriginal(argv[2]);
         eResult = rOriginal.Copy(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
         return eResult;
@@ -218,7 +218,7 @@ int RasterManEngine::RasterAdd(int argc, char * argv[])
     QString sArg2 = argv[3];
     CheckFile(argc, argv, 4, false);
 
-    int eResult;
+    int eResult = PROCESS_OK;
 
     bool FileisNumeric;
     double dOperator = sArg2.toDouble(&FileisNumeric);
@@ -257,7 +257,7 @@ int RasterManEngine::RasterSubtract(int argc, char * argv[])
     QString sArg2 = argv[3];
     CheckFile(argc, argv, 4, false);
 
-    int eResult;
+    int eResult = PROCESS_OK;
 
     bool FileisNumeric;
     double dOperator = sArg2.toDouble(&FileisNumeric);
@@ -295,7 +295,7 @@ int RasterManEngine::RasterDivide(int argc, char * argv[])
     QString sArg2 = argv[3];
     CheckFile(argc, argv, 4, false);
 
-    int eResult;
+    int eResult = PROCESS_OK;
 
     bool FileisNumeric;
     double dOperator = sArg2.toDouble(&FileisNumeric);
@@ -334,7 +334,7 @@ int RasterManEngine::RasterMultiply(int argc, char * argv[])
     QString sArg2 = argv[3];
     CheckFile(argc, argv, 4, false);
 
-    int eResult;
+    int eResult = PROCESS_OK;
 
     bool FileisNumeric;
     double dOperator = sArg2.toDouble(&FileisNumeric);
@@ -371,7 +371,7 @@ int RasterManEngine::RasterPower(int argc, char * argv[])
     CheckFile(argc, argv, 2, true);
     double dPower = GetDouble(argc, argv, 3);
     CheckFile(argc, argv, 4, false);
-    int eResult;
+    int eResult = PROCESS_OK;
 
     eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
     return eResult;
@@ -392,7 +392,7 @@ int RasterManEngine::RasterSqrt(int argc, char * argv[])
 
     CheckFile(argc, argv, 2, true);
     CheckFile(argc, argv, 3, false);
-    int eResult;
+    int eResult = PROCESS_OK;
 
     eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
             argv[3]);
@@ -425,7 +425,7 @@ int RasterManEngine::Mosaic(int argc, char * argv[])
     }
 
     CheckFile(argc, argv, 3, false);
-    int eResult;
+    int eResult = PROCESS_OK;
 
     eResult = RasterManager::Mosaic(argv[2], argv[3]);
     return eResult;
@@ -586,7 +586,7 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
         std::cout << "\n\n";
         return PROCESS_OK;
     }
-    int eResult;
+    int eResult = PROCESS_OK;
 
     CheckFile(argc, argv, 2, true);
     CheckFile(argc, argv, 3, false);

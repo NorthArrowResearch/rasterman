@@ -18,8 +18,6 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 
     double dNoData = GetNoDataValue();
 
-    int nSuccess = 0;
-
     /*************************************************************************************************
     * Create the memory buffers for reading the old raster and writing the new raster.
     */
@@ -100,10 +98,10 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
 
 
                     if (!this->HasNoDataValue() ||
-                               (static_cast<float>(Z01) != fNoData)
+                               ((static_cast<float>(Z01) != fNoData)
                             && (static_cast<float>(Z11) != fNoData)
                             && (static_cast<float>(Z00) != fNoData)
-                            && (static_cast<float>(Z10) != fNoData))
+                            && (static_cast<float>(Z10) != fNoData)))
                     {
                         double Lx = fOldX;
                         double Z1 = Z01 + (Z11 - Z01) * ((fNewX - Lx) / fOldCellWidth);
