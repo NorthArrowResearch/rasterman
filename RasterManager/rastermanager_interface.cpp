@@ -116,6 +116,9 @@ DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
 }
 
 
+extern "C" DLL_API void RegisterGDAL() { GDALAllRegister();}
+extern "C" DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
+
 extern "C" DLL_API int BasicMath(const char * psRaster1,
                                  const char * psRaster2,
                                  const double dOperator,

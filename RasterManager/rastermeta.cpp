@@ -73,6 +73,10 @@ void RasterMeta::operator=(RasterMeta &source)
     Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
+GDALDataType RasterMeta::GetGDALDataType() { return m_eDataType; }
+
+void RasterMeta::SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
     // Open the original dataset

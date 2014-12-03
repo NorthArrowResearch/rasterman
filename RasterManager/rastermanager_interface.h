@@ -2,7 +2,6 @@
 #define RASTERINTERFACE_H
 
 #include "rastermanager_global.h"
-#include "gdal_priv.h"
 #include "rastermeta.h"
 
 #include <limits>
@@ -12,6 +11,8 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
+
+class GDALDataset;
 
 namespace RasterManager {
 
@@ -84,8 +85,8 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode);
  * @brief
  *
  */
-extern "C" DLL_API void inline RegisterGDAL() { GDALAllRegister();}
-extern "C" DLL_API void inline DestroyGDAL() { GDALDestroyDriverManager();}
+extern "C" DLL_API void RegisterGDAL();
+extern "C" DLL_API void DestroyGDAL();
 
 /**
  * @brief GetRasterProperties

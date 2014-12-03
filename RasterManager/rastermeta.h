@@ -48,7 +48,7 @@ public:
      * @brief GetGDALDataType
      * @return
      */
-    inline GDALDataType GetGDALDataType() { return m_eDataType; }
+    inline GDALDataType GetGDALDataType();
 
     /**
      * @brief GetProjectionRef
@@ -65,7 +65,7 @@ public:
      * @brief SetGDALDataType
      * @param fDataType
      */
-    inline void SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+    inline void SetGDALDataType(GDALDataType fDataType);
 
     /**
      * @brief IsOthogonal
