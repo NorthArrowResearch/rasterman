@@ -4,7 +4,6 @@
 #include "extentrectangle.h"
 
 #include <stdio.h>
-
 #include "extentrectangle.h"
 #include "rastermeta.h"
 
@@ -14,6 +13,7 @@
 #include <limits>
 #include <math.h>
 #include <string>
+
 
 #include <algorithm>
 #include <iostream>
@@ -1019,7 +1019,7 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
         return "Unspecified error.";
 
     default:
-        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((_ULonglong)eErrorCode);
+        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((int)eErrorCode);
         return errMsg.c_str();
     }
 
