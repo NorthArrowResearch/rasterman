@@ -2,8 +2,6 @@
 #define EXTENTRECTANGLE_H
 
 #include "rastermanager_global.h"
-//#include "raster.h"
-//#include "rastermeta.h"
 
 class Raster;
 class RasterMeta;

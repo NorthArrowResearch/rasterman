@@ -2,7 +2,7 @@
 #define RASTERINTERFACE_H
 
 #include "rastermanager_global.h"
-#include "gdal.h"
+#include "gdal_priv.h"
 #include "rastermeta.h"
 
 #include <limits>
@@ -12,8 +12,6 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
-
-class GDALDataset;
 
 namespace RasterManager {
 

@@ -5,10 +5,6 @@
 #include "rastermanager_global.h"
 #include <string>
 
-////#include "cpl_list.h"
-//#include "gdal_priv.h"
-////#include "ogrsf_frmts.h"
-
 //class OGRPolygon;
 
 class GDALRasterBand;

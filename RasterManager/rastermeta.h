@@ -3,7 +3,7 @@
 
 #include "rastermanager_global.h"
 #include "extentrectangle.h"
-#include "gdal.h"
+#include "gdal_priv.h"
 
 namespace RasterManager {
 
