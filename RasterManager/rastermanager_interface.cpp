@@ -1019,7 +1019,7 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
         return "Unspecified error.";
 
     default:
-        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string(eErrorCode);
+        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((_ULonglong)eErrorCode);
         return errMsg.c_str();
     }
 
