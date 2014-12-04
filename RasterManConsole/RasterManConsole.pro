@@ -13,11 +13,8 @@ VERSION = 6.1.4
 TARGET = rasterman
 
 CONFIG += console
-# CONFIG += static
 CONFIG -= app_bundle
-
-CONFIG += c++11
-
+CONFIG += c++11 static
 TEMPLATE = app
 
 SOURCES += main.cpp \
@@ -31,8 +28,8 @@ DEPENDPATH += $$PWD/../RasterManager
 
 Libs += -L$$PWD/../RasterManager
 
-CONFIG(release, debug|release): BUILD_TYPE = Release
-else:CONFIG(debug, debug|release): BUILD_TYPE = Debug
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
@@ -45,15 +42,16 @@ win32 {
     }
 
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    LIBS += -L$$GDALWIN/lib/ -lgdal_i
-    INCLUDEPATH += $$GDALWIN/include
-    DEPENDPATH += $$GDALWIN/include
+    LIBS += -LC:\GDALBuild\bld\lib -lgdal_i
+    INCLUDEPATH += C:\GDALBuild\bld\include
+    DEPENDPATH += C:\GDALBuild\bld\include
 
     # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 
     # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$DESTDIR -lRasterManager
+    LIBS += -L$$OUT_PWD/../RasterManager/release -lRasterManager
+    message($$LIBS)
 
 }
 macx{
