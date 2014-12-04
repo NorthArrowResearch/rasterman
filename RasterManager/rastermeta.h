@@ -48,7 +48,7 @@ public:
      * @brief GetGDALDataType
      * @return
      */
-    inline GDALDataType GetGDALDataType();
+    GDALDataType GetGDALDataType();
 
     /**
      * @brief GetProjectionRef
