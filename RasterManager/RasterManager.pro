@@ -13,9 +13,7 @@ TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-# CONFIG += static
-CONFIG += c++11
-
+CONFIG += c++11 staticlib
 DEFINES += RASTERMANAGER_LIBRARY
 
 SOURCES += \
@@ -54,12 +52,12 @@ win32 {
 
     # GDAL is required
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    LIBS += -L$$GDALWIN/lib -lgdal_i
-    INCLUDEPATH += $$GDALWIN/include
-    DEPENDPATH += $$GDALWIN/include
+    LIBS += -LC:\GDALBuild\bld\lib -lgdal_i
+    INCLUDEPATH += C:\GDALBuild\bld\include
+    DEPENDPATH += C:\GDALBuild\bld\include
 
     # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 }
 macx{
     ## OSX common build here
@@ -67,7 +65,7 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
     # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix

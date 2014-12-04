@@ -34,9 +34,9 @@
  
 #if defined(_WIN32) || defined(_WIN64)
 #   ifdef MY_DLL_EXPORT
-#       define DLL_API __declspec(dllexport)
+#       define DLL_API
 #   else
-#       define DLL_API __declspec(dllimport)
+#       define DLL_API
 #   endif
 #else
 #   define DLL_API
