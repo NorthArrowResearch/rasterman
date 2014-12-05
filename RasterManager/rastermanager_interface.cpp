@@ -634,6 +634,13 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
     return PROCESS_OK;
 }
 
+extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2){
+
+    RasterManager::RasterMeta rmRaster1(csRaster1);
+    RasterManager::RasterMeta rmRaster2(csRaster2);
+
+    return rmRaster1.IsConcurrent(&rmRaster2);
+}
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {

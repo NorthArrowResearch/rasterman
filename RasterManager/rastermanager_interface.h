@@ -209,6 +209,13 @@ extern "C" DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
 
 /**
+ * @brief IsConcurrent
+ * @param csRaster
+ * @return
+ */
+extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2);
+
+/**
  * @brief
  *
  * @param psInputRaster
