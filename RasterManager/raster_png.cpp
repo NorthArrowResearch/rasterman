@@ -1,3 +1,11 @@
+/*
+ * Create a PNG image from a GDAL compatible raster
+ *
+ * 4 December 2014
+ *
+ * Original code developed by Konrad Hafen at Utah State University
+*/
+
 #include "raster.h"
 #include "gdal.h"
 #include "gdal_priv.h"
@@ -11,13 +19,23 @@ namespace RasterManager {
 
 int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style)
 {
+    // Input validation
+
+    if (nQuality < 0 || nQuality > 100)
+        return RM_PNG_QUALITY;
+
+    if (nTransparency < 0 || nTransparency > 100)
+        return RM_PNG_TRANSPARENCY;
+
+    if (nLongLength < -1)
+        return RM_PNG_LONG_AXIS;
+
     GDALDataset *pOldDS, *pTempDS, *pPngDS;
     GDALDriver *pDriverTiff, *pDriverPNG;
     GDALColorTable colorTable(GPI_RGB);
 
     pDriverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
     pDriverPNG = GetGDALDriverManager()->GetDriverByName("PNG");
-
 
     //create temp raster file path by appending "_yyyyMMddhhmmss" to the input raster file name
     QDateTime dtCurrent = QDateTime::currentDateTime();
@@ -30,10 +48,6 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
 
     //get source data from input raster
     pOldDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
-//    nRows = pOldDS->GetRasterBand(1)->GetYSize();
-//    nCols = pOldDS->GetRasterBand(1)->GetXSize();
-//    noData = pOldDS->GetRasterBand(1)->GetNoDataValue();
-
     double transform[6];
     int nCols = GetCols();
     int nRows = GetRows();
@@ -221,16 +235,19 @@ int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality
 {
     QImage image = QImage(QString::fromUtf8(inputImage));
 
-    //determine if height or width is greater and rescale
-    if (image.height() > image.width())
+    // -1 disables scaling. So should zero.
+    if (nLongLength > 0)
     {
-        image = image.scaledToHeight(nLongLength, Qt::SmoothTransformation);
+        //determine if height or width is greater and rescale
+        if (image.height() > image.width())
+        {
+            image = image.scaledToHeight(nLongLength, Qt::SmoothTransformation);
+        }
+        else
+        {
+            image = image.scaledToWidth(nLongLength, Qt::SmoothTransformation);
+        }
     }
-    else
-    {
-        image = image.scaledToWidth(nLongLength, Qt::SmoothTransformation);
-    }
-
     //save and compress the image
     image.save(QString::fromUtf8(inputImage), 0, nQuality);
 
@@ -242,21 +259,21 @@ Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
     QString sStyle(psStyle);
 
     if (QString::compare(sStyle , "DEM", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_DEM;
+        return GSS_DEM;
     else if (QString::compare(sStyle , "DoD", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_DoD;
+        return GSS_DoD;
     else if (QString::compare(sStyle , "Error", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_Error;
+        return GSS_Error;
     else if (QString::compare(sStyle , "HillShade", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_Hlsd;
+        return GSS_Hlsd;
     else if (QString::compare(sStyle , "PointDensity", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_PtDens;
+        return GSS_PtDens;
     else if (QString::compare(sStyle , "SlopeDeg", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_SlopeDeg;
+        return GSS_SlopeDeg;
     else if (QString::compare(sStyle , "SlopePC", Qt::CaseInsensitive) == 0)
-        return Raster_SymbologyStyle::GSS_SlopePer;
+        return GSS_SlopePer;
     else
-        return Raster_SymbologyStyle::GSS_Unknown;
+        return GSS_Unknown;
 
 }
 

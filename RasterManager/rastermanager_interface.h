@@ -50,6 +50,10 @@ enum RasterManagerOutputCodes {
     , RM_BASIC_MATH_SQRT = 20
     , RM_BASIC_MATH_THRESHOLD_PROP_ERROR = 21
 
+    , RM_PNG_QUALITY = 22
+    , RM_PNG_TRANSPARENCY = 23
+    , RM_PNG_LONG_AXIS =24
+
     , OTHER_ERROR = 999
 };
 
