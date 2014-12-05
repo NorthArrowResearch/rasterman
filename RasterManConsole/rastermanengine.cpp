@@ -70,6 +70,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "Mask", Qt::CaseInsensitive) == 0)
             eResult = Mask(argc, argv);
 
+        else if (QString::compare(sCommand, "PNG", Qt::CaseInsensitive) == 0)
+            eResult = PNG(argc, argv);
+
         else
             bRecognizedCommand = false;
 
@@ -102,6 +105,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n";
         std::cout << "\n    hillshade       Create a hillshade raster.";
         std::cout << "\n    slope           Create a slope raster.";
+        std::cout << "\n    png             Create a PNG image copy of a raster.";
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n ";
@@ -536,7 +540,7 @@ int RasterManEngine::Hillshade(int argc, char * argv[])
     {
         std::cout << "\n Create Hillshade:";
         std::cout << "\n    Syntax: rasterman hillshade <raster_file_path> <output_file_path>";
-        std::cout << "\n   Command: bilinear";
+        std::cout << "\n   Command: hillshade";
         std::cout << "\n";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
@@ -554,6 +558,38 @@ int RasterManEngine::Hillshade(int argc, char * argv[])
     return eResult;
 }
 
+int RasterManEngine::PNG(int argc, char * argv[])
+{
+    if (argc != 8)
+    {
+        std::cout << "\n Create a PNG Image File:";
+        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path>";
+        std::cout << "\n   Command: PNG";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
+        std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
+        std::cout << "\n             Quality: Image quality integer from 1 to 100. (100 is highest quality.)";
+        std::cout << "\n    Long Axis Length: Number of pixels on the longer of the width or height.";
+        std::cout << "\n        Transparency: Transparency from 0 to 100. 0 is solid and 100 is transparent.";
+        std::cout << "\n         Raster Type: Known raster type. Leave blank for gray scale PNG image.";
+        std::cout << "\n";
+        return PROCESS_OK;
+    }
+
+    CheckFile(argc, argv, 2, true);
+    CheckFile(argc, argv, 3, false);
+
+    int nQuality = GetInteger(argc, argv,4);
+    int nLongLength = GetInteger(argc,argv, 5);
+    int nTransparency = GetInteger(argc, argv, 6);
+    Raster_SymbologyStyle eStyle = RasterManager::GetSymbologyStyleFromString(argv[7]);
+
+    RasterManager::Raster rOriginal(argv[2]);
+    int eResult = rOriginal.PNG(argv[3], nQuality, nLongLength,nTransparency,eStyle);
+
+    return eResult;
+}
 
 int RasterManEngine::CSVToRaster(int argc, char * argv[])
 {

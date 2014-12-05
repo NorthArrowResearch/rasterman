@@ -102,6 +102,13 @@ private:
     int Mask(int argc, char *argv[]);
 
     /**
+     * @brief Mask
+     * @param argc
+     * @param argv
+     */
+    int PNG(int argc, char *argv[]);
+
+    /**
      * @brief CheckFile
      * @param sFilename
      * @param bMustExist

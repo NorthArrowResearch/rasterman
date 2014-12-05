@@ -11,6 +11,18 @@ class GDALRasterBand;
 
 namespace RasterManager {
 
+
+enum Raster_SymbologyStyle{
+    GSS_DEM,
+    GSS_DoD,
+    GSS_Error,
+    GSS_Hlsd,
+    GSS_PtDens,
+    GSS_SlopeDeg,
+    GSS_SlopePer,
+    GSS_Unknown
+};
+
 /**
  * @brief Represents a [GDAL](http://www.gdal.org/) compatible raster on disk
  *
@@ -219,6 +231,8 @@ public:
      */
     int Slope(const char *psOutputSlope, int nSlpType);
 
+    int PNG(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
+
 protected:
 
     /**
@@ -274,6 +288,10 @@ private:
     int ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
   };
 
+// Support methods for PNG creation
+int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency);
+int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
+DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
 }
 
 #endif // RASTER_H

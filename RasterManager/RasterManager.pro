@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       -= core gui
+QT       += core
+QT       += widgets
+QT       -= gui
 
 VERSION = 6.1.3
 TARGET = RasterManager
@@ -25,7 +27,8 @@ SOURCES += \
     extentrectangle.cpp \
     rastermeta.cpp \
     raster_hillshade.cpp \
-    raster_slope.cpp
+    raster_slope.cpp \
+    raster_png.cpp
 
 HEADERS +=\
     rastermanager_global.h \
