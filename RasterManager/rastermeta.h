@@ -65,7 +65,7 @@ public:
      * @brief SetGDALDataType
      * @param fDataType
      */
-    inline void SetGDALDataType(GDALDataType fDataType);
+    void SetGDALDataType(GDALDataType fDataType);
 
     /**
      * @brief IsOthogonal

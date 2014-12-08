@@ -20,7 +20,7 @@ enum Raster_SymbologyStyle{
     GSS_PtDens,
     GSS_SlopeDeg,
     GSS_SlopePer,
-    GSS_Unknown
+    GSS_Unknown, // This one is for when the user doesn't enter it.
 };
 
 /**

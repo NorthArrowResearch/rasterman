@@ -560,21 +560,27 @@ int RasterManEngine::Hillshade(int argc, char * argv[])
 
 int RasterManEngine::PNG(int argc, char * argv[])
 {
-    if (argc != 8)
-    {
+    int eResult = PROCESS_OK;
+    Raster_SymbologyStyle eStyle = GSS_Unknown;
+
+    switch (argc) {
+    case 7: break;
+    case 8: eStyle = RasterManager::GetSymbologyStyleFromString(argv[7]); break;
+    default:
         std::cout << "\n Create a PNG Image File:";
-        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path>";
+        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <transparency> [<raster_type>]";
         std::cout << "\n   Command: PNG";
         std::cout << "\n";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
         std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
-        std::cout << "\n             Quality: Image quality integer from 1 to 100. (100 is highest quality.)";
-        std::cout << "\n    Long Axis Length: Number of pixels on the longer of the width or height.";
-        std::cout << "\n        Transparency: Transparency from 0 to 100. 0 is solid and 100 is transparent.";
-        std::cout << "\n         Raster Type: Known raster type. Leave blank for gray scale PNG image.";
+        std::cout << "\n             quality: Image quality integer from 1 to 100. (100 is highest quality.)";
+        std::cout << "\n           long_axis: Number of pixels on the longer of the width or height.";
+        std::cout << "\n        transparency: Transparency from 0 to 100. 0 is solid and 100 is transparent.";
+        std::cout << "\n         raster_type: Known raster type. Leave blank for gray scale PNG image.";
         std::cout << "\n";
-        return PROCESS_OK;
+        return eResult;
+        break;
     }
 
     CheckFile(argc, argv, 2, true);
@@ -583,10 +589,9 @@ int RasterManEngine::PNG(int argc, char * argv[])
     int nQuality = GetInteger(argc, argv,4);
     int nLongLength = GetInteger(argc,argv, 5);
     int nTransparency = GetInteger(argc, argv, 6);
-    Raster_SymbologyStyle eStyle = RasterManager::GetSymbologyStyleFromString(argv[7]);
 
     RasterManager::Raster rOriginal(argv[2]);
-    int eResult = rOriginal.PNG(argv[3], nQuality, nLongLength,nTransparency,eStyle);
+    eResult = rOriginal.PNG(argv[3], nQuality, nLongLength, nTransparency, eStyle);
 
     return eResult;
 }
