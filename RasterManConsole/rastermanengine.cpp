@@ -576,7 +576,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
         std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
         std::cout << "\n             quality: Image quality integer from 1 to 100. (100 is highest quality.)";
         std::cout << "\n           long_axis: Number of pixels on the longer of the width or height.";
-        std::cout << "\n        transparency: Transparency from 0 to 100. 0 is solid and 100 is transparent.";
+        std::cout << "\n             opacity: png opacity from 0 to 100. 100 is solid and 0 is transparent.";
         std::cout << "\n         raster_type: Known raster type. Leave blank for gray scale PNG image.";
         std::cout << "\n";
         return eResult;

@@ -60,8 +60,8 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     getColorTable(colorTable, style, nTransparency);
 
     //allocate memory for reading and writing datasets
-    float *oldRow = (float*) CPLMalloc(sizeof(float)*GetCols());
-    unsigned char *newRow = (unsigned char*) CPLMalloc(sizeof(int)*GetCols());
+    double * oldRow = (double*) CPLMalloc(sizeof(double)*GetCols());
+    int * newRow = (int*) CPLMalloc(sizeof(int)*GetCols());
 
     if (style == GSS_DEM || style == GSS_Unknown)
     {
@@ -80,7 +80,7 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
 
         for (int i=0; i< GetRows(); i++)
         {
-            pOldDS->GetRasterBand(1)->RasterIO(GF_Read, 0, i, nCols, 1, oldRow, nCols, 1, GDT_Float32, 0, 0);
+            pOldDS->GetRasterBand(1)->RasterIO(GF_Read, 0, i, nCols, 1, oldRow, nCols, 1, GDT_Float64, 0, 0);
             for (int j=0; j< GetCols(); j++)
             {
                 if (oldRow[j] == noData)
