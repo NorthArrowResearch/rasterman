@@ -66,6 +66,8 @@ int Raster::Slope(const char *psOutputSlope, int nSlpType){
         pSlopeDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,GetCols(),1,fSlope,GetCols(),1,GDT_Float64,0,0);
     }
 
+    Raster::CalculateStats(pSlopeDS->GetRasterBand(1));
+
     //close datasets
     GDALClose(pDemDS);
     GDALClose(pSlopeDS);

@@ -240,7 +240,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
             pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
         }
         CPLFree(pInputLine2);
-        GDALClose(pDS2);
+
 
     }
     else if (dOperator != NULL || iOperation == RM_BASIC_MATH_SQRT){
@@ -302,6 +302,8 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     }
     CPLFree(pInputLine1);
     CPLFree(pOutputLine);
+
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
 
     GDALClose(pDS1);
     GDALClose(pDSOutput);
@@ -381,8 +383,6 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
 
     RasterMeta rmMaskMeta(psMaskRaster);
 
-
-
     /*****************************************************************************************
      * Check that input rasters have the same numbers of rows and columns
      */
@@ -422,12 +422,11 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
     CPLFree(pInputLine);
     CPLFree(pOutputLine);
 
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
+
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
     GDALClose(pDSMask);
-
-    PrintRasterProperties(psOutput);
-
 
     return PROCESS_OK;
 
@@ -516,6 +515,8 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
     CPLFree(pInputLine1);
     CPLFree(pInputLine2);
     CPLFree(pOutputLine);
+
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
 
     GDALClose(pDS1);
     GDALClose(pDS2);
@@ -627,6 +628,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
      * Now Close everything and clean it all up
      */
     CPLFree(pOutputLine);
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
     GDALClose(pDSOutput);
 
     PrintRasterProperties(psOutput);
@@ -772,6 +774,9 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
         }
         CPLFree(pOutputLine);
         CPLFree(pInputLine);
+
+        Raster::CalculateStats(pDSOutput->GetRasterBand(1));
+
         GDALClose(pDSOutput);
 
         PrintRasterProperties(sOutputFileName.c_str());

@@ -231,7 +231,22 @@ public:
      */
     int Slope(const char *psOutputSlope, int nSlpType);
 
-    int PNG(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
+    /**
+     * @brief PNG
+     * @param psOutputPNG
+     * @param nQuality
+     * @param nLongLength
+     * @param nTransparency
+     * @param style
+     * @return
+     */
+     int PNG(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
+
+    /**
+     * @brief CloseWithStats finishes and closes a file after running statistics calculations on it.
+     * @param pRasterBand
+     */
+    static void CalculateStats(GDALRasterBand *pRasterBand);
 
 protected:
 
@@ -292,6 +307,8 @@ private:
 int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency);
 int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
 DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
+
+
 }
 
 #endif // RASTER_H

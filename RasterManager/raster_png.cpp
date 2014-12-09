@@ -39,12 +39,13 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
 
     //create temp raster file path by appending "_yyyyMMddhhmmss" to the input raster file name
     QDateTime dtCurrent = QDateTime::currentDateTime();
-    QString name, dirName, tempRaster;
     QFileInfo fileInfo(QString::fromUtf8(m_sFilePath));
-    dirName = fileInfo.absolutePath();
-    name = fileInfo.baseName();
-    name = name + "_" + dtCurrent.toString("yyyyMMddhhmmss") + ".tif";
-    tempRaster = dirName + "/" + name;
+
+    QString sName(fileInfo.baseName() + "_" + dtCurrent.toString("yyyyMMddhhmmss") + ".tif");
+
+    const QByteArray name = sName.toLocal8Bit();
+    const QByteArray dirName(fileInfo.absolutePath().toLocal8Bit());
+    const QByteArray tempRaster(dirName + "/" + name);
 
     //get source data from input raster
     pOldDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
@@ -55,13 +56,13 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     pOldDS->GetGeoTransform(transform);
 
     //create temporary GeoTiff dataset of type byte, this is the dataset to which we will apply the symbology
-    pTempDS = pDriverTiff->Create(tempRaster.toStdString().c_str(), nCols, nRows, 1, GDT_Byte, NULL);
+    pTempDS = pDriverTiff->Create(tempRaster.data(), nCols, nRows, 1, GDT_Byte, NULL);
 
     getColorTable(colorTable, style, nTransparency);
 
     //allocate memory for reading and writing datasets
     double * oldRow = (double*) CPLMalloc(sizeof(double)*GetCols());
-    int * newRow = (int*) CPLMalloc(sizeof(int)*GetCols());
+    unsigned char * newRow = (unsigned char*) CPLMalloc(sizeof(int)*GetCols());
 
     if (style == GSS_DEM || style == GSS_Unknown)
     {
@@ -131,6 +132,7 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     }
 
     //add color table to temporary tiff
+    Raster::CalculateStats(pTempDS->GetRasterBand(1));
     pTempDS->GetRasterBand(1)->SetColorInterpretation(GCI_PaletteIndex);
     pTempDS->GetRasterBand(1)->SetColorTable(&colorTable);
 
@@ -144,7 +146,7 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     GDALClose(pPngDS);
 
     //delete temporary tiff
-    pDriverTiff->Delete(tempRaster.toStdString().c_str());
+    pDriverTiff->Delete(tempRaster.data());
 
     //free allocated memory
     CPLFree(oldRow);

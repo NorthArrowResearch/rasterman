@@ -306,8 +306,10 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
 
         }
     }
-    inputCSVFile.close();
 
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
+
+    inputCSVFile.close();
     GDALClose(pDSOutput);
 
     PrintRasterProperties(psOutput);
@@ -517,6 +519,8 @@ int  Raster::Copy(const char *pOutputRaster,
     CPLFree(pInputLine);
     CPLFree(pOutputLine);
 
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
+
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
 
@@ -610,14 +614,21 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     ReSampleRaster(pRBInput, pRBOutput, fNewCellSize, fNewLeft, fNewTop, nNewRows, nNewCols);
 
+    Raster::CalculateStats(pDSOutput->GetRasterBand(1));
+
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
+
     std::cout << "\n\n Input Raster: --------------------\n";
     PrintRasterProperties(m_sFilePath);
     std::cout << "\n\n Output Raster: --------------------\n";
     PrintRasterProperties(pOutputRaster);
 
     return PROCESS_OK;
+}
+
+void Raster::CalculateStats(GDALRasterBand * pRasterBand){
+    pRasterBand->ComputeStatistics(0, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 }
