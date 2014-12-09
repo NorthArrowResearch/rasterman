@@ -13,14 +13,14 @@ namespace RasterManager {
 
 
 enum Raster_SymbologyStyle{
-    GSS_DEM,
-    GSS_DoD,
-    GSS_Error,
-    GSS_Hlsd,
-    GSS_PtDens,
-    GSS_SlopeDeg,
-    GSS_SlopePer,
-    GSS_Unknown, // This one is for when the user doesn't enter it.
+    GSS_DEM      = 1,  // DEM
+    GSS_DoD      = 2,  // DoD
+    GSS_Error    = 3,  // Error
+    GSS_Hlsd     = 4,  // HillShade
+    GSS_PtDens   = 5,  // PointDensity
+    GSS_SlopeDeg = 6,  // SlopeDeg
+    GSS_SlopePer = 7,  // SlopePC
+    GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
 };
 
 /**

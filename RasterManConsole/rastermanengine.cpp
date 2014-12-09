@@ -577,7 +577,9 @@ int RasterManEngine::PNG(int argc, char * argv[])
         std::cout << "\n             quality: Image quality integer from 1 to 100. (100 is highest quality.)";
         std::cout << "\n           long_axis: Number of pixels on the longer of the width or height.";
         std::cout << "\n             opacity: png opacity from 0 to 100. 100 is solid and 0 is transparent.";
-        std::cout << "\n         raster_type: Known raster type. Leave blank for gray scale PNG image.";
+        std::cout << "\n         raster_type: Known raster type. Specify to apply a color gradient.";
+        std::cout << "\n                      Leave blank for gray scale PNG image.";
+        std::cout << "\n                      Valid Options: DEM, DoD, Error, HillShade, PointDensity, SlopeDeg, SlopePC";
         std::cout << "\n";
         return eResult;
         break;
