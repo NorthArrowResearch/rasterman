@@ -1036,7 +1036,10 @@ extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
         return "Invalid image quality.";
 
     case RM_PNG_TRANSPARENCY:
-        return "Invalid PNG transparency."
+        return "Invalid PNG transparency.";
+
+    case RM_PNG_LONG_AXIS:
+            return "Invalid Long Axis specified.";
 
     default:
         std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((long long)eErrorCode);
