@@ -158,9 +158,8 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     //GDALDestroyColorTable(&colorTable);
 
     //resize and compress the output PNG
-   resizeAndCompressImage(outputPNG, nLongLength, nQuality);
+   return resizeAndCompressImage(outputPNG, nLongLength, nQuality);
 
-    return 0;
 }
 
 int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency)
@@ -235,25 +234,29 @@ int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int n
 
 int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality)
 {
-    QImage image = QImage(QString::fromUtf8(inputImage));
+    QString sInputImagePath(inputImage);
+    QImage input = QImage(sInputImagePath);
 
     // -1 disables scaling. So should zero.
     if (nLongLength > 0)
     {
         //determine if height or width is greater and rescale
-        if (image.height() > image.width())
+        if (input.height() > input.width())
         {
-            image = image.scaledToHeight(nLongLength, Qt::SmoothTransformation);
+            input = input.scaledToHeight(nLongLength, Qt::SmoothTransformation);
         }
         else
         {
-            image = image.scaledToWidth(nLongLength, Qt::SmoothTransformation);
+            input = input.scaledToWidth(nLongLength, Qt::SmoothTransformation);
         }
     }
+    else {
+        return RM_PNG_LONG_AXIS;
+    }
     //save and compress the image
-    image.save(QString::fromUtf8(inputImage), 0, nQuality);
+    input.save(sInputImagePath, 0, nQuality);
 
-    return 0;
+    return PROCESS_OK;
 }
 
 Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
