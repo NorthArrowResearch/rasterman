@@ -1,5 +1,47 @@
 --------------------------------
 
+## 6.1.3
+
+### New Features
+
+* png raster -> png support. 
+* Operations which create rasters now set max, min before closing the file.
+* New Functions: `IsConcurrent` and `MakeConcurrent`
+* More correct POSIX error reporting on the command line.
+
+### Fixes
+
+* Moved basic math enumerations. This should be noted for any future GCD-addon release.
+* More error codes added.
+* A few more memory leaks caught and squashed. Dr. Memory now offers a clean bill of health.
+
+### Notes
+
+This release was mainly aimed at Ubuntu 12.04 64-bit and done mainly so that we could include a raster-to-png converter.
+
+**Note:** In addition to the list of dependencies (in windows) we've added `Qt5Gui.dll`
+
+The complete list of dependencies is as follows:
+
+* `gdal110.dll`, 
+* `icudt52.dll`, 
+* `icuin52.dll`
+* `icuuc52.dll`
+* `Qt5Core.dll`
+* `Qt5Gui.dll`
+* `Qt5Xml.dll`
+
+--------------------------------
+
+## 6.1.2
+
+### Fixes
+
+* A number of memory errors were identified and crushed. These fixes offer a vast improvement to the stability of our tool set.
+* A number of cleanups and standardizations (also perfectly cromulent verbifications) were added to make the command line a nicer place to play.
+
+--------------------------------
+
 ## 6.1.1
 
 ### New Features
