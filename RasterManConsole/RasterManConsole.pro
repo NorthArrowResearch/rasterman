@@ -9,7 +9,7 @@ QT       += xml
 
 QT       -= gui
 
-VERSION = 6.1.3
+VERSION = 6.1.4
 TARGET = rasterman
 
 CONFIG += console
