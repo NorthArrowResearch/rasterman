@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "rastermanengine.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,12 +25,16 @@ int main(int argc, char *argv[])
         }
         exit (EXIT_SUCCESS);
     }
-    catch (std::exception& e)
+    catch (RasterManager::RasterManagerException & e)
     {
-        std::cerr <<"Error: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.GetReturnMsgAsString().toStdString() << std::endl;
         exit (EXIT_FAILURE);
     }
-
+    catch (std::exception & e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        exit (EXIT_FAILURE);
+    }
     //return a.exec();
     qApp->quit();
 }

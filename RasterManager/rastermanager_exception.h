@@ -60,16 +60,16 @@ public:
         switch (eErrorCode)
         {
         case PROCESS_OK:
-            return "process completed successfully.";
+            return "process completed successfully";
 
         case INPUT_FILE_ERROR:
-            return "input file error.";
+            return "input file error";
 
         case INPUT_FILE_TRANSFORM_ERROR:
-            return "input raster map projection error.";
+            return "input raster map projection error";
 
         case OUTPUT_FILE_MISSING:
-            return "input raster file is missing or cannot be found.";
+            return "input raster file is missing or cannot be found";
 
         case  OUTPUT_FILE_ERROR:
             return "output file error";
@@ -78,43 +78,43 @@ public:
             return "NoData error on output raster";
 
         case  OUTPUT_FILE_EXT_ERROR:
-            return "Output raster file extension error.";
+            return "Output raster file extension error";
 
         case OUTPUT_UNHANDLED_DRIVER:
-            return "Unhandled output raster type.";
+            return "Unhandled output raster type";
 
         case CELL_SIZE_ERROR:
-            return "Cell size error.";
+            return "Cell size error";
 
         case LEFT_ERROR:
-            return "Invalid raster left coordinate.";
+            return "Invalid raster left coordinate";
 
         case TOP_ERROR:
-            return "Invalid raster top coordinate.";
+            return "Invalid raster top coordinate";
 
         case ROWS_ERROR:
-            return "Invalid raster number of rows.";
+            return "Invalid raster number of rows";
 
         case COLS_ERROR:
-            return "Invalid raster number of columns.";
+            return "Invalid raster number of columns";
 
         case NO_OPERATION_SPECIFIED:
-            return "No operation specified.";
+            return "No operation specified";
 
         case MISSING_ARGUMENT:
             return "Missing argument";
 
         case OTHER_ERROR:
-            return "Unspecified error.";
+            return "Unspecified error";
 
         case RM_PNG_QUALITY:
-            return "Invalid image quality.";
+            return "Invalid image quality";
 
         case RM_PNG_TRANSPARENCY:
-            return "Invalid PNG transparency.";
+            return "Invalid PNG transparency";
 
         case RM_PNG_LONG_AXIS:
-            return "Invalid Long Axis specified.";
+            return "Invalid Long Axis specified";
 
         case ARGUMENT_VALIDATION:
             return "Argument Validation Error";
