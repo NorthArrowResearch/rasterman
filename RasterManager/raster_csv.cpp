@@ -3,6 +3,7 @@
 #include "gdal_priv.h"
 #include "raster.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "gdalgrid.h"
 #include "helpers.h"
 
@@ -70,7 +71,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
     std::ifstream inputCSVFile(sCSVSourcePath);
     if (!inputCSVFile)
     {
-        throw std::runtime_error("ERROR: couldn't open csv file.");
+        throw RasterManagerException(INPUT_FILE_ERROR, "Couldn't open csv file.");
     }
 
     std::string unused;
@@ -123,19 +124,16 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                 else{
                     // Basic checking to make sure we have parameters
                     if (xcol == -1){
-                        char sErr [128];
-                        sprintf(sErr, "X Field '%s' not found", sXField);
-                        throw std::runtime_error(sErr);
+                        QString sErr = QString("X Field '%1' not found").arg(sXField);
+                        throw RasterManagerException(MISSING_ARGUMENT, sErr);
                     }
                     else if (ycol == -1){
-                        char sErr [128];
-                        sprintf(sErr, "Y Column '%s' not found", sYField);
-                        throw std::runtime_error(sErr);
+                        QString sErr = QString("Y Column '%1' not found").arg(sYField);
+                        throw RasterManagerException(MISSING_ARGUMENT, sErr);
                     }
                     else if (zcol == -1){
-                        char sErr [128];
-                        sprintf(sErr, "Data Column '%s' not found", sDataField);
-                        throw std::runtime_error(sErr);
+                        QString sErr = QString("Data Column '%1' not found").arg(sDataField);
+                        throw RasterManagerException(MISSING_ARGUMENT, sErr);
                     }
 
                     // Assign our CSV values to an appropriate place in the raster

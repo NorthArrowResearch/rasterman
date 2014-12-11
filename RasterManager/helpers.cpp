@@ -1,6 +1,7 @@
 #define MY_DLL_EXPORT
 
 #include "gdal_priv.h"
+#include "rastermanager_exception.h"
 #include <QFile>
 #include <QDir>
 
@@ -16,14 +17,14 @@ void CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments
     if (sFile.isNull() || sFile.isEmpty())
-        throw std::runtime_error("Command line missing a file path.");
+        throw RasterManagerException(PATH_ERROR, "Command line missing a file path.");
     else
     {
         // Check if the directory the file exists in is actually there
         QDir sFilePath = QFileInfo(sFile).absoluteDir();
         if (!sFilePath.exists()){
             QString sErr = "The directory of the file you specified does not exist: " + sFilePath.absolutePath();
-            throw  std::runtime_error(sErr.toStdString());
+            throw  RasterManagerException(PATH_ERROR, sErr);
         }
 
         sFile = sFile.trimmed();
@@ -32,13 +33,13 @@ void CheckFile(QString sFile, bool bMustExist)
         {
             if (!QFile::exists(sFile)){
                 QString sErr = "The specified input file does not exist: " + sFile;
-                throw  std::runtime_error(sErr.toStdString());
+                throw  RasterManagerException(INPUT_FILE_ERROR, sErr);
             }
         }
         else {
             if (QFile::exists(sFile)){
                 QString sErr = "The specified output file already exists." + sFile;
-                throw  std::runtime_error(sErr.toStdString());
+                throw  RasterManagerException(INPUT_FILE_ERROR, sErr);
             }
         }
     }

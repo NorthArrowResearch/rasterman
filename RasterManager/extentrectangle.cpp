@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "extentrectangle.h"
+#include "rastermanager_exception.h"
 #include "helpers.h"
 #include "gdal.h"
 #include "gdal_priv.h"
@@ -49,7 +50,7 @@ ExtentRectangle::ExtentRectangle(const char * psFilePath)
     // Check Valid Data Set
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS == NULL)
-        throw std::runtime_error(CPLGetLastErrorMsg());
+        throw RasterManagerException(INPUT_FILE_NOT_VALID, CPLGetLastErrorMsg());
 
     GDALRasterBand * pBand = pDS->GetRasterBand(1);
 

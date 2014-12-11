@@ -2,6 +2,7 @@
 
 #include "raster.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "gdal_priv.h"
 #include "helpers.h"
 #include <limits>
@@ -111,7 +112,7 @@ int Raster::Hillshade(const char * psOutputHillshade){
     fElev = NULL;
     hlsd = NULL;
 
-    return 0;
+    return PROCESS_OK;
 }
 
 }
