@@ -69,7 +69,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
     if (pDSOutput == NULL)
         return NULL;
 
-    if (pTemplateRastermeta->GetNoDataValue() != NULL)
+    if (pTemplateRastermeta->HasNoDataValue())
     {
         CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(pTemplateRastermeta->GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)
@@ -188,7 +188,7 @@ extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaste
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
-    return MakeConcurrent(csRasters, csRasterOutputs);
+    return Raster::MakeRasterConcurrent(csRasters, csRasterOutputs);
 }
 
 /*******************************************************************************************************

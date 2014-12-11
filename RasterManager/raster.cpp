@@ -227,7 +227,7 @@ int  Raster::Copy(const char *pOutputRaster,
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
-    if (GetNoDataValue() != NULL)
+    if (HasNoDataValue())
     {
         CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(GetNoDataValue());
         if (er == CE_Failure || er == CE_Fatal)

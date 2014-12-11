@@ -19,7 +19,7 @@ int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
 }
 
 
-int Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs){
+int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOutputs){
     // Loop through the strings, delimited by ;
     std::string sInPutFileName,
             sOutputFileName,
