@@ -130,56 +130,99 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                                  const int iOperation,
                                  const char * psOutput)
 {
-    return Raster::RasterMath(psRaster1,
-               psRaster2,
-               dOperator,
-               iOperation,
-               psOutput);
-
-    return PROCESS_OK;
+    try {
+        return Raster::RasterMath(psRaster1,
+                   psRaster2,
+                   dOperator,
+                   iOperation,
+                   psOutput);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 }
 
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
-    Raster pDemRaster (psInputRaster);
-    return pDemRaster.Hillshade(psOutputHillshade);
+    try {
+        Raster pDemRaster (psInputRaster);
+        return pDemRaster.Hillshade(psOutputHillshade);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
 }
 
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
-    Raster pDemRaster (psInputRaster);
-    return pDemRaster.Slope(psOutputSlope, nSlopeType);
+    try{
+        Raster pDemRaster (psInputRaster);
+        return pDemRaster.Slope(psOutputSlope, nSlopeType);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
 }
 
 extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
-    return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
+    try{
+        return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 }
 
 extern "C" DLL_API int RootSumSquares(const char * psRaster1,
                                       const char * psRaster2,
                                       const char * psOutput)
 {
-    return Raster::RasterRootSumSquares(psRaster1, psRaster2, psOutput);
+    try{
+        return Raster::RasterRootSumSquares(psRaster1, psRaster2, psOutput);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
 }
 
 
 extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
-    return Raster::RasterMosaic(csRasters, psOutput);
+    try{
+        return Raster::RasterMosaic(csRasters, psOutput);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
 }
 
-extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2){
+extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2)
+{
+    try{
+        RasterManager::RasterMeta rmRaster1(csRaster1);
+        RasterManager::RasterMeta rmRaster2(csRaster2);
 
-    RasterManager::RasterMeta rmRaster1(csRaster1);
-    RasterManager::RasterMeta rmRaster2(csRaster2);
+        return rmRaster1.IsConcurrent(&rmRaster2);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 
-    return rmRaster1.IsConcurrent(&rmRaster2);
 }
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
-    return Raster::MakeRasterConcurrent(csRasters, csRasterOutputs);
+    try{
+        return Raster::MakeRasterConcurrent(csRasters, csRasterOutputs);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 }
 
 /*******************************************************************************************************
@@ -192,99 +235,105 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType)
 {
-
-    RasterManager::Raster r(ppszRaster);
-    fCellHeight = r.GetCellHeight();
-    fCellWidth = r.GetCellWidth();
-    fLeft = r.GetLeft();
-    fTop = r.GetTop();
-    nRows = r.GetRows();
-    nCols = r.GetCols();
-    fNoData = r.GetNoDataValue();
-    bHasNoData = (int) r.HasNoDataValue();
-    nDataType = (int) r.GetGDALDataType();
-
-
+    try{
+        RasterManager::Raster r(ppszRaster);
+        fCellHeight = r.GetCellHeight();
+        fCellWidth = r.GetCellWidth();
+        fLeft = r.GetLeft();
+        fTop = r.GetTop();
+        nRows = r.GetRows();
+        nCols = r.GetCols();
+        fNoData = r.GetNoDataValue();
+        bHasNoData = (int) r.HasNoDataValue();
+        nDataType = (int) r.GetGDALDataType();
+    }
+    catch (RasterManagerException e){
+        // e.GetErrorCode();
+    }
 }
-
 
 extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
 {
-    double fCellWidth = 0;
-    double fCellHeight = 0;
-    double fLeft = 0;
-    double fTop = 0;
-    double fBottom = 0;
-    double fRight = 0;
-    int nRows = 0;
-    int nCols = 0;
-    double fNoData = 0;
-    double dRasterMax = 0;
-    double dRasterMin = 0;
-    int bHasNoData = 0;
-    int orthogonal = 0;
-    int nDataType;
+
+    try{
+        double fCellWidth = 0;
+        double fCellHeight = 0;
+        double fLeft = 0;
+        double fTop = 0;
+        double fBottom = 0;
+        double fRight = 0;
+        int nRows = 0;
+        int nCols = 0;
+        double fNoData = 0;
+        double dRasterMax = 0;
+        double dRasterMin = 0;
+        int bHasNoData = 0;
+        int orthogonal = 0;
+        int nDataType;
 
 
 
-    RasterManager::Raster r(ppszRaster);
-    std::string projection = r.GetProjectionRef();
+        RasterManager::Raster r(ppszRaster);
+        std::string projection = r.GetProjectionRef();
 
-    fCellHeight = r.GetCellHeight();
-    fCellWidth = r.GetCellWidth();
-    fLeft = r.GetLeft();
-    fRight = r.GetRight();
-    fTop = r.GetTop();
-    fBottom = r.GetBottom();
-    nRows = r.GetRows();
-    nCols = r.GetCols();
-    dRasterMax = r.GetMaximum();
-    dRasterMin = r.GetMinimum();
-    orthogonal = r.IsOthogonal();
-    fNoData = r.GetNoDataValue();
-    bHasNoData = (int) r.HasNoDataValue();
-    nDataType = (int) r.GetGDALDataType();
+        fCellHeight = r.GetCellHeight();
+        fCellWidth = r.GetCellWidth();
+        fLeft = r.GetLeft();
+        fRight = r.GetRight();
+        fTop = r.GetTop();
+        fBottom = r.GetBottom();
+        nRows = r.GetRows();
+        nCols = r.GetCols();
+        dRasterMax = r.GetMaximum();
+        dRasterMin = r.GetMinimum();
+        orthogonal = r.IsOthogonal();
+        fNoData = r.GetNoDataValue();
+        bHasNoData = (int) r.HasNoDataValue();
+        nDataType = (int) r.GetGDALDataType();
 
 
-    std::cout << "\n     Raster: " << ppszRaster;
-    std::printf( "\n       Left: %.8lf      Right: %.8lf", fLeft, fRight);
-    std::printf( "\n        Top: %.8lf     Bottom: %.8lf", fTop, fBottom);
-    std::cout << "\n       Rows: " << nRows << "    Cols: " << nCols;
-    std::cout << "\n      ";
-    std::printf( "\n     Cell Width: %.1lf", fCellWidth);
-    std::printf( "\n     Min: %.3lf     Max: %.3lf", dRasterMin, dRasterMax);
-    if (orthogonal == 1 ){
-        std::printf( "\n     Orthogonal: True");
+        std::cout << "\n     Raster: " << ppszRaster;
+        std::printf( "\n       Left: %.8lf      Right: %.8lf", fLeft, fRight);
+        std::printf( "\n        Top: %.8lf     Bottom: %.8lf", fTop, fBottom);
+        std::cout << "\n       Rows: " << nRows << "    Cols: " << nCols;
+        std::cout << "\n      ";
+        std::printf( "\n     Cell Width: %.1lf", fCellWidth);
+        std::printf( "\n     Min: %.3lf     Max: %.3lf", dRasterMin, dRasterMax);
+        if (orthogonal == 1 ){
+            std::printf( "\n     Orthogonal: True");
+        }
+        else {
+            std::printf( "\n     Orthogonal: False");
+        }
+        std::cout << "\n";
+        switch (nDataType)
+        {
+        // Note 0 = unknown;
+        case  1: std::cout << "\n      Data Type: 1, GDT_Byte, Eight bit unsigned integer"; break;
+        case  2: std::cout << "\n      Data Type: 2, GDT_UInt16, Sixteen bit unsigned integer"; break;
+        case  3: std::cout << "\n      Data Type: 3, GDT_Int16, Sixteen bit signed integer"; break;
+        case  4: std::cout << "\n      Data Type: 4, GDT_UInt32, Thirty two bit unsigned integer"; break;
+        case  5: std::cout << "\n      Data Type: 5, GDT_Int32, Thirty two bit signed integer"; break;
+        case  6: std::cout << "\n      Data Type: 6, GDT_Float32, Thirty two bit floating point"; break;
+        case  7: std::cout << "\n      Data Type: 7, GDT_Float64, Sixty four bit floating point"; break;
+        case  8: std::cout << "\n      Data Type: 8, GDT_CInt16, Complex Int16"; break;
+        case  9: std::cout << "\n      Data Type: 9, GDT_CInt32, Complex Int32"; break;
+        case 10: std::cout << "\n      Data Type: 10, GDT_CFloat32, Complex Float32"; break;
+        case 11: std::cout << "\n      Data Type: 11, GDT_CFloat64, Complex Float64"; break;
+        default: std::cout << "\n      Data Type: Unknown"; break;
+        }
+        if (bHasNoData)
+            std::cout << "\n        No Data: " << fNoData;
+        else
+            std::cout << "\n        No Data: none";
+
+        std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
+        std::cout << "\n ";
+
     }
-    else {
-        std::printf( "\n     Orthogonal: False");
+    catch (RasterManagerException e){
+        //e.GetErrorCode();
     }
-    std::cout << "\n";
-    switch (nDataType)
-    {
-    // Note 0 = unknown;
-    case  1: std::cout << "\n      Data Type: 1, GDT_Byte, Eight bit unsigned integer"; break;
-    case  2: std::cout << "\n      Data Type: 2, GDT_UInt16, Sixteen bit unsigned integer"; break;
-    case  3: std::cout << "\n      Data Type: 3, GDT_Int16, Sixteen bit signed integer"; break;
-    case  4: std::cout << "\n      Data Type: 4, GDT_UInt32, Thirty two bit unsigned integer"; break;
-    case  5: std::cout << "\n      Data Type: 5, GDT_Int32, Thirty two bit signed integer"; break;
-    case  6: std::cout << "\n      Data Type: 6, GDT_Float32, Thirty two bit floating point"; break;
-    case  7: std::cout << "\n      Data Type: 7, GDT_Float64, Sixty four bit floating point"; break;
-    case  8: std::cout << "\n      Data Type: 8, GDT_CInt16, Complex Int16"; break;
-    case  9: std::cout << "\n      Data Type: 9, GDT_CInt32, Complex Int32"; break;
-    case 10: std::cout << "\n      Data Type: 10, GDT_CFloat32, Complex Float32"; break;
-    case 11: std::cout << "\n      Data Type: 11, GDT_CFloat64, Complex Float64"; break;
-    default: std::cout << "\n      Data Type: Unknown"; break;
-    }
-    if (bHasNoData)
-        std::cout << "\n        No Data: " << fNoData;
-    else
-        std::cout << "\n        No Data: none";
-
-    std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
-    std::cout << "\n ";
-
-
 }
 
 extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType)
@@ -304,10 +353,13 @@ extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
                                           double fNewCellSize,
                                           double fLeft, double fTop, int nRows, int nCols)
 {
-
-    RasterManager::Raster ra(ppszOriginalRaster);
-    return ra.Copy(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
-
+    try{
+        RasterManager::Raster ra(ppszOriginalRaster);
+        return ra.Copy(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 }
 
 extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
@@ -315,12 +367,13 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                                       double fNewCellSize,
                                                       double fLeft, double fTop, int nRows, int nCols)
 {
-
-
-    RasterManager::Raster ra(ppszOriginalRaster);
-    return ra.ReSample(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
-
-
+    try{
+        RasterManager::Raster ra(ppszOriginalRaster);
+        return ra.ReSample(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
 }
 
 extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
@@ -401,7 +454,6 @@ extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char 
         return GSS_SlopePer;
     else
         return GSS_Unknown;
-
 }
 
 extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
