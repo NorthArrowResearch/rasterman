@@ -3,6 +3,8 @@
 
 #include "rastermeta.h"
 #include "rastermanager_global.h"
+#include "rastermanager_interface.h"
+#include <QString>
 #include <string>
 
 //class OGRPolygon;
@@ -10,18 +12,6 @@
 class GDALRasterBand;
 
 namespace RasterManager {
-
-
-enum Raster_SymbologyStyle{
-    GSS_DEM      = 1,  // DEM
-    GSS_DoD      = 2,  // DoD
-    GSS_Error    = 3,  // Error
-    GSS_Hlsd     = 4,  // HillShade
-    GSS_PtDens   = 5,  // PointDensity
-    GSS_SlopeDeg = 6,  // SlopeDeg
-    GSS_SlopePer = 7,  // SlopePC
-    GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
-};
 
 /**
  * @brief Represents a [GDAL](http://www.gdal.org/) compatible raster on disk
@@ -59,14 +49,6 @@ public:
      * @return Returns the full, absolute file path to the raster file.
      */
     inline const char * FilePath() const {return m_sFilePath;}
-
-    /**
-     * @brief Prints the basic properties (rows, cols etc) about the raster to the standard output
-     *
-     * Note that the exported RasterProperties() method from the RasterManager library exposes
-     * many of the same raster properties to calling assemblies.
-     */
-    void GetInfo();
 
     /**
      * @brief Copy constructor that creates a new raster object from an existing one.
@@ -111,12 +93,6 @@ public:
      * @param ySize
      */
     void Size(int& xSize, int& ySize);
-
-    /**
-     * @brief HasNoDataValue
-     * @return
-     */
-    inline bool HasNoDataValue() const {return !(hasNoData == 0);}
 
     /**
      * @brief GetMaximum
@@ -232,7 +208,22 @@ public:
     int Slope(const char *psOutputSlope, int nSlpType);
 
     /**
-     * @brief PNG
+     * @brief RasterMath
+     * @param psRaster1
+     * @param psRaster2
+     * @param dOperator
+     * @param iOperation
+     * @param psOutput
+     * @return
+     */
+    static int RasterMath(const char * psRaster1,
+                   const char * psRaster2,
+                   const double dOperator,
+                   const int iOperation,
+                   const char * psOutput);
+
+    /**Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
+     * @brief RastertoPng
      * @param psOutputPNG
      * @param nQuality
      * @param nLongLength
@@ -240,13 +231,15 @@ public:
      * @param style
      * @return
      */
-     int PNG(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
+     int RastertoPng(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
 
-    /**
-     * @brief CloseWithStats finishes and closes a file after running statistics calculations on it.
-     * @param pRasterBand
-     */
-    static void CalculateStats(GDALRasterBand *pRasterBand);
+     /**
+      * @brief MakeConcurrent
+      * @param csRasters
+      * @param csRasterOutputs
+      * @return
+      */
+     int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
 
 protected:
 
@@ -274,16 +267,13 @@ protected:
     void Init(bool bFullImage);
 
 private:
-    char * m_sFilePath; /**< TODO */
-    int xBlockSize; /**< TODO */
-    int yBlockSize; /**< TODO */
-    int hasNoData; /**< TODO */
+    int xBlockSize; /**< TODO: Implement block size optimization for raster ops */
+    int yBlockSize; /**< TODO: Implement block size optimization for raster ops */
+
+    char * m_sFilePath;
 
     double m_dRasterMax;
     double m_dRasterMin;
-
-    double m_fXOrigin; /**< TODO */
-    double m_fYOrigin; /**< TODO */
 
     /* These are the private implementations of the resample and copy raster routines depending on the data size
      * of the raster data values
@@ -301,12 +291,26 @@ private:
      * @return int
      */
     int ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
-  };
 
-// Support methods for PNG creation
-int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency);
-int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
-DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
+    /**
+     * @brief getColorTable
+     * @param colorTable
+     * @param style
+     * @param nTransparency
+     * @return
+     */
+    static int GetColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency);
+
+    /**
+     * @brief resizeAndCompressImage
+     * @param inputImage
+     * @param nLongLength
+     * @param nQuality
+     * @return
+     */
+    static int ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
+
+};
 
 
 }

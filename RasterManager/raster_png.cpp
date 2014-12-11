@@ -1,3 +1,4 @@
+#define MY_DLL_EXPORT
 /*
  * Create a PNG image from a GDAL compatible raster
  *
@@ -7,20 +8,25 @@
 */
 
 #include "raster.h"
+#include "rastermanager_interface.h"
 #include "gdal.h"
 #include "gdal_priv.h"
+#include "helpers.h"
 #include <QtCore>
 #include <QWidget>
 #include <QString>
 
-#include "rastermanager_interface.h"
 
 namespace RasterManager {
 
-int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style)
+int Raster::RastertoPng(const char * outputPNG,
+                        int nQuality,
+                        int nLongLength,
+                        int nTransparency,
+                        Raster_SymbologyStyle style)
 {
     // Input validation
-
+    // ------------------------
     if (nQuality < 0 || nQuality > 100)
         return RM_PNG_QUALITY;
 
@@ -29,6 +35,8 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
 
     if (nLongLength < -1)
         return RM_PNG_LONG_AXIS;
+
+    CheckFile(outputPNG, false);
 
     GDALDataset *pOldDS, *pTempDS, *pPngDS;
     GDALDriver *pDriverTiff, *pDriverPNG;
@@ -58,7 +66,7 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     //create temporary GeoTiff dataset of type byte, this is the dataset to which we will apply the symbology
     pTempDS = pDriverTiff->Create(tempRaster.data(), nCols, nRows, 1, GDT_Byte, NULL);
 
-    getColorTable(colorTable, style, nTransparency);
+    GetColorTable(colorTable, style, nTransparency);
 
     //allocate memory for reading and writing datasets
     double * oldRow = (double*) CPLMalloc(sizeof(double)*GetCols());
@@ -132,7 +140,7 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     }
 
     //add color table to temporary tiff
-    Raster::CalculateStats(pTempDS->GetRasterBand(1));
+    CalculateStats(pTempDS->GetRasterBand(1));
     pTempDS->GetRasterBand(1)->SetColorInterpretation(GCI_PaletteIndex);
     pTempDS->GetRasterBand(1)->SetColorTable(&colorTable);
 
@@ -158,11 +166,11 @@ int Raster::PNG(const char *outputPNG, int nQuality, int nLongLength, int nTrans
     //GDALDestroyColorTable(&colorTable);
 
     //resize and compress the output PNG
-   return resizeAndCompressImage(outputPNG, nLongLength, nQuality);
+   return ResizeAndCompressImage(outputPNG, nLongLength, nQuality);
 
 }
 
-int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency)
+int Raster::GetColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency)
 {
     GDALColorEntry trans;
     trans.c1 = 255, trans.c2 = 255, trans.c3 = 255, trans.c4 = 0;
@@ -232,7 +240,7 @@ int getColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int n
     return 0;
 }
 
-int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality)
+int Raster::ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality)
 {
     QString sInputImagePath(inputImage);
     QImage input = QImage(sInputImagePath);
@@ -257,29 +265,6 @@ int resizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality
     input.save(sInputImagePath, 0, nQuality);
 
     return PROCESS_OK;
-}
-
-Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
-{
-    QString sStyle(psStyle);
-
-    if (QString::compare(sStyle , "DEM", Qt::CaseInsensitive) == 0)
-        return GSS_DEM;
-    else if (QString::compare(sStyle , "DoD", Qt::CaseInsensitive) == 0)
-        return GSS_DoD;
-    else if (QString::compare(sStyle , "Error", Qt::CaseInsensitive) == 0)
-        return GSS_Error;
-    else if (QString::compare(sStyle , "HillShade", Qt::CaseInsensitive) == 0)
-        return GSS_Hlsd;
-    else if (QString::compare(sStyle , "PointDensity", Qt::CaseInsensitive) == 0)
-        return GSS_PtDens;
-    else if (QString::compare(sStyle , "SlopeDeg", Qt::CaseInsensitive) == 0)
-        return GSS_SlopeDeg;
-    else if (QString::compare(sStyle , "SlopePC", Qt::CaseInsensitive) == 0)
-        return GSS_SlopePer;
-    else
-        return GSS_Unknown;
-
 }
 
 }

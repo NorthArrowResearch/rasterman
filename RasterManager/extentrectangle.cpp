@@ -7,8 +7,7 @@
 #include <algorithm>
 
 #include "extentrectangle.h"
-#include "rmexception.h"
-
+#include "helpers.h"
 #include "gdal.h"
 #include "gdal_priv.h"
 
@@ -44,10 +43,13 @@ void ExtentRectangle::operator=(ExtentRectangle &source)
 
 ExtentRectangle::ExtentRectangle(const char * psFilePath)
 {
+    // Basic file existence Check.
+    CheckFile(psFilePath, true);
 
+    // Check Valid Data Set
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS == NULL)
-        throw RMException(CPLGetLastErrorMsg());
+        throw std::runtime_error(CPLGetLastErrorMsg());
 
     GDALRasterBand * pBand = pDS->GetRasterBand(1);
 
@@ -145,7 +147,6 @@ double ExtentRectangle::GetCellWidth(){
 double ExtentRectangle::GetCellHeight(){
     return m_GeoTransform[5];
 }
-
 int ExtentRectangle::GetRows(){
     return rows;
 }

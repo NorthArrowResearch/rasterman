@@ -125,8 +125,6 @@ int RasterManEngine::RasterProperties(int argc, char * argv[])
         std::cout << "\n";
         return PROCESS_OK;
     }
-    CheckFile(argc, argv, 2, true);
-
 
     RasterManager::PrintRasterProperties(argv[2]);
     return PROCESS_OK;
@@ -151,9 +149,6 @@ int RasterManEngine::BiLinearResample(int argc, char * argv[])
         std::cout << "\n";
         return PROCESS_OK;
     }
-
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, false);
 
     std::cout << "\n\n --  Bilinear Resampling --";
 
@@ -189,10 +184,6 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-        // Check that the files exist (or not)
-        CheckFile(argc, argv, 2, true);
-        CheckFile(argc, argv, 3, false);
-
         double fLeft, fTop, fCellSize;
         int nRows, nCols;
         GetOutputRasterProperties(fLeft, fTop, nRows, nCols, fCellSize, argc, argv, 4);
@@ -218,9 +209,7 @@ int RasterManEngine::RasterAdd(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    CheckFile(argc, argv, 2, true);
     QString sArg2 = argv[3];
-    CheckFile(argc, argv, 4, false);
 
     int eResult = PROCESS_OK;
 
@@ -228,7 +217,6 @@ int RasterManEngine::RasterAdd(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        CheckFile(argc, argv, 3, true);
         eResult =  RasterManager::BasicMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
@@ -256,10 +244,7 @@ int RasterManEngine::RasterSubtract(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-
-    CheckFile(argc, argv, 2, true);
     QString sArg2 = argv[3];
-    CheckFile(argc, argv, 4, false);
 
     int eResult = PROCESS_OK;
 
@@ -267,7 +252,6 @@ int RasterManEngine::RasterSubtract(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        CheckFile(argc, argv, 3, true);
         eResult =  RasterManager::BasicMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
                 argv[4]);
@@ -295,9 +279,7 @@ int RasterManEngine::RasterDivide(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    CheckFile(argc, argv, 2, true);
     QString sArg2 = argv[3];
-    CheckFile(argc, argv, 4, false);
 
     int eResult = PROCESS_OK;
 
@@ -305,7 +287,6 @@ int RasterManEngine::RasterDivide(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        CheckFile(argc, argv, 3, true);
         eResult =  RasterManager::BasicMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
                 argv[4]);
@@ -334,9 +315,7 @@ int RasterManEngine::RasterMultiply(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    CheckFile(argc, argv, 2, true);
     QString sArg2 = argv[3];
-    CheckFile(argc, argv, 4, false);
 
     int eResult = PROCESS_OK;
 
@@ -344,7 +323,6 @@ int RasterManEngine::RasterMultiply(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        CheckFile(argc, argv, 3, true);
         eResult =  RasterManager::BasicMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
                 argv[4]);
@@ -372,9 +350,7 @@ int RasterManEngine::RasterPower(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    CheckFile(argc, argv, 2, true);
     double dPower = GetDouble(argc, argv, 3);
-    CheckFile(argc, argv, 4, false);
     int eResult = PROCESS_OK;
 
     eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
@@ -394,8 +370,6 @@ int RasterManEngine::RasterSqrt(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, false);
     int eResult = PROCESS_OK;
 
     eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
@@ -418,17 +392,6 @@ int RasterManEngine::Mosaic(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    QString rasterInputs(argv[2]);
-    QStringList inputFileList = rasterInputs.split(";");
-
-    foreach (QString sFilename, inputFileList) {
-        if (sFilename.compare("") != 0){
-            CheckFile(sFilename, true);
-        }
-
-    }
-
-    CheckFile(argc, argv, 3, false);
     int eResult = PROCESS_OK;
 
     eResult = RasterManager::Mosaic(argv[2], argv[3]);
@@ -451,26 +414,6 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-
-    QString rasterInputs(argv[2]);
-    QString rasterOutputs(argv[3]);
-
-    QString delimiterPattern(";");
-
-    QStringList inputFileList = rasterInputs.split(delimiterPattern);
-    QStringList outputFileList = rasterOutputs.split(delimiterPattern);
-
-    foreach (QString sFilename, inputFileList) {
-        if (sFilename.compare("") != 0) {
-            CheckFile(sFilename, true);
-        }
-    }
-    foreach (QString sFilename, outputFileList) {
-        if (sFilename.compare("") != 0){
-            CheckFile(sFilename, false);
-        }
-    }
-
     int eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
 
     return eResult;
@@ -491,10 +434,6 @@ int RasterManEngine::Mask(int argc, char * argv[])
         std::cout << "\n ";
         return PROCESS_OK;
     }
-
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, true);
-    CheckFile(argc, argv, 4, false);
 
     int eResult =  RasterManager::Mask(argv[2],
             argv[3],
@@ -519,9 +458,6 @@ int RasterManEngine::Slope(int argc, char * argv[])
         std::cout << "\n";
         return PROCESS_OK;
     }
-
-    CheckFile(argc, argv, 3, true);
-    CheckFile(argc, argv, 4, false);
 
     int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
     QString sType(argv[2]);
@@ -548,9 +484,6 @@ int RasterManEngine::Hillshade(int argc, char * argv[])
         std::cout << "\n";
         return PROCESS_OK;
     }
-
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, false);
 
     RasterManager::Raster rOriginal(argv[2]);
     int eResult = rOriginal.Hillshade(argv[3]);
@@ -586,15 +519,12 @@ int RasterManEngine::PNG(int argc, char * argv[])
         break;
     }
 
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, false);
-
     int nQuality = GetInteger(argc, argv,4);
     int nLongLength = GetInteger(argc,argv, 5);
     int nTransparency = GetInteger(argc, argv, 6);
 
     RasterManager::Raster rOriginal(argv[2]);
-    eResult = rOriginal.PNG(argv[3], nQuality, nLongLength, nTransparency, eStyle);
+    eResult = rOriginal.RastertoPng(argv[3], nQuality, nLongLength, nTransparency, eStyle);
 
     return eResult;
 }
@@ -632,9 +562,6 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     }
     int eResult = PROCESS_OK;
 
-    CheckFile(argc, argv, 2, true);
-    CheckFile(argc, argv, 3, false);
-
     // Either all
     if (argc == 13){
 
@@ -659,7 +586,6 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     }
     // Otherwise a csv file is used
     else if (argc == 8){
-        CheckFile(argc, argv, 7, true);
         eResult = RasterManager::Raster::CSVtoRaster(argv[2],
                 argv[3],
                 argv[7],
@@ -669,55 +595,6 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     }
 
     return eResult;
-
-}
-
-
-void RasterManEngine::CheckFile(QString sFile, bool bMustExist)
-{
-    // Enough arguments
-    if (sFile.isNull() || sFile.isEmpty())
-        throw std::runtime_error("Command line missing a file path.");
-    else
-    {
-        // Check if the directory the file exists in is actually there
-        QDir sFilePath = QFileInfo(sFile).absoluteDir();
-        if (!sFilePath.exists()){
-            QString sErr = "The directory of the file you specified does not exist: " + sFilePath.absolutePath();
-            throw  std::runtime_error(sErr.toStdString());
-        }
-
-        sFile = sFile.trimmed();
-        sFile = sFile.replace("\"","");
-        if (bMustExist)
-        {
-            if (!QFile::exists(sFile)){
-                QString sErr = "The specified input file does not exist: " + sFile;
-                throw  std::runtime_error(sErr.toStdString());
-            }
-        }
-        else {
-            if (QFile::exists(sFile)){
-                QString sErr = "The specified output file already exists." + sFile;
-                throw  std::runtime_error(sErr.toStdString());
-            }
-        }
-    }
-
-
-}
-
-
-void RasterManEngine::CheckFile(int argc, char * argv[], int nIndex, bool bMustExist)
-{
-
-    if (nIndex < argc)
-    {
-        QString filename = argv[nIndex];
-        CheckFile(filename, bMustExist);
-    }
-    else
-        throw std::runtime_error("Insufficient command line arguments for operation.");
 
 }
 

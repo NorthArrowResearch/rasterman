@@ -1,17 +1,19 @@
+#define MY_DLL_EXPORT
+
 #include "raster.h"
 #include "rastermanager_interface.h"
 #include "gdal_priv.h"
-
+#include "helpers.h"
 #include <limits>
 #include <math.h>
 #include <string>
 
 namespace RasterManager {
 
-int Raster::Slope(const char *psOutputSlope, int nSlpType){
+int Raster::Slope(const char * psOutputSlope, int nSlpType){
 
-    GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
     GDALDataset * pSlopeDS = CreateOutputDS(psOutputSlope, this);
+    GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
 
     const double PI = 3.14159265;
     double dzdx, dzdy, dzxy, riseRun;
@@ -66,7 +68,7 @@ int Raster::Slope(const char *psOutputSlope, int nSlpType){
         pSlopeDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,GetCols(),1,fSlope,GetCols(),1,GDT_Float64,0,0);
     }
 
-    Raster::CalculateStats(pSlopeDS->GetRasterBand(1));
+    CalculateStats(pSlopeDS->GetRasterBand(1));
 
     //close datasets
     GDALClose(pDemDS);
