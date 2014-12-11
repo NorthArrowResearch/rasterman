@@ -62,6 +62,12 @@ public:
     inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
 
     /**
+     * @brief HasNoDataValue
+     * @return
+     */
+    inline bool HasNoDataValue() const {return b_HasNoData;}
+
+    /**
      * @brief SetGDALDataType
      * @param fDataType
      */
@@ -94,6 +100,9 @@ private:
     char * m_psProjection;
 
     double m_fNoDataValue;
+    bool b_HasNoData; // Recall we need this because m_fNoDataValue will be a value of
+                     // lowest possible double if it doesn't read anything from the
+                     // actual raster.
     GDALDataType m_eDataType;
 
 

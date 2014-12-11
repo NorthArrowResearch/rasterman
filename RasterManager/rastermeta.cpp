@@ -80,6 +80,8 @@ void RasterMeta::SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataTy
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
     // Open the original dataset
+    b_HasNoData = true;
+
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS  == NULL)
         throw std::runtime_error("error opening raster file");
@@ -94,9 +96,10 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
     const char * psProjection = pDS->GetProjectionRef();
 
-    if (nSuccess == 0)
+    if (nSuccess == 0){
+        b_HasNoData = false;
         dNoData = DEFAULT_NO_DATA;
-
+    }
     Init(dNoData, psDriver, gdDataType, psProjection);
 
     GDALClose(pDS);
@@ -111,16 +114,6 @@ int RasterMeta::IsOthogonal(){
         return true;
     }
     return false;
-}
-
-int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
-    if (pCompareMeta->GetTop() == GetTop()
-            && pCompareMeta->GetLeft() == GetLeft()
-            && pCompareMeta->GetRows() == GetRows()
-            && pCompareMeta->GetCols() == GetCols() ){
-        return 1;
-    }
-    return 0;
 }
 
 

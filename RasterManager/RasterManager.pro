@@ -13,12 +13,11 @@ TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-CONFIG += c++11 staticlib
+CONFIG += c++11
 DEFINES += RASTERMANAGER_LIBRARY
 
 SOURCES += \
     raster.cpp \
-    rmexception.cpp \
     raster_resample.cpp \
     dodraster.cpp \
     rastermanager_interface.cpp \
@@ -26,16 +25,20 @@ SOURCES += \
     rastermeta.cpp \
     raster_hillshade.cpp \
     raster_slope.cpp \
-    raster_png.cpp
+    raster_png.cpp \
+    raster_math.cpp \
+    raster_csv.cpp \
+    helpers.cpp \
+    raster_concurrency.cpp
 
 HEADERS +=\
     rastermanager_global.h \
     raster.h \
-    rmexception.h \
     dodraster.h \
     rastermanager_interface.h \
     extentrectangle.h \
-    rastermeta.h
+    rastermeta.h \
+    helpers.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
@@ -65,7 +68,7 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
     # Compile to a central location
-    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix

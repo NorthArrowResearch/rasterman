@@ -58,6 +58,17 @@ enum RasterManagerOperators {
     , RM_BASIC_MATH_THRESHOLD_PROP_ERROR = 7
 };
 
+enum Raster_SymbologyStyle{
+    GSS_DEM      = 1,  // DEM
+    GSS_DoD      = 2,  // DoD
+    GSS_Error    = 3,  // Error
+    GSS_Hlsd     = 4,  // HillShade
+    GSS_PtDens   = 5,  // PointDensity
+    GSS_SlopeDeg = 6,  // SlopeDeg
+    GSS_SlopePer = 7,  // SlopePC
+    GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
+};
+
 //!Extract File Extension
 //* Take a full file path and return just the file extension, excluding the period */
 /**
@@ -173,11 +184,33 @@ extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                  const int iOperation,
                                  const char * psOutput);
 
-
+/**
+ * @brief CreateOutputDSfromRef
+ * @param pOutputRaster
+ * @param eDataType
+ * @param bHasNoData
+ * @param fNoDataValue
+ * @param pReferenceDS
+ * @return
+ */
 DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
 
+/**
+ * @brief CreateOutputDS
+ * @param pOutputRaster
+ * @param pTemplateRastermeta
+ * @return
+ */
 DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
+/**
+ * @brief CreateOutputDSfromRef
+ * @param pOutputRaster
+ * @param eDataType
+ * @param fNoDataValue
+ * @param pReferenceDS
+ * @return
+ */
 DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
 
 /**
@@ -224,11 +257,31 @@ extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaste
  */
 extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
 
+/**
+ * @brief CreateHillshade
+ * @param psInputRaster
+ * @param psOutputHillshade
+ * @return
+ */
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
 
+/**
+ * @brief CreateSlope
+ * @param psInputRaster
+ * @param psOutputSlope
+ * @param nSlopeType
+ * @return
+ */
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
 
 extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
+
+/**
+ * @brief GetSymbologyStyleFromString
+ * @param psStyle
+ * @return
+ */
+extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
 
 /**
  * @brief

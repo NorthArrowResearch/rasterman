@@ -1,7 +1,9 @@
+#define MY_DLL_EXPORT
+
 #include "raster.h"
 #include "rastermanager_interface.h"
 #include "gdal_priv.h"
-
+#include "helpers.h"
 #include <limits>
 #include <math.h>
 #include <string>
@@ -98,7 +100,7 @@ int Raster::Hillshade(const char * psOutputHillshade){
         pHsDS->GetRasterBand(1)->RasterIO(GF_Write,0,i,GetCols(),1,hlsd,GetCols(),1,GDT_Byte,0,0);
     }
 
-    Raster::CalculateStats(pHsDS->GetRasterBand(1));
+    CalculateStats(pHsDS->GetRasterBand(1));
 
     //close datasets
     GDALClose(pDemDS);
