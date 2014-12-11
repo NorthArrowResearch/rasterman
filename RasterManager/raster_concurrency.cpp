@@ -2,6 +2,7 @@
 
 #include "raster.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "gdal_priv.h"
 #include "helpers.h"
 
@@ -58,7 +59,7 @@ int Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
             return INPUT_FILE_ERROR;
 
         if (sOutputFileName == "")
-            throw std::runtime_error("ERROR: Number of output filepaths does not match number of input filepaths.");
+            throw RasterManagerException(ARGUMENT_VALIDATION, "Number of output filepaths does not match number of input filepaths.");
 
         CheckFile(sInPutFileName.c_str(), true);
 
@@ -72,11 +73,13 @@ int Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
         }
         else{
             if (erRasterInput.IsOthogonal() == 0){
-                throw std::runtime_error("ERROR: All rasters must be orthogonal.");
+                QString sErr = QString("All rasters must be orthogonal: %1").arg(sInPutFileName.c_str());
+                throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
             }
             else if(erRasterInput.GetCellHeight() != MasterMeta.GetCellHeight()
                     || erRasterInput.GetCellWidth() != MasterMeta.GetCellWidth() ){
-                throw std::runtime_error("ERROR: cell resolutions must be the same for all rasters");
+                QString sErr = QString("Cell resolutions must be the same for all rasters: %1").arg(sInPutFileName.c_str());
+                throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
             }
             else {
                 MasterMeta.Union(&erRasterInput);

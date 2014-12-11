@@ -25,29 +25,6 @@ enum RasterManagerInputCodes {
     SLOPE_PERCENT = 1
 };
 
-enum RasterManagerOutputCodes {
-    PROCESS_OK = 0
-    , INPUT_FILE_ERROR = 1
-    , INPUT_FILE_TRANSFORM_ERROR = 2
-    , OUTPUT_FILE_MISSING = 3
-    , OUTPUT_FILE_ERROR = 4
-    , OUTPUT_NO_DATA_ERROR = 5
-    , OUTPUT_FILE_EXT_ERROR = 6
-    , OUTPUT_UNHANDLED_DRIVER = 7
-    , CELL_SIZE_ERROR = 8
-    , LEFT_ERROR = 9
-    , TOP_ERROR = 10
-    , ROWS_ERROR = 11
-    , COLS_ERROR = 12
-    , NO_OPERATION_SPECIFIED = 13
-    , MISSING_ARGUMENT = 14
-
-    , RM_PNG_QUALITY = 22
-    , RM_PNG_TRANSPARENCY = 23
-    , RM_PNG_LONG_AXIS =24
-    , OTHER_ERROR = 999
-};
-
 enum RasterManagerOperators {
     RM_BASIC_MATH_ADD = 1
     , RM_BASIC_MATH_SUBTRACT = 2

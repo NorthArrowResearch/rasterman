@@ -7,6 +7,7 @@
 
 #include "raster.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 
 namespace RasterManager {
 
@@ -606,18 +607,18 @@ int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
         // Enough arguments
         QString sInput = argv[nIndex];
         if (sInput.isNull() || sInput.isEmpty())
-            throw std::runtime_error("Command line missing integer argument.");
+            throw RasterManagerException(MISSING_ARGUMENT, "Command line missing integer argument.");
         else
         {
             sInput = sInput.trimmed();
             bool bOK = false;
             nResult = sInput.toInt(&bOK);
             if (!bOK)
-                throw std::runtime_error("Unable to convert input to integer numeric value.");
+                throw RasterManagerException(ARGUMENT_VALIDATION, "Unable to convert input to integer numeric value.");
         }
     }
     else
-        throw std::runtime_error("Insufficient command line arguments for operation.");
+        throw RasterManagerException(MISSING_ARGUMENT, "Insufficient command line arguments for operation.");
 
     return nResult;
 }
@@ -630,18 +631,18 @@ double RasterManEngine::GetDouble(int argc, char * argv[], int nIndex)
         // Enough arguments
         QString sInput = argv[nIndex];
         if (sInput.isNull() || sInput.isEmpty())
-            throw  std::runtime_error("Command line missing integer argument.");
+            throw  RasterManagerException(MISSING_ARGUMENT, "Command line missing integer argument.");
         else
         {
             sInput = sInput.trimmed();
             bool bOK = false;
             fResult = sInput.toDouble(&bOK);
             if (!bOK)
-                throw  std::runtime_error("Unable to convert input to double numeric value.");
+                throw  RasterManagerException(ARGUMENT_VALIDATION, "Unable to convert input to double numeric value.");
         }
     }
     else
-        throw std::runtime_error("Insufficient command line arguments for operation.");
+        throw RasterManagerException(MISSING_ARGUMENT, "Insufficient command line arguments for operation.");
 
     return fResult;
 }

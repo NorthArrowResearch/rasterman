@@ -3,6 +3,7 @@
 #include "raster.h"
 #include "rastermanager_interface.h"
 #include "gdal_priv.h"
+#include "rastermanager_exception.h"
 
 #include "ogrsf_frmts.h"
 #include "helpers.h"
@@ -72,7 +73,7 @@ void Raster::Init(bool bFullImage)
     GDALDataset * ds = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
 
     if (ds == NULL)
-        throw std::runtime_error(CPLGetLastErrorMsg());
+        throw RasterManagerException(INPUT_FILE_NOT_VALID, CPLGetLastErrorMsg());
 
     GDALRasterBand * band = ds->GetRasterBand(1);
 
@@ -98,9 +99,13 @@ void Raster::Init(bool bFullImage)
     {
         if ((GetLeft() + GetCols() > band->GetXSize()) || (GetTop() + GetRows() > band->GetYSize()))
         {
-            throw std::runtime_error("Invalid origin (" + stringify(GetLeft()) + "," +
-                              stringify(GetTop()) + " and size (" + stringify(GetCols()) + "," + stringify(GetRows()) +
-                              " for file " + FilePath());
+            QString sErr = QString("Invalid origin ( %1, %2 ) and size ( %5, %6 ) for file: %7")
+                    .arg(GetLeft())
+                    .arg(GetTop())
+                    .arg(GetCols())
+                    .arg(GetRows())
+                    .arg(FilePath());
+            throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
         }
         double xMapOrigin = GetLeft() + (GetLeft() * GetCellWidth());
         double yMapOrigin = GetTop() + (GetTop() * GetCellHeight());

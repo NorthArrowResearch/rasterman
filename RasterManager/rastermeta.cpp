@@ -2,6 +2,7 @@
 
 #include "rastermeta.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 
 #include "gdal_priv.h"
 #include "ogrsf_frmts.h"
@@ -84,7 +85,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
     GDALDataset * pDS = (GDALDataset*) GDALOpen(psFilePath, GA_ReadOnly);
     if (pDS  == NULL)
-        throw std::runtime_error("error opening raster file");
+        throw RasterManagerException(INPUT_FILE_NOT_VALID, "Error opening raster file: " + QString(psFilePath) );
 
     int nSuccess;
 

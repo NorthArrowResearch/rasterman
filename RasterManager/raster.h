@@ -7,8 +7,6 @@
 #include <QString>
 #include <string>
 
-//class OGRPolygon;
-
 class GDALRasterBand;
 
 namespace RasterManager {
@@ -207,21 +205,6 @@ public:
      */
     int Slope(const char *psOutputSlope, int nSlpType);
 
-    /**
-     * @brief RasterMath
-     * @param psRaster1
-     * @param psRaster2
-     * @param dOperator
-     * @param iOperation
-     * @param psOutput
-     * @return
-     */
-    static int RasterMath(const char * psRaster1,
-                   const char * psRaster2,
-                   const double dOperator,
-                   const int iOperation,
-                   const char * psOutput);
-
     /**Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
      * @brief RastertoPng
      * @param psOutputPNG
@@ -231,7 +214,19 @@ public:
      * @param style
      * @return
      */
-     int RastertoPng(const char *psOutputPNG, int nQuality, int nLongLength, int nTransparency, Raster_SymbologyStyle style);
+     int RastertoPng(const char *psOutputPNG, int nQuality, int nLongLength,
+                     int nTransparency, Raster_SymbologyStyle style);
+
+     /**
+      * @brief Raster::RasterRootSumSquares
+      * @param psRaster1
+      * @param psRaster2
+      * @param psOutput
+      * @return
+      */
+     static int RasterRootSumSquares(const char * psRaster1,
+                                     const char * psRaster2,
+                                     const char * psOutput);
 
      /**
       * @brief MakeConcurrent
@@ -239,7 +234,41 @@ public:
       * @param csRasterOutputs
       * @return
       */
-     int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+     static int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+
+     /**
+      * @brief RasterMath
+      * @param psRaster1
+      * @param psRaster2
+      * @param dOperator
+      * @param iOperation
+      * @param psOutput
+      * @return
+      */
+     static int RasterMath(const char * psRaster1,
+                    const char * psRaster2,
+                    const double dOperator,
+                    const int iOperation,
+                    const char * psOutput);
+
+     /**
+      * @brief RasterMask
+      * @param psInputRaster
+      * @param psMaskRaster
+      * @param psOutput
+      * @return
+      */
+     static int RasterMask(const char * psInputRaster,
+                           const char * psMaskRaster,
+                           const char * psOutput);
+
+     /**
+      * @brief RasterMosaic
+      * @param csRasters
+      * @param psOutput
+      * @return
+      */
+     static int RasterMosaic(const char * csRasters, const char * psOutput);
 
 protected:
 
@@ -290,7 +319,9 @@ private:
      * @param nNewCols
      * @return int
      */
-    int ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput, double fNewCellSize, double fNewLeft, double fNewTop, int nNewRows, int nNewCols);
+    int ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput,
+                       double fNewCellSize, double fNewLeft, double fNewTop,
+                       int nNewRows, int nNewCols);
 
     /**
      * @brief getColorTable
@@ -299,7 +330,8 @@ private:
      * @param nTransparency
      * @return
      */
-    static int GetColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style, int nTransparency);
+    static int GetColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style,
+                             int nTransparency);
 
     /**
      * @brief resizeAndCompressImage

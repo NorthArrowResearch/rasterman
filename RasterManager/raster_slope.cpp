@@ -2,6 +2,7 @@
 
 #include "raster.h"
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "gdal_priv.h"
 #include "helpers.h"
 #include <limits>
@@ -80,8 +81,7 @@ int Raster::Slope(const char * psOutputSlope, int nSlpType){
     fElev = NULL;
     fSlope = NULL;
 
-    return 0;
-
+    return PROCESS_OK;
 
 }
 

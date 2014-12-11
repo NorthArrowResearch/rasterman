@@ -1,6 +1,7 @@
 #define MY_DLL_EXPORT
 
 #include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
 #include "extentrectangle.h"
 
 #include <stdio.h>
@@ -143,334 +144,31 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
 extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
     Raster pDemRaster (psInputRaster);
-    pDemRaster.Hillshade(psOutputHillshade);
-
-    return PROCESS_OK;
+    return pDemRaster.Hillshade(psOutputHillshade);
 }
 
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
     Raster pDemRaster (psInputRaster);
-    pDemRaster.Slope(psOutputSlope, nSlopeType);
-
-    return PROCESS_OK;
+    return pDemRaster.Slope(psOutputSlope, nSlopeType);
 }
 
 extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
-
-    // Everything except square root needs at least one other parameter (raster or doube)
-    if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
-        return MISSING_ARGUMENT;
-
-    // Input Validation
-    CheckFile(psInputRaster, true);
-    CheckFile(psMaskRaster, true);
-
-    /*****************************************************************************************
-     * Raster 1
-     */
-    if (psInputRaster == NULL)
-        return INPUT_FILE_ERROR;
-
-    RasterMeta rmInputMeta(psInputRaster);
-
-    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
-    if (pDSInput == NULL)
-        return INPUT_FILE_ERROR;
-
-    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
-
-    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmInputMeta.GetCols());
-
-    /*****************************************************************************************
-     * The default output type is 32 bit floating point.
-     */
-    RasterMeta rmOutputMeta;
-    rmOutputMeta = rmInputMeta;
-
-    double fNoDataValue;
-    if (rmInputMeta.GetNoDataValue() == NULL){
-        fNoDataValue = (double) std::numeric_limits<float>::lowest();
-    }
-    else {
-        fNoDataValue = rmInputMeta.GetNoDataValue();
-    }
-
-    // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmInputMeta);
-
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
-
-    /*****************************************************************************************
-     * The Mask Raster to be used: psMaskRaster
-     */
-    GDALDataset * pDSMask = (GDALDataset*) GDALOpen(psMaskRaster, GA_ReadOnly);
-    if (pDSInput == NULL)
-        return INPUT_FILE_ERROR;
-
-    GDALRasterBand * pRBMask = pDSMask->GetRasterBand(1);
-
-    RasterMeta rmMaskMeta(psMaskRaster);
-
-    /*****************************************************************************************
-     * Check that input rasters have the same numbers of rows and columns
-     */
-
-    if (pRBInput->GetXSize() != pRBMask->GetXSize())
-        return COLS_ERROR;
-
-    if (pRBInput->GetYSize() != pRBMask->GetYSize())
-        return ROWS_ERROR;
-
-    if (psOutput == NULL)
-        return OUTPUT_FILE_MISSING;
-
-    double * pMaskline = (double *) CPLMalloc(sizeof(double)*rmMaskMeta.GetCols());
-
-    int i, j;
-    for (i = 0; i < rmOutputMeta.GetRows(); i++)
-    {
-        pRBInput->RasterIO(GF_Read, 0,  i, rmInputMeta.GetCols(), 1, pInputLine, rmInputMeta.GetCols(), 1, GDT_Float64, 0, 0);
-        pRBMask->RasterIO(GF_Read, 0,  i, rmMaskMeta.GetCols(), 1, pMaskline, rmMaskMeta.GetCols(), 1, GDT_Float64, 0, 0);
-
-        for (j = 0; j < rmOutputMeta.GetCols(); j++)
-        {
-            if (pMaskline[j] == rmMaskMeta.GetNoDataValue())
-            {
-                pOutputLine[j] = rmOutputMeta.GetNoDataValue();
-            }
-            else
-            {
-                pOutputLine[j] = pInputLine[j];
-            }
-        }
-
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
-    }
-    CPLFree(pMaskline);
-    CPLFree(pInputLine);
-    CPLFree(pOutputLine);
-
-    CalculateStats(pDSOutput->GetRasterBand(1));
-
-    GDALClose(pDSInput);
-    GDALClose(pDSOutput);
-    GDALClose(pDSMask);
-
-    return PROCESS_OK;
-
+    return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
 }
 
-extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput)
+extern "C" DLL_API int RootSumSquares(const char * psRaster1,
+                                      const char * psRaster2,
+                                      const char * psOutput)
 {
-
-
-    /*****************************************************************************************
-     * Raster 1
-     */
-    if (psRaster1 == NULL)
-        return INPUT_FILE_ERROR;
-
-    //Input Validation
-    CheckFile(psRaster1, true);
-    CheckFile(psRaster2, true);
-
-    GDALDataset * pDS1 = (GDALDataset*) GDALOpen(psRaster1, GA_ReadOnly);
-    if (pDS1 == NULL)
-        return INPUT_FILE_ERROR;
-
-    GDALRasterBand * pRBInput1 = pDS1->GetRasterBand(1);
-    int nHasNoData1 = 0;
-    double fNoDataValue1 = pRBInput1->GetNoDataValue(&nHasNoData1);
-
-    /*****************************************************************************************
-     * Raster 2
-     */
-    if (psRaster2 == NULL)
-        return INPUT_FILE_ERROR;
-
-    GDALDataset * pDS2 = (GDALDataset*) GDALOpen(psRaster2, GA_ReadOnly);
-    if (pDS1 == NULL)
-        return INPUT_FILE_ERROR;
-
-    GDALRasterBand * pRBInput2 = pDS2->GetRasterBand(1);
-    int nHasNoData2 = 0;
-    double fNoDataValue2 = pRBInput2->GetNoDataValue(&nHasNoData2);
-
-    /*****************************************************************************************
-     * Check that input rasters have the same numbers of rows and columns
-     */
-    if (pRBInput1->GetXSize() != pRBInput2->GetXSize())
-        return COLS_ERROR;
-
-    if (pRBInput1->GetYSize() != pRBInput2->GetYSize())
-        return ROWS_ERROR;
-
-    if (psOutput == NULL)
-        return OUTPUT_FILE_MISSING;
-
-    /*****************************************************************************************
-     * The default output type is 32 bit floating point.
-     */
-    float fNoDataValue = (float) std::numeric_limits<float>::lowest();
-
-    // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDSfromRef(psOutput, GDT_Float32, true, fNoDataValue, pDS1);
-
-
-    /*****************************************************************************************
-     * Allocate the memory for the input / output lines
-     */
-    double * pInputLine1 = (double *) CPLMalloc(sizeof(double)*pRBInput1->GetXSize());
-    double * pInputLine2 = (double *) CPLMalloc(sizeof(double)*pRBInput2->GetXSize());
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*pDSOutput->GetRasterBand(1)->GetXSize());
-
-    int i, j;
-    for (i = 0; i < pRBInput1->GetYSize(); i++)
-    {
-        pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float64, 0, 0);
-        pRBInput2->RasterIO(GF_Read, 0,  i, pRBInput2->GetXSize(), 1, pInputLine2, pRBInput2->GetXSize(), 1, GDT_Float64, 0, 0);
-
-        for (j = 0; j < pRBInput1->GetXSize(); j++)
-        {
-            if ( (nHasNoData1 != 0 && pInputLine1[j] == fNoDataValue1) ||
-                 (nHasNoData2 != 0 && pInputLine2[j] == fNoDataValue2) )
-            {
-                pOutputLine[j] = fNoDataValue;
-            }
-            else
-                pOutputLine[j] = sqrt( pow(pInputLine1[j], 2) + pow(pInputLine2[j], 2) );
-        }
-
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput2->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float64, 0, 0);
-    }
-
-    CPLFree(pInputLine1);
-    CPLFree(pInputLine2);
-    CPLFree(pOutputLine);
-
-    CalculateStats(pDSOutput->GetRasterBand(1));
-
-    GDALClose(pDS1);
-    GDALClose(pDS2);
-    GDALClose(pDSOutput);
-
-
-
-    return PROCESS_OK;
+    return Raster::RasterRootSumSquares(psRaster1, psRaster2, psOutput);
 }
 
 
 extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
-
-    // Loop through the strings, delimited by ;
-    std::string RasterFileName, RasterFiles(csRasters), RasterFilesToken;
-
-    // Terminate with a semicolon if it hasn't already been done
-    if (!EndsWith(psOutput, ";")){
-        RasterFiles.append(";");
-    }
-    RasterFilesToken = RasterFiles;
-
-    // The output raster info
-    RasterMeta OutputMeta;
-
-    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
-
-    /*****************************************************************************************
-     * Open all the relevant files and figure out the bounds of the final file.
-     */
-    int counter = 0;
-    while(RasterFilesToken != ""){
-        counter++;
-        RasterFileName = RasterFilesToken.substr(0,RasterFilesToken.find_first_of(";"));
-        RasterFilesToken = RasterFilesToken.substr(RasterFilesToken.find_first_of(";") + 1);
-
-        if (RasterFileName.c_str() == NULL)
-            return INPUT_FILE_ERROR;
-
-        CheckFile(RasterFileName.c_str(), true);
-
-        RasterMeta erRasterInput (RasterFileName.c_str());
-
-        // First time round set the bounds to the first raster we give it.
-        if (counter==1){
-            OutputMeta = erRasterInput;
-            OutputMeta.SetNoDataValue(fNoDataValue);
-            OutputMeta.SetGDALDataType(GDT_Float32);
-        }
-        else{
-            OutputMeta.Union(&erRasterInput);
-        }
-    }
-
-    /*****************************************************************************************
-     * The default output type is 32 bit floating point.
-     */
-
-    // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &OutputMeta);
-
-    //projectionRef use from inputs.
-
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*OutputMeta.GetCols());
-
-    /*****************************************************************************************
-     * Loop over the inputs and then the rows and columns
-     *
-     */
-    int i,j;
-    RasterFilesToken = RasterFiles;
-    RasterFileName = "";
-
-    while(RasterFilesToken != ""){
-        RasterFileName = RasterFilesToken.substr(0,RasterFilesToken.find_first_of(";"));
-        RasterFilesToken = RasterFilesToken.substr(RasterFilesToken.find_first_of(";") + 1);
-
-        GDALDataset * pDS = (GDALDataset*) GDALOpen(RasterFileName.c_str(), GA_ReadOnly);
-        GDALRasterBand * pRBInput = pDS->GetRasterBand(1);
-
-        RasterMeta inputMeta (RasterFileName.c_str());
-
-        // We need to figure out where in the output the input lives.
-        int trans_i = OutputMeta.GetRowTranslation(&inputMeta);
-        int trans_j = OutputMeta.GetColTranslation(&inputMeta);
-
-        double * pInputLine = (double *) CPLMalloc(sizeof(double)*pRBInput->GetXSize());
-
-        for (i = 0; i < pRBInput->GetYSize(); i++){
-            pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
-            // here's where we need to get the correct row of the output. Replace
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Read, 0,  trans_i+i, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
-
-            for (j = 0; j < pRBInput->GetXSize(); j++){
-                // If the input line is empty then do nothing
-                if ( (pInputLine[j] != inputMeta.GetNoDataValue())
-                     && pOutputLine[trans_j+j] ==  OutputMeta.GetNoDataValue())
-                {
-                    pOutputLine[trans_j+j] = pInputLine[j];
-                }
-            }
-            // here's where we need to get the correct row of the output. Replace
-            pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  trans_i+i, OutputMeta.GetCols(), 1, pOutputLine, OutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
-
-        }
-        CPLFree(pInputLine);
-
-    }
-
-    /*****************************************************************************************
-     * Now Close everything and clean it all up
-     */
-    CPLFree(pOutputLine);
-    CalculateStats(pDSOutput->GetRasterBand(1));
-    GDALClose(pDSOutput);
-
-    PrintRasterProperties(psOutput);
-
-    return PROCESS_OK;
+    return Raster::RasterMosaic(csRasters, psOutput);
 }
 
 extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2){
@@ -483,8 +181,6 @@ extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaste
 
 extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
-
-
     return MakeConcurrent(csRasters, csRasterOutputs);
 }
 
@@ -712,70 +408,7 @@ extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char 
 
 extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode)
 {
-    switch (eErrorCode)
-    {
-    case PROCESS_OK:
-        return "process completed successfully.";
-
-    case INPUT_FILE_ERROR:
-        return "input file error.";
-
-    case INPUT_FILE_TRANSFORM_ERROR:
-        return "input raster map projection error.";
-
-    case OUTPUT_FILE_MISSING:
-        return "input raster file is missing or cannot be found.";
-
-    case  OUTPUT_FILE_ERROR:
-        return "output file error";
-
-    case  OUTPUT_NO_DATA_ERROR:
-        return "NoData error on output raster";
-
-    case  OUTPUT_FILE_EXT_ERROR:
-        return "Output raster file extension error.";
-
-    case OUTPUT_UNHANDLED_DRIVER:
-        return "Unhandled output raster type.";
-
-    case CELL_SIZE_ERROR:
-        return "Cell size error.";
-
-    case LEFT_ERROR:
-        return "Invalid raster left coordinate.";
-
-    case TOP_ERROR:
-        return "Invalid raster top coordinate.";
-
-    case ROWS_ERROR:
-        return "Invalid raster number of rows.";
-
-    case COLS_ERROR:
-        return "Invalid raster number of columns.";
-
-    case NO_OPERATION_SPECIFIED:
-        return "No operation specified.";
-
-    case MISSING_ARGUMENT:
-        return "Missing argument";
-
-    case OTHER_ERROR:
-        return "Unspecified error.";
-
-    case RM_PNG_QUALITY:
-        return "Invalid image quality.";
-
-    case RM_PNG_TRANSPARENCY:
-        return "Invalid PNG transparency.";
-
-    case RM_PNG_LONG_AXIS:
-            return "Invalid Long Axis specified.";
-
-    default:
-        std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((long long)eErrorCode);
-        return errMsg.c_str();
-    }
-
+    return RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
 }
 
 } // namespace
