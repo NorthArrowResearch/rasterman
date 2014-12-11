@@ -10,7 +10,7 @@
 #include "rastermanager_exception.h"
 #include "gdal.h"
 #include "gdal_priv.h"
-#include "helpers.h"
+#include "rastermanager.h"
 
 #include <QtCore>
 #include <QWidget>
