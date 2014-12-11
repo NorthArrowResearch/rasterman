@@ -10,7 +10,7 @@
 #include "raster.h"
 #include "gdal.h"
 #include "gdal_priv.h"
-#include "helpers.h"
+#include "rastermanager.h"
 
 
 

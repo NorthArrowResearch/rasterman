@@ -4,7 +4,7 @@
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "gdal_priv.h"
-#include "helpers.h"
+#include "rastermanager.h"
 #include <limits>
 #include <math.h>
 #include <string>

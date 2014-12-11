@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include "extentrectangle.h"
 #include "rastermeta.h"
-#include "helpers.h"
+#include "rastermanager.h"
 
 #include "raster.h"
 #include "gdal_priv.h"

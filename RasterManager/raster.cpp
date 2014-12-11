@@ -1,12 +1,12 @@
 #define MY_DLL_EXPORT
 
 #include "raster.h"
+#include "rastermanager.h"
 #include "rastermanager_interface.h"
 #include "gdal_priv.h"
 #include "rastermanager_exception.h"
 
 #include "ogrsf_frmts.h"
-#include "helpers.h"
 #include <limits>
 #include <string>
 #include <vector>

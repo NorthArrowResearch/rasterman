@@ -8,7 +8,7 @@
 
 #include "extentrectangle.h"
 #include "rastermanager_exception.h"
-#include "helpers.h"
+#include "rastermanager.h"
 #include "gdal.h"
 #include "gdal_priv.h"
 

@@ -28,11 +28,11 @@ SOURCES += \
     raster_png.cpp \
     raster_math.cpp \
     raster_csv.cpp \
-    helpers.cpp \
     raster_concurrency.cpp \
     raster_mask.cpp \
     raster_rootsumsquare.cpp \
-    raster_mosaic.cpp
+    raster_mosaic.cpp \
+    rastermanager.cpp
 
 HEADERS +=\
     rastermanager_global.h \
@@ -41,8 +41,8 @@ HEADERS +=\
     rastermanager_interface.h \
     extentrectangle.h \
     rastermeta.h \
-    helpers.h \
-    rastermanager_exception.h
+    rastermanager_exception.h \
+    rastermanager.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
