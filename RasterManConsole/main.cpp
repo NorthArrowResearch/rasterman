@@ -4,9 +4,9 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QDebug>
-#include "rastermanengine.h"
-#include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
+#include "rastermanager_interface.h"
+#include "rastermanengine.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
         RasterManager::RasterManEngine * rm = new RasterManager::RasterManEngine();
         int eResult = rm->Run(argc, argv);
         if (eResult <= 0) {
-            std::cout << std::endl <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
+            std::cout << std::endl <<  RasterManager::RasterManagerException::GetReturnCodeOnlyAsString(eResult)<< std::endl;
         }
         else {
-            std::cerr << std::endl << "Error: " <<  RasterManager::GetReturnCodeAsString(eResult)<< std::endl;
+            std::cerr << std::endl << "Error: " <<  RasterManager::RasterManagerException::GetReturnCodeOnlyAsString(eResult)<< std::endl;
             exit (EXIT_FAILURE);
         }
         exit (EXIT_SUCCESS);
