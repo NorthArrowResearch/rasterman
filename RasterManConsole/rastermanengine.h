@@ -109,21 +109,6 @@ private:
     int PNG(int argc, char *argv[]);
 
     /**
-     * @brief CheckFile
-     * @param sFilename
-     * @param bMustExist
-     */
-    void CheckFile(QString sFile, bool bMustExist);
-    /**
-     * @brief CheckFile
-     * @param argc
-     * @param argv
-     * @param nIndex
-     * @param bMustExist
-     */
-    void CheckFile(int argc, char *argv[], int nIndex, bool bMustExist);
-
-    /**
      * @brief GetInteger
      * @param argc
      * @param argv

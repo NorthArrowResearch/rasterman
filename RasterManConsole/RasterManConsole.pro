@@ -42,16 +42,15 @@ win32 {
     }
 
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    LIBS += -LC:\GDALBuild\bld\lib -lgdal_i
-    INCLUDEPATH += C:\GDALBuild\bld\include
-    DEPENDPATH += C:\GDALBuild\bld\include
+    LIBS += -L$$GDALWIN/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
 
     # Compile to a central location
-    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 
     # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$OUT_PWD/../RasterManager/release -lRasterManager
-    message($$LIBS)
+    LIBS += -L$$DESTDIR -lRasterManager
 
 }
 macx{

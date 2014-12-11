@@ -59,12 +59,12 @@ win32 {
 
     # GDAL is required
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    LIBS += -LC:\GDALBuild\bld\lib -lgdal_i
-    INCLUDEPATH += C:\GDALBuild\bld\include
-    DEPENDPATH += C:\GDALBuild\bld\include
+    LIBS += -L$$GDALWIN/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
 
     # Compile to a central location
-    # DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
 }
 macx{
     ## OSX common build here
