@@ -568,7 +568,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
     case 8: eStyle = RasterManager::GetSymbologyStyleFromString(argv[7]); break;
     default:
         std::cout << "\n Create a PNG Image File:";
-        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <transparency> [<raster_type>]";
+        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <opacity> [<raster_type>]";
         std::cout << "\n   Command: PNG";
         std::cout << "\n";
         std::cout << "\n Arguments:";
