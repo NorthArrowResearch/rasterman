@@ -130,13 +130,20 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
                                  const int iOperation,
                                  const char * psOutput)
 {
-    Raster::RasterMath(psRaster1,
+
+    try {
+
+    }
+    catch (RasterManagerException & e){
+
+    }
+
+
+    return Raster::RasterMath(psRaster1,
                psRaster2,
                dOperator,
                iOperation,
                psOutput);
-
-    PrintRasterProperties(psOutput);
 
     return PROCESS_OK;
 }
