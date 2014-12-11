@@ -205,15 +205,15 @@ public:
      */
     int Slope(const char *psOutputSlope, int nSlpType);
 
-    /**Raster::MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
-     * @brief RastertoPng
-     * @param psOutputPNG
-     * @param nQuality
-     * @param nLongLength
-     * @param nTransparency
-     * @param style
-     * @return
-     */
+    /**
+      * @brief RastertoPng
+      * @param psOutputPNG
+      * @param nQuality
+      * @param nLongLength
+      * @param nTransparency
+      * @param style
+      * @return
+      */
      int RastertoPng(const char *psOutputPNG, int nQuality, int nLongLength,
                      int nTransparency, Raster_SymbologyStyle style);
 
@@ -229,12 +229,12 @@ public:
                                      const char * psOutput);
 
      /**
-      * @brief MakeConcurrent
+      * @brief MakeRasterConcurrent
       * @param csRasters
       * @param csRasterOutputs
       * @return
       */
-     static int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+     static int MakeRasterConcurrent(const char * csRasters, const char * csRasterOutputs);
 
      /**
       * @brief RasterMath
