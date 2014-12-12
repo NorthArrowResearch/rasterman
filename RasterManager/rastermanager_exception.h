@@ -7,32 +7,35 @@
 namespace RasterManager{
 
 enum RasterManagerOutputCodes {
-    PROCESS_OK = 0
-    , INPUT_FILE_ERROR = 1
-    , INPUT_FILE_TRANSFORM_ERROR = 2
-    , INPUT_FILE_NOT_VALID = 26
+    PROCESS_OK
+    , INPUT_FILE_ERROR
+    , INPUT_FILE_TRANSFORM_ERROR
+    , INPUT_FILE_NOT_VALID
 
-    , PATH_ERROR = 27
+    , PATH_ERROR
 
-    , OUTPUT_FILE_MISSING = 3
-    , OUTPUT_FILE_ERROR = 4
-    , OUTPUT_NO_DATA_ERROR = 5
-    , OUTPUT_FILE_EXT_ERROR = 6
-    , OUTPUT_UNHANDLED_DRIVER = 7
+    , OUTPUT_FILE_MISSING
+    , OUTPUT_FILE_ERROR
+    , OUTPUT_NO_DATA_ERROR
+    , OUTPUT_FILE_EXT_ERROR
+    , OUTPUT_UNHANDLED_DRIVER
 
-    , CELL_SIZE_ERROR = 8
-    , LEFT_ERROR = 9
-    , TOP_ERROR = 10
-    , ROWS_ERROR = 11
-    , COLS_ERROR = 12
-    , NO_OPERATION_SPECIFIED = 13
-    , MISSING_ARGUMENT = 14
-    , ARGUMENT_VALIDATION = 15
+    , CELL_SIZE_ERROR
+    , LEFT_ERROR
+    , TOP_ERROR
+    , ROWS_ERROR
+    , COLS_ERROR
+    , NO_OPERATION_SPECIFIED
+    , MISSING_ARGUMENT
+    , ARGUMENT_VALIDATION
 
-    , RM_PNG_QUALITY = 22
-    , RM_PNG_TRANSPARENCY = 23
-    , RM_PNG_LONG_AXIS =24
-    , GDAL_ERROR = 25
+    , GDALVERSION
+    , RASTERMAN_VERSION
+
+    , RM_PNG_QUALITY
+    , RM_PNG_TRANSPARENCY
+    , RM_PNG_LONG_AXIS
+    , GDAL_ERROR
     , OTHER_ERROR = 999
 };
 
@@ -61,76 +64,107 @@ public:
         {
         case PROCESS_OK:
             return "process completed successfully";
+            break;
 
         case INPUT_FILE_ERROR:
             return "input file error";
+            break;
 
         case INPUT_FILE_TRANSFORM_ERROR:
             return "input raster map projection error";
+            break;
 
         case OUTPUT_FILE_MISSING:
             return "input raster file is missing or cannot be found";
+            break;
 
         case  OUTPUT_FILE_ERROR:
             return "output file error";
+            break;
 
         case  OUTPUT_NO_DATA_ERROR:
             return "NoData error on output raster";
+            break;
 
         case  OUTPUT_FILE_EXT_ERROR:
             return "Output raster file extension error";
+            break;
 
         case OUTPUT_UNHANDLED_DRIVER:
             return "Unhandled output raster type";
+            break;
 
         case CELL_SIZE_ERROR:
             return "Cell size error";
+            break;
 
         case LEFT_ERROR:
             return "Invalid raster left coordinate";
+            break;
 
         case TOP_ERROR:
             return "Invalid raster top coordinate";
+            break;
 
         case ROWS_ERROR:
             return "Invalid raster number of rows";
+            break;
 
         case COLS_ERROR:
             return "Invalid raster number of columns";
+            break;
 
         case NO_OPERATION_SPECIFIED:
             return "No operation specified";
+            break;
 
         case MISSING_ARGUMENT:
             return "Missing argument";
+            break;
 
         case OTHER_ERROR:
             return "Unspecified error";
+            break;
 
         case RM_PNG_QUALITY:
             return "Invalid image quality";
+            break;
 
         case RM_PNG_TRANSPARENCY:
             return "Invalid PNG transparency";
+            break;
 
         case RM_PNG_LONG_AXIS:
             return "Invalid Long Axis specified";
+            break;
 
         case ARGUMENT_VALIDATION:
             return "Argument Validation Error";
+            break;
 
         case INPUT_FILE_NOT_VALID:
             return "Input Exists but is Invalid";
+            break;
 
         case GDAL_ERROR:
             return "GDAL Error";
+            break;
+
+        case RASTERMAN_VERSION:
+            return "Rasterman executable is at a different version than its DLL";
+            break;
 
         case PATH_ERROR:
             return "File Path Error";
+            break;
 
+        case GDALVERSION:
+            return "Insufficient GDAL version detected.";
+            break;
         default:
             std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((long long)eErrorCode);
             return errMsg.c_str();
+            break;
         }
     };
 

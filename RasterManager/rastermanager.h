@@ -20,7 +20,12 @@ void CalculateStats(GDALRasterBand * pRasterBand);
  */
 void DLL_API CheckFile(QString sFile, bool bMustExist);
 
-}
+/**
+ * @brief LibCheck
+ */
+void DLL_API LibCheck();
 
+
+}
 
 #endif // TOOLS_H

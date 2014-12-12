@@ -6,13 +6,27 @@
 #include <cstring>
 
 #include "raster.h"
+#include "rastermanager.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 
 namespace RasterManager {
 
 RasterManEngine::RasterManEngine()
-{ }
+{
+    CheckRasterManVersion();
+}
+
+void RasterManEngine::CheckRasterManVersion(){
+
+//    QString sVersion = QString(EXEVERSION);
+//    QString sLibVersion = QString(RasterManager::GetVersion());
+
+//    if (sVersion.compare(sLibVersion, Qt::CaseInsensitive) != 0){
+//        QString sErr = QString("Exe is at: %1, Library is at %2").arg(sVersion).arg(sLibVersion);
+//        throw RasterManager::RasterManagerException(RASTERMAN_VERSION, sErr);
+//    }
+}
 
 int RasterManEngine::Run(int argc, char * argv[])
 {
@@ -86,6 +100,7 @@ int RasterManEngine::Run(int argc, char * argv[])
 
     if (!bRecognizedCommand)
     {
+        std::cout << "\n Rasterman  v" << EXEVERSION;
         std::cout << "\n Usage: rasterman <command> [paramters...]\n";
 
         std::cout << "\n Commands (type rasterman followed by the command to retrieve parameter information):\n";

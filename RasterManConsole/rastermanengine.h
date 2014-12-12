@@ -11,7 +11,13 @@ public:
     RasterManEngine();
 
     int Run(int argc, char *argv[]);
+
+
 private:
+    /**
+     * @brief CheckRasterManVersion
+     */
+    void CheckRasterManVersion();
     /**
      * @brief RasterProperties
      * @param argc
