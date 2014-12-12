@@ -2,6 +2,7 @@
 
 #include "gdal_priv.h"
 #include "rastermanager_exception.h"
+#include "rastermanager_global.h"
 #include <QFile>
 #include <QDir>
 
@@ -13,7 +14,7 @@ void CalculateStats(GDALRasterBand * pRasterBand){
 }
 
 
-void CheckFile(QString sFile, bool bMustExist)
+void DLL_API CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments
     if (sFile.isNull() || sFile.isEmpty())
