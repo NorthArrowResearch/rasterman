@@ -18,7 +18,7 @@ void CalculateStats(GDALRasterBand * pRasterBand);
  * @param sFile
  * @param bMustExist
  */
-void CheckFile(QString sFile, bool bMustExist);
+void DLL_API CheckFile(QString sFile, bool bMustExist);
 
 }
 
