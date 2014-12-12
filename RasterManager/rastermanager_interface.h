@@ -72,7 +72,7 @@ extern "C" DLL_API const char * GetDriverFromFileName(const char *psFileName);
  * A string representing the plain English words describing the error code.
  * e.g. passing the argument INPUT_FILE_ERROR would return the string "input file error."
  */
-extern "C" DLL_API const char * GetReturnCodeAsString(int eErrorCode);
+extern "C" DLL_API void GetReturnCodeAsString(int eErrorCode, const char ** sErr);
 
 /**
  * @brief
