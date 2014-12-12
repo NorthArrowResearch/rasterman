@@ -8,10 +8,13 @@ QT       += core
 QT       += widgets
 QT       -= gui
 
-VERSION = 6.1.4
 TARGET = RasterManager
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
+
+VERSION = 6.1.4
+DEFINES += LIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
+DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
 
 CONFIG += c++11
 DEFINES += RASTERMANAGER_LIBRARY

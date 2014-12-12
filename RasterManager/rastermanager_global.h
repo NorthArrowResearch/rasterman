@@ -26,6 +26,7 @@
 
 //#include <QtCore/qglobal.h>
 
+
 #if defined(RASTERMANAGER_LIBRARY)
 #  define RASTERMANAGERSHARED_EXPORT Q_DECL_EXPORT
 #else

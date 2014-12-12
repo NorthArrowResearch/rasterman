@@ -8,11 +8,13 @@
 
 namespace RasterManager {
 
-
 void CalculateStats(GDALRasterBand * pRasterBand){
     pRasterBand->ComputeStatistics(0, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
+void DLL_API LibCheck(){
+
+}
 
 void DLL_API CheckFile(QString sFile, bool bMustExist)
 {

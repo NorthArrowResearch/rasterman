@@ -456,10 +456,11 @@ extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char 
         return GSS_Unknown;
 }
 
-extern "C" DLL_API void GetReturnCodeAsString(int eErrorCode, const char ** sErr)
+extern "C" DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
 {
-    const char * pHabErr = HabitatException::GetReturnCodeOnlyAsString(eErrorCode);
-    sErr = &pHabErr;
+    const char * pHabErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
+    strncpy(sErr, pHabErr, iBufferSize);
+    sErr[ iBufferSize - 1 ] = 0;
 }
 
 } // namespace
