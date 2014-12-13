@@ -890,6 +890,12 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
 
 }
 
+extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType)
+{
+    RasterManager::Raster rOriginal(psInputRaster);
+    int eResult = rOriginal.PNG(psOutputPNG, nImageQuality, nLongAxisPixels, nOpacity, (Raster_SymbologyStyle) eRasterType);
+    return eResult;
+}
 
 /*******************************************************************************************************
  *******************************************************************************************************

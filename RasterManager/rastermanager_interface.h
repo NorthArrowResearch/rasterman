@@ -228,6 +228,7 @@ extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * 
 
 extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
 
+extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
 
 /**
  * @brief
