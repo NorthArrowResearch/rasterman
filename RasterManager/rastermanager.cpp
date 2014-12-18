@@ -12,11 +12,11 @@ void CalculateStats(GDALRasterBand * pRasterBand){
     pRasterBand->ComputeStatistics(0, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
-void DLL_API LibCheck(){
+void RM_DLL_API LibCheck(){
 
 }
 
-void DLL_API CheckFile(QString sFile, bool bMustExist)
+void RM_DLL_API CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments
     if (sFile.isNull() || sFile.isEmpty())

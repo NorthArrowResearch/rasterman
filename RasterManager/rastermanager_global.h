@@ -35,12 +35,12 @@
  
 #if defined(_WIN32) || defined(_WIN64)
 #   ifdef MY_DLL_EXPORT
-#       define DLL_API __declspec(dllexport)
+#       define RM_DLL_API __declspec(dllexport)
 #   else
-#       define DLL_API
+#       define RM_DLL_API __declspec(dllimport)
 #   endif
 #else
-#   define DLL_API __declspec(dllimport)
+#   define RM_DLL_API
 #endif
 
 #endif // RASTERMANAGER_GLOBAL_H
