@@ -210,7 +210,7 @@ int Raster::RasterMath(const char * psRaster1,
     GDALClose(pDSOutput);
 
 
-
+    return PROCESS_OK;
 
 }
 
