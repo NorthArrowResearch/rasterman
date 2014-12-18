@@ -15,7 +15,7 @@ namespace RasterManager {
  * class is to provide access to the methods that calculate the statistics
  * describing the amount of change between the rasters.
  */
-class DLL_API DoDRaster : Raster
+class RM_DLL_API DoDRaster : Raster
 {
 public:
     /**
@@ -64,7 +64,7 @@ public:
  * DoD Change Statistics Methods
  */
 
-extern "C" DLL_API void GetDoDMinLoDStats(const char * ppszRawDoD, double fThreshold,
+extern "C" RM_DLL_API void GetDoDMinLoDStats(const char * ppszRawDoD, double fThreshold,
                                                      double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                      double * fAreaErosionThr, double * fAreaDepositionThr,
                                                      double * fVolErosionRaw, double * fVolDepositionRaw,
@@ -72,7 +72,7 @@ extern "C" DLL_API void GetDoDMinLoDStats(const char * ppszRawDoD, double fThres
                                                      double * fVolErosionErr, double * fVolDepositonErr);
 
 
-extern "C" DLL_API void GetDoDPropStats(const char * ppszRawDoD, const char * ppszPropError,
+extern "C" RM_DLL_API void GetDoDPropStats(const char * ppszRawDoD, const char * ppszPropError,
                                                      double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                      double * fAreaErosionThr, double * fAreaDepositionThr,
                                                      double * fVolErosionRaw, double * fVolDepositionRaw,
@@ -81,7 +81,7 @@ extern "C" DLL_API void GetDoDPropStats(const char * ppszRawDoD, const char * pp
 
 
 
-extern "C" DLL_API void GetDoDProbStats(const char * ppszRawDoD, const char * ppszThrDod,
+extern "C" RM_DLL_API void GetDoDProbStats(const char * ppszRawDoD, const char * ppszThrDod,
                                                       const char * ppszPropError,
                                                       double * fAreaErosionRaw, double * fAreaDepositonRaw,
                                                       double * fAreaErosionThr, double * fAreaDepositionThr,

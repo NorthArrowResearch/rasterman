@@ -19,7 +19,7 @@ namespace RasterManager {
  * The members and methods of this class provide access to the common properties of a
  * file based raster such as columns, rows etc.
  */
-class DLL_API Raster : public RasterMeta
+class RM_DLL_API Raster : public RasterMeta
 {
 public:
     /**

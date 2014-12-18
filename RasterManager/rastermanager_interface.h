@@ -54,7 +54,7 @@ enum Raster_SymbologyStyle{
  * @param FileName
  * @return const char
  */
-extern "C" DLL_API const char * ExtractFileExt(const char * FileName);
+extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName);
 
 /**
  * @brief
@@ -62,7 +62,7 @@ extern "C" DLL_API const char * ExtractFileExt(const char * FileName);
  * @param psFileName
  * @return const char
  */
-extern "C" DLL_API const char * GetDriverFromFileName(const char *psFileName);
+extern "C" RM_DLL_API const char * GetDriverFromFileName(const char *psFileName);
 
 /**
  * @brief Retrieves the plain english words for a particular raster manager error code
@@ -72,14 +72,14 @@ extern "C" DLL_API const char * GetDriverFromFileName(const char *psFileName);
  * A string representing the plain English words describing the error code.
  * e.g. passing the argument INPUT_FILE_ERROR would return the string "input file error."
  */
-extern "C" DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize);
+extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize);
 
 /**
  * @brief
  *
  */
-extern "C" DLL_API void RegisterGDAL();
-extern "C" DLL_API void DestroyGDAL();
+extern "C" RM_DLL_API void RegisterGDAL();
+extern "C" RM_DLL_API void DestroyGDAL();
 
 /**
  * @brief GetRasterProperties
@@ -95,7 +95,7 @@ extern "C" DLL_API void DestroyGDAL();
  * @param bHasNoData
  * @param nDataType
  */
-extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
+extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType);
@@ -113,7 +113,7 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
  * @param bHasNoData
  * @param nDataType
  */
-extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster);
+extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster);
 
 /**
  * @brief BiLinearResample
@@ -127,7 +127,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster);
  * @param nCols
  * @return int
  */
-extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
+extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                                       const char *ppszOutputRaster, double fNewCellSize,
                                                       double fLeft, double fTop, int nRows, int nCols);
 
@@ -143,7 +143,7 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
  * @param nCols
  * @return int
  */
-extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
+extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
                                           const char *ppszOutputRaster, double fNewCellSize,
                                           double fLeft, double fTop, int nRows, int nCols);
 
@@ -155,7 +155,7 @@ extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
  * @param ppszOriginalRaster2
  * @param ppszOutputRaster
  */
-extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
+extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                  const char * ppszOriginalRaster2,
                                  const double dOperator,
                                  const int iOperation,
@@ -170,7 +170,7 @@ extern "C" DLL_API int BasicMath(const char * ppszOriginalRaster1,
  * @param pReferenceDS
  * @return
  */
-DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
+RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
 
 /**
  * @brief CreateOutputDS
@@ -178,7 +178,7 @@ DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALData
  * @param pTemplateRastermeta
  * @return
  */
-DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
+RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
 /**
  * @brief CreateOutputDSfromRef
@@ -188,7 +188,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
  * @param pReferenceDS
  * @return
  */
-DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
+RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
 
 /**
  * @brief
@@ -198,7 +198,7 @@ DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALData
  * @param psOutput
  * @return int
  */
-extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput);
+extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput);
 
 /**
  * @brief
@@ -207,7 +207,7 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1, const char * psRas
  * @param psOutput
  * @return int
  */
-extern "C" DLL_API int Mosaic(const char *psRasters, const char * psOutput);
+extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 
 /**
  * @brief
@@ -216,14 +216,14 @@ extern "C" DLL_API int Mosaic(const char *psRasters, const char * psOutput);
  * @param csRasterOutputs
  * @return int
  */
-extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
 
 /**
  * @brief IsConcurrent
  * @param csRaster
  * @return
  */
-extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2);
+extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2);
 
 /**
  * @brief
@@ -232,7 +232,7 @@ extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaste
  * @param psOutput
  * @return int
  */
-extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
+extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
 
 /**
  * @brief CreateHillshade
@@ -240,7 +240,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster
  * @param psOutputHillshade
  * @return
  */
-extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
+extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
 
 /**
  * @brief CreateSlope
@@ -249,16 +249,16 @@ extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * 
  * @param nSlopeType
  * @return
  */
-extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
 
-extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
+extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
 
 /**
  * @brief GetSymbologyStyleFromString
  * @param psStyle
  * @return
  */
-extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
+extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
 
 /**
  * @brief
@@ -292,7 +292,7 @@ public:
  * @param x
  * @return std::string
  */
-inline DLL_API std::string stringify(double x) {
+inline RM_DLL_API std::string stringify(double x) {
     std::ostringstream o;
     if (!(o << x))
         throw BadConversion("stringify(double)");

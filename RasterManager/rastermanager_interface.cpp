@@ -21,7 +21,7 @@
 
 namespace RasterManager {
 
-DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
+RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
                          double fNoDataValue,
@@ -32,7 +32,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
    return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
 
-DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
+RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
 
     // Make sure the file doesn't exist. Throws an exception if it does.
     CheckFile(pOutputRaster, false);
@@ -93,7 +93,7 @@ DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pT
 
 }
 
-DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
+RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
                                             GDALDataType eDataType,
                                             bool bHasNoData,
                                             double fNoDataValue,
@@ -121,10 +121,10 @@ DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
 }
 
 
-extern "C" DLL_API void RegisterGDAL() { GDALAllRegister();}
-extern "C" DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
+extern "C" RM_DLL_API void RegisterGDAL() { GDALAllRegister();}
+extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
 
-extern "C" DLL_API int BasicMath(const char * psRaster1,
+extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
                                  const char * psRaster2,
                                  const double dOperator,
                                  const int iOperation,
@@ -142,7 +142,7 @@ extern "C" DLL_API int BasicMath(const char * psRaster1,
     }
 }
 
-extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
+extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
     try {
         Raster pDemRaster (psInputRaster);
@@ -154,7 +154,7 @@ extern "C" DLL_API int CreateHillshade(const char * psInputRaster, const char * 
 
 }
 
-extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
 
     try{
         Raster pDemRaster (psInputRaster);
@@ -166,7 +166,7 @@ extern "C" DLL_API int CreateSlope(const char * psInputRaster, const char * psOu
 
 }
 
-extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
+extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
     try{
         return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
@@ -176,7 +176,7 @@ extern "C" DLL_API int Mask(const char * psInputRaster, const char * psMaskRaste
     }
 }
 
-extern "C" DLL_API int RootSumSquares(const char * psRaster1,
+extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1,
                                       const char * psRaster2,
                                       const char * psOutput)
 {
@@ -190,7 +190,7 @@ extern "C" DLL_API int RootSumSquares(const char * psRaster1,
 }
 
 
-extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
+extern "C" RM_DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
     try{
         return Raster::RasterMosaic(csRasters, psOutput);
@@ -201,7 +201,7 @@ extern "C" DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 
 }
 
-extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2)
+extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2)
 {
     try{
         RasterManager::RasterMeta rmRaster1(csRaster1);
@@ -215,7 +215,7 @@ extern "C" DLL_API int IsConcurrent(const char * csRaster1, const char * csRaste
 
 }
 
-extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
+extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
 {
     try{
         return Raster::MakeRasterConcurrent(csRasters, csRasterOutputs);
@@ -230,7 +230,7 @@ extern "C" DLL_API int MakeConcurrent(const char * csRasters, const char * csRas
  * Raster property methods
  */
 
-extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
+extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType)
@@ -252,7 +252,7 @@ extern "C" DLL_API void GetRasterProperties(const char * ppszRaster,
     }
 }
 
-extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
+extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
 {
 
     try{
@@ -336,7 +336,7 @@ extern "C" DLL_API void PrintRasterProperties(const char * ppszRaster)
     }
 }
 
-extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType)
+extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType)
 {
     RasterManager::Raster rOriginal(psInputRaster);
     int eResult = rOriginal.RastertoPng(psOutputPNG, nImageQuality, nLongAxisPixels, nOpacity, (Raster_SymbologyStyle) eRasterType);
@@ -348,7 +348,7 @@ extern "C" DLL_API int CreatePNG(const char * psInputRaster, const char * psOutp
  * Raster copy and resample methods
  */
 
-extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
+extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
                                           const char *ppszOutputRaster,
                                           double fNewCellSize,
                                           double fLeft, double fTop, int nRows, int nCols)
@@ -362,7 +362,7 @@ extern "C" DLL_API int Copy(const char * ppszOriginalRaster,
     }
 }
 
-extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
+extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                                       const char *ppszOutputRaster,
                                                       double fNewCellSize,
                                                       double fLeft, double fTop, int nRows, int nCols)
@@ -376,7 +376,7 @@ extern "C" DLL_API int BiLinearResample(const char * ppszOriginalRaster,
     }
 }
 
-extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
+extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName)
 {
     for (int i = strlen(FileName); i >= 0; i--) {
         if (FileName[i] == '.' ){
@@ -386,7 +386,7 @@ extern "C" DLL_API const char * ExtractFileExt(const char * FileName)
     return NULL;
 }
 
-extern "C" DLL_API const char * GetDriverFromFilename(const char * FileName)
+extern "C" RM_DLL_API const char * GetDriverFromFilename(const char * FileName)
 {
     const char * pSuffix = ExtractFileExt(FileName);
 
@@ -405,7 +405,7 @@ extern "C" DLL_API const char * GetDriverFromFilename(const char * FileName)
     }
 }
 
-extern "C" DLL_API const char * GetDriverFromFileName(const char * psFileName)
+extern "C" RM_DLL_API const char * GetDriverFromFileName(const char * psFileName)
 {
     if (EndsWith(psFileName, ".tif"))
     {
@@ -434,7 +434,7 @@ bool EndsWith(const char * psFullString, const char * psEnding)
     }
 }
 
-extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
+extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
 {
     QString sStyle(psStyle);
 
@@ -456,7 +456,7 @@ extern "C" DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char 
         return GSS_Unknown;
 }
 
-extern "C" DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
+extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
 {
     const char * pHabErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
     strncpy(sErr, pHabErr, iBufferSize);
