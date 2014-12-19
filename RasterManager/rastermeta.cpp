@@ -117,6 +117,11 @@ int RasterMeta::IsOthogonal(){
     return false;
 }
 
+void RasterMeta::SetNoDataValue(double fNoData) {
+    m_fNoDataValue = fNoData;
+    b_HasNoData = true;
+}
+
 
 void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 {

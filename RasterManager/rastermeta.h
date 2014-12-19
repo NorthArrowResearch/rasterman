@@ -55,11 +55,6 @@ public:
      * @return
      */
     inline char * GetProjectionRef() { return m_psProjection; }
-    /**
-     * @brief SetNoDataValue
-     * @param fNoData
-     */
-    inline void SetNoDataValue(double fNoData) { m_fNoDataValue = fNoData; }
 
     /**
      * @brief HasNoDataValue
@@ -73,6 +68,11 @@ public:
      */
     void SetGDALDataType(GDALDataType fDataType);
 
+    /**
+     * @brief SetNoDataValue
+     * @param fNoData
+     */
+    void SetNoDataValue(double fNoData);
     /**
      * @brief IsOthogonal
      * @return
