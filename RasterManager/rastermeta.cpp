@@ -56,9 +56,7 @@ RasterMeta::~RasterMeta()
 
 void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
 {
-
-    if (fNoDataValue != 0)
-        SetNoDataValue(fNoDataValue);
+    SetNoDataValue(fNoDataValue);
 
     if (eDataType != NULL)
         SetGDALDataType(eDataType);
