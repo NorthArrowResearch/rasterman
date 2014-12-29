@@ -145,11 +145,11 @@ public:
      * @param p_rastermeta
      */
     static int CSVtoRaster(const char * sCSVSourcePath,
-                            const char * psOutput,
-                            const char * sXField,
-                            const char * sYField,
-                            const char * sDataField,
-                            RasterMeta * p_rastermeta );
+                           const char * psOutput,
+                           const char * sXField,
+                           const char * sYField,
+                           const char * sDataField,
+                           RasterMeta * p_rastermeta );
 
     /**
      * @brief CSVtoRaster
@@ -161,11 +161,11 @@ public:
      * @param sDataField
      */
     static int CSVtoRaster(const char * sCSVSourcePath,
-                            const char * psOutput,
-                            const char * sRasterTemplate,
-                            const char * sXField,
-                            const char * sYField,
-                            const char * sDataField );
+                           const char * psOutput,
+                           const char * sRasterTemplate,
+                           const char * sXField,
+                           const char * sYField,
+                           const char * sDataField );
 
     /**
      * @brief CSVtoRaster
@@ -182,15 +182,43 @@ public:
      * @param sDataField
      */
     static int CSVtoRaster(const char * sCSVSourcePath,
-                                    const char * sOutput,
-                                    double dTop,
-                                    double dLeft,
-                                    int nRows,
-                                    int nCols,
-                                    double dCellWidth, double dNoDataVal,
-                                    const char * sXField,
-                                    const char * sYField,
-                                    const char * sDataField);
+                           const char * sOutput,
+                           double dTop,
+                           double dLeft,
+                           int nRows,
+                           int nCols,
+                           double dCellWidth, double dNoDataVal,
+                           const char * sXField,
+                           const char * sYField,
+                           const char * sDataField);
+
+
+    static int VectortoRaster(const char * sVectorSourcePath,
+                              const char * psOutput,
+                              const char * sXField,
+                              const char * sYField,
+                              const char * sDataField,
+                              RasterMeta * p_rastermeta );
+
+    static int VectortoRaster(const char * sVectorSourcePath,
+                              const char * psOutput,
+                              const char * sRasterTemplate,
+                              const char * sXField,
+                              const char * sYField,
+                              const char * sDataField );
+
+    static int VectortoRaster(const char * sVectorSourcePath,
+                              const char * sOutput,
+                              double dTop,
+                              double dLeft,
+                              int nRows,
+                              int nCols,
+                              double dCellWidth, double dNoDataVal,
+                              const char * sXField,
+                              const char * sYField,
+                              const char * sDataField);
+
+
 
     /**
      * @brief Hillshade

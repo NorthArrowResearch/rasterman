@@ -35,7 +35,8 @@ SOURCES += \
     raster_mask.cpp \
     raster_rootsumsquare.cpp \
     raster_mosaic.cpp \
-    rastermanager.cpp
+    rastermanager.cpp \
+    raster_vector.cpp
 
 HEADERS +=\
     rastermanager_global.h \
