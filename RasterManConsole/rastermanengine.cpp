@@ -70,6 +70,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "csv2raster", Qt::CaseInsensitive) == 0)
             eResult = CSVToRaster(argc, argv);
 
+        else if (QString::compare(sCommand, "vector2raster", Qt::CaseInsensitive) == 0)
+            eResult = VectorToRaster(argc, argv);
+
         else if (QString::compare(sCommand, "Slope", Qt::CaseInsensitive) == 0)
             eResult = Slope(argc, argv);
 
@@ -124,6 +127,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    png             Create a PNG image copy of a raster.";
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
+        std::cout << "\n    vector2raster   Create a raster from a vector file.";
         std::cout << "\n ";
     }
     return PROCESS_OK;
@@ -435,6 +439,15 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
     return eResult;
 }
 
+bool RasterManEngine::isNumeric( const char* pszInput, int nNumberBase )
+{
+    std::string base = "0123456789ABCDEF";
+    std::string input = pszInput;
+
+    return (input.find_first_not_of(base.substr(0, nNumberBase)) == std::string::npos);
+
+}
+
 
 int RasterManEngine::Mask(int argc, char * argv[])
 {
@@ -550,11 +563,11 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc < 8)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_file_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";
+        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_raster_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       csv_file_path: Absolute full path to existing .csv file.";
-        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
         std::cout << "\n";
         std::cout << "\n         XField: Name of the field to use for the x values";
         std::cout << "\n         YField: Name of the field to use for the y values";
@@ -614,6 +627,54 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 }
 
+
+int RasterManEngine::VectorToRaster(int argc, char * argv[])
+{
+    if (argc < 6)
+    {
+        std::cout << "\n Convert a Vector file into a raster.";
+        std::cout << "\n    Usage: gcd vector2raster <vector_file_path> <output_raster_path> <vector_layer> [<cell_size> | <raster_template_path>]";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n       vector_file_path: Absolute full path to existing .shp file.";
+        std::cout << "\n     output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n           vector_layer: Name of the vector layer. use \"quotes\" for names with spaces.";
+        std::cout << "\n";
+        std::cout << "\n      cell_size: Cell size for the output raster.";
+        std::cout << "\n          OR";
+        std::cout << "\n    raster_template_path: Path to template raster file. File will be used for extents, cell size etc.";
+        std::cout << "\n\n";
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    // Either the last parameter is a double which indicates we are being given cell size.
+    if (isNumeric(argv[6], 10)){
+
+        double dCellSize;
+        dCellSize = GetDouble(argc, argv, 5);
+
+        eResult = RasterManager::Raster::VectortoRaster( argv[3],    // sVectorSourcePath
+                argv[4],    // sRasterOutputPath
+                dCellSize,  // dCellWidth
+                argv[5]     // LayerName
+                );
+    }
+    // Or we are using a template raster for the bounds
+    else {
+        eResult = RasterManager::Raster::VectortoRaster( argv[3],  // sVectorSourcePath
+                argv[4],  // sRasterOutputPath
+                argv[6],  // sRasterTemplate
+                argv[5]   // LayerName
+                );
+    }
+
+    return eResult;
+
+}
+
+
+
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
 {
     int nResult = 0;
@@ -661,6 +722,7 @@ double RasterManEngine::GetDouble(int argc, char * argv[], int nIndex)
 
     return fResult;
 }
+
 
 void RasterManEngine::GetOutputRasterProperties(double & fLeft, double & fTop, int & nRows, int & nCols, double & fCellSize, int argc, char * argv[], int nStartArg)
 {
