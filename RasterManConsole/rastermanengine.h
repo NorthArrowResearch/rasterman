@@ -12,7 +12,6 @@ public:
 
     int Run(int argc, char *argv[]);
 
-
 private:
     /**
      * @brief CheckRasterManVersion
@@ -99,6 +98,14 @@ private:
      * @param argv
      */
     int CSVToRaster(int argc, char * argv[]);
+
+    /**
+     * @brief VectorToRaster
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int VectorToRaster(int argc, char * argv[]);
 
     /**
      * @brief Mask

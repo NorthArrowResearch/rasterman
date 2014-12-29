@@ -194,29 +194,19 @@ public:
 
 
     static int VectortoRaster(const char * sVectorSourcePath,
-                              const char * psOutput,
-                              const char * sXField,
-                              const char * sYField,
-                              const char * sDataField,
+                              const char * sRasterOutputPath,
+                              const char * LayerName,
                               RasterMeta * p_rastermeta );
 
     static int VectortoRaster(const char * sVectorSourcePath,
-                              const char * psOutput,
+                              const char * sRasterOutputPath,
                               const char * sRasterTemplate,
-                              const char * sXField,
-                              const char * sYField,
-                              const char * sDataField );
+                              const char * LayerName );
 
     static int VectortoRaster(const char * sVectorSourcePath,
-                              const char * sOutput,
-                              double dTop,
-                              double dLeft,
-                              int nRows,
-                              int nCols,
-                              double dCellWidth, double dNoDataVal,
-                              const char * sXField,
-                              const char * sYField,
-                              const char * sDataField);
+                              const char * sRasterOutputPath,
+                              double dCellWidth,
+                              const char * LayerName);
 
 
 

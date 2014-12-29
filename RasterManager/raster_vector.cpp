@@ -1,39 +1,47 @@
 #define MY_DLL_EXPORT
-#include "raster.h"
 
+#include "gdal_priv.h"
+#include "raster.h"
+#include "rastermanager_interface.h"
+#include "rastermanager_exception.h"
+
+#include <limits>
+#include <math.h>
 
 namespace RasterManager {
 
-int VectortoRaster(const char * sVectorSourcePath,
-                   const char * psOutput,
-                   const char * sXField,
-                   const char * sYField,
-                   const char * sDataField,
+int Raster::VectortoRaster(const char * sVectorSourcePath,
+                   const char * sRasterOutputPath,
+                   const char * LayerName,
                    RasterMeta * p_rastermeta ){
 
+    //This is where the implementation actually goes
+    return PROCESS_OK;
 }
 
-int VectortoRaster(const char * sVectorSourcePath,
-                   const char * psOutput,
+int Raster::VectortoRaster(const char * sVectorSourcePath,
+                   const char * sRasterOutputPath,
                    const char * sRasterTemplate,
-                   const char * sXField,
-                   const char * sYField,
-                   const char * sDataField ){
+                   const char * LayerName ){
+
+    RasterMeta TemplateRaster(sRasterTemplate);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, LayerName, &TemplateRaster);
 
 }
 
-int VectortoRaster(const char * sVectorSourcePath,
-                   const char * sOutput,
-                   double dTop,
-                   double dLeft,
-                   int nRows,
-                   int nCols,
-                   double dCellWidth, double dNoDataVal,
-                   const char * sXField,
-                   const char * sYField,
-                   const char * sDataField){
+int Raster::VectortoRaster(const char * sVectorSourcePath,
+                   const char * sRasterOutputPath,
+                   double dCellWidth,
+                   const char * LayerName){
+
+    // TODO: Calculate the extent of the shapefile layer and
+    // Create a template raster with those specs.
+
+    RasterMeta TemplateRaster(sRasterOutputPath);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, LayerName, &TemplateRaster);
 
 }
+
 /**
 <PolygonFilePath> <PolygonLayerName> <TemplateRasterPath> <OutputRasterPath>
 <PolygonFilePath> <PolygonLayerName> <CellSizeEtc> <OutputRasterPath>
