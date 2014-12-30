@@ -1,7 +1,11 @@
 #define MY_DLL_EXPORT
 
-#include "gdal_priv.h"
+#include <gdal_priv.h>
+#include <gdal_alg.h>
+#include <ogrsf_frmts.h>
+
 #include "raster.h"
+#include "rastermeta.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 
@@ -15,8 +19,40 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
                    const char * LayerName,
                    RasterMeta * p_rastermeta ){
 
+    OGRRegisterAll();
+
+    // Create the output dataset for writing
+    GDALDataset * pDSOutput = CreateOutputDS(sRasterOutputPath, p_rastermeta);
+
+    OGRDataSource * pDSVectorInput;
+    pDSVectorInput = OGRSFDriverRegistrar::Open( sVectorSourcePath, FALSE );
+    if (pDSVectorInput == NULL)
+        return INPUT_FILE_ERROR;
+
+    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( LayerName );
+
+    OGREnvelope * psExtent;
+    poLayer->GetExtent(psExtent, true);
+
+    // http://stackoverflow.com/questions/18384217/gdalrasterizelayers-with-all-touched-and-attribute-option
+
+    char** options = nullptr;
+
+    options = CSLSetNameValue(options, "ALL_TOUCHED", "TRUE");
+    options = CSLSetNameValue(options, "ATTRIBUTE", "ID");
+
+    int nTargetBand = 1;
+    CPLErr eErr = GDALRasterizeLayers(pDSOutput, 1, &nTargetBand, 1,
+            (OGRLayerH*)&poLayer,
+            NULL, NULL, NULL, options, NULL, NULL);
+
+    CSLDestroy(options);
+    GDALClose(pDSOutput);
+    GDALClose(pDSVectorInput);
+
     //This is where the implementation actually goes
     return PROCESS_OK;
+
 }
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
@@ -34,10 +70,36 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
                    double dCellWidth,
                    const char * LayerName){
 
-    // TODO: Calculate the extent of the shapefile layer and
-    // Create a template raster with those specs.
 
-    RasterMeta TemplateRaster(sRasterOutputPath);
+    OGRRegisterAll();
+    OGRDataSource * pDSVectorInput;
+    pDSVectorInput = OGRSFDriverRegistrar::Open( sVectorSourcePath, FALSE );
+    if (pDSVectorInput == NULL)
+        return INPUT_FILE_ERROR;
+
+    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( LayerName );
+    poLayer = pDSVectorInput->GetLayerByName( LayerName );
+
+    OGREnvelope * psExtent;
+    poLayer->GetExtent(psExtent, true);
+
+    OGRwkbGeometryType layerType = poLayer->GetGeomType();
+
+    int nRows = (int)((psExtent->MaxY - psExtent->MinY) / fabs(dCellWidth));
+    int nCols = (int)((psExtent->MaxX - psExtent->MinX) / fabs(dCellWidth));
+\
+    // We're going to create them without projections but the projection will need to be set int he next step.
+
+    // TODO: DETECT WHAT THE DATA TYPE IS.
+    // For floats.
+    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
+    RasterMeta TemplateRaster(psExtent->MaxY, psExtent->MinX, nRows, nCols, dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
+
+    // For Integers.
+//    int nNoDataValue = (int) std::numeric_limits<int>::lowest();
+//    RasterMeta TemplateRaster(psExtent->MaxY, psExtent->MinX, nRows, nCols, dCellWidth, dCellWidth, nNoDataValue, "GTiff", GDT_Byte, "");
+
+    GDALClose(pDSVectorInput);
     return VectortoRaster(sVectorSourcePath, sRasterOutputPath, LayerName, &TemplateRaster);
 
 }
