@@ -198,11 +198,27 @@ public:
                               const char * LayerName,
                               RasterMeta * p_rastermeta );
 
+    /**
+     * @brief VectortoRaster convenience method that takes a raster template
+     * @param sVectorSourcePath
+     * @param sRasterOutputPath
+     * @param sRasterTemplate
+     * @param LayerName
+     * @return
+     */
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath,
                               const char * sRasterTemplate,
                               const char * LayerName );
 
+    /**
+     * @brief VectortoRaster Convenience method that takes a cell width
+     * @param sVectorSourcePath
+     * @param sRasterOutputPath
+     * @param dCellWidth
+     * @param LayerName
+     * @return
+     */
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath,
                               double dCellWidth,
