@@ -31,23 +31,44 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
+
     OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
+    char *pszWKT = NULL;
+
+    poLayer->GetSpatialRef()->exportToWkt(&pszWKT);
+    p_rastermeta->SetProjectionRef(pszWKT);
+    CPLFree(pszWKT);
+
     // http://stackoverflow.com/questionsb/18384217/gdalrasterizelayers-with-all-touched-and-attribute-option
+//    char** options = nullptr;
 
-    char** options = nullptr;
+//    options = CSLSetNameValue(options, "ALL_TOUCHED", "TRUE");
+//    options = CSLSetNameValue(options, "ATTRIBUTE", psFieldName);
 
-    options = CSLSetNameValue(options, "ALL_TOUCHED", "TRUE");
-    options = CSLSetNameValue(options, "ATTRIBUTE", psFieldName);
+//    int nTargetBand = 1;
+//    CPLErr eErr = GDALRasterizeLayers(pDSOutput, 1, &nTargetBand, 1,
+//            (OGRLayerH*)&poLayer,
+//            NULL, NULL, NULL, options, NULL, NULL);
 
-    int nTargetBand = 1;
-    CPLErr eErr = GDALRasterizeLayers(pDSOutput, 1, &nTargetBand, 1,
-            (OGRLayerH*)&poLayer,
-            NULL, NULL, NULL, options, NULL, NULL);
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*p_rastermeta->GetCols());
 
+    int i, j;
+    for (i = 0; i < p_rastermeta->GetRows(); i++)
+    {
+        for (j = 0; j < p_rastermeta->GetCols(); j++)
+        {
+            OGRPoint point();
+            pOutputLine[j] = 1;
+        }
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, p_rastermeta->GetCols(), 1, pOutputLine, p_rastermeta->GetCols(), 1, GDT_Float64, 0, 0);
+    }
+
+
+    // Done. Calculate stats and close file
     CalculateStats(pDSOutput->GetRasterBand(1));
 
-    CSLDestroy(options);
+//    CSLDestroy(options);
     GDALClose(pDSOutput);
     GDALClose(pDSVectorInput);
 
