@@ -85,10 +85,14 @@ public:
      */
     int IsConcurrent(RasterMeta *pCompareMeta);
 
+    /**
+     * @brief SetProjectionRef
+     * @param fProjectionRef
+     */
+    void SetProjectionRef(const char * fProjectionRef);
 
 protected:
 
-    void SetProjectionRef(const char * fProjectionRef);
     void SetGDALDriver(const char * sGDALDriver);
 
 private:
