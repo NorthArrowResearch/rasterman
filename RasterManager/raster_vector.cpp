@@ -6,9 +6,10 @@
 
 #include "raster.h"
 #include "rastermeta.h"
+#include "rastermanager.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
-
+#include <string>
 #include <limits>
 #include <math.h>
 
@@ -16,7 +17,8 @@ namespace RasterManager {
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
                    const char * sRasterOutputPath,
-                   const char * LayerName,
+                   const char * psLayerName,
+                   const char * psFieldName,
                    RasterMeta * p_rastermeta ){
 
     OGRRegisterAll();
@@ -29,26 +31,27 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
-    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( LayerName );
+    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
-    OGREnvelope * psExtent;
-    poLayer->GetExtent(psExtent, true);
-
-    // http://stackoverflow.com/questions/18384217/gdalrasterizelayers-with-all-touched-and-attribute-option
+    // http://stackoverflow.com/questionsb/18384217/gdalrasterizelayers-with-all-touched-and-attribute-option
 
     char** options = nullptr;
 
     options = CSLSetNameValue(options, "ALL_TOUCHED", "TRUE");
-    options = CSLSetNameValue(options, "ATTRIBUTE", "ID");
+    options = CSLSetNameValue(options, "ATTRIBUTE", psFieldName);
 
     int nTargetBand = 1;
     CPLErr eErr = GDALRasterizeLayers(pDSOutput, 1, &nTargetBand, 1,
             (OGRLayerH*)&poLayer,
             NULL, NULL, NULL, options, NULL, NULL);
 
+    CalculateStats(pDSOutput->GetRasterBand(1));
+
     CSLDestroy(options);
     GDALClose(pDSOutput);
     GDALClose(pDSVectorInput);
+
+    PrintRasterProperties(sRasterOutputPath);
 
     //This is where the implementation actually goes
     return PROCESS_OK;
@@ -56,20 +59,21 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 }
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
-                   const char * sRasterOutputPath,
-                   const char * sRasterTemplate,
-                   const char * LayerName ){
+                           const char * sRasterOutputPath,
+                           const char * sRasterTemplate,
+                           const char * psLayerName,
+                           const char * psFieldName){
 
     RasterMeta TemplateRaster(sRasterTemplate);
-    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, LayerName, &TemplateRaster);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
 
 }
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
-                   const char * sRasterOutputPath,
-                   double dCellWidth,
-                   const char * LayerName){
-
+                           const char * sRasterOutputPath,
+                           double dCellWidth,
+                           const char * psLayerName,
+                           const char * psFieldName){
 
     OGRRegisterAll();
     OGRDataSource * pDSVectorInput;
@@ -77,30 +81,26 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
-    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( LayerName );
-    poLayer = pDSVectorInput->GetLayerByName( LayerName );
+    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
-    OGREnvelope * psExtent;
-    poLayer->GetExtent(psExtent, true);
+    if (poLayer == NULL)
+        return VECTOR_LAYER_NOT_FOUND;
 
-    OGRwkbGeometryType layerType = poLayer->GetGeomType();
+    OGREnvelope psExtent;
+    poLayer->GetExtent(&psExtent, FALSE);
 
-    int nRows = (int)((psExtent->MaxY - psExtent->MinY) / fabs(dCellWidth));
-    int nCols = (int)((psExtent->MaxX - psExtent->MinX) / fabs(dCellWidth));
+    int nRows = (int)((psExtent.MaxY - psExtent.MinY) / fabs(dCellWidth));
+    int nCols = (int)((psExtent.MaxX - psExtent.MinX) / fabs(dCellWidth));
 \
     // We're going to create them without projections but the projection will need to be set int he next step.
 
-    // TODO: DETECT WHAT THE DATA TYPE IS.
+
     // For floats.
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
-    RasterMeta TemplateRaster(psExtent->MaxY, psExtent->MinX, nRows, nCols, dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
-
-    // For Integers.
-//    int nNoDataValue = (int) std::numeric_limits<int>::lowest();
-//    RasterMeta TemplateRaster(psExtent->MaxY, psExtent->MinX, nRows, nCols, dCellWidth, dCellWidth, nNoDataValue, "GTiff", GDT_Byte, "");
+    RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
 
     GDALClose(pDSVectorInput);
-    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, LayerName, &TemplateRaster);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
 
 }
 
