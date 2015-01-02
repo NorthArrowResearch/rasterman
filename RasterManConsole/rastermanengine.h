@@ -154,14 +154,6 @@ private:
      * @param argv
      */
     int MakeConcurrent(int argc, char *argv[]);
-    /**
-     * @brief isNumeric
-     * @param pszInput
-     * @param nNumberBase
-     * @return
-     */
-    bool isNumeric(const char *pszInput, int nNumberBase);
-
 
 
 };

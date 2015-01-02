@@ -439,16 +439,6 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
     return eResult;
 }
 
-bool RasterManEngine::isNumeric( const char* pszInput, int nNumberBase )
-{
-    std::string base = "0123456789ABCDEF";
-    std::string input = pszInput;
-
-    return (input.find_first_not_of(base.substr(0, nNumberBase)) == std::string::npos);
-
-}
-
-
 int RasterManEngine::Mask(int argc, char * argv[])
 {
     if (argc != 5)
@@ -630,15 +620,16 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {
-    if (argc < 6)
+    if (argc < 7)
     {
         std::cout << "\n Convert a Vector file into a raster.";
-        std::cout << "\n    Usage: gcd vector2raster <vector_file_path> <output_raster_path> <vector_layer> [<cell_size> | <raster_template_path>]";
+        std::cout << "\n    Usage: gcd vector2raster <vector_file_path> <output_raster_path> <vector_layer> <vector_field> [<cell_size> | <raster_template_path>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       vector_file_path: Absolute full path to existing .shp file.";
         std::cout << "\n     output_raster_path: Absolute full path to desired output raster file.";
         std::cout << "\n           vector_layer: Name of the vector layer. use \"quotes\" for names with spaces.";
+        std::cout << "\n           vector_field: Name of the field. use \"quotes\" for names with spaces.";
         std::cout << "\n";
         std::cout << "\n      cell_size: Cell size for the output raster.";
         std::cout << "\n          OR";
@@ -649,23 +640,26 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
     int eResult = PROCESS_OK;
 
     // Either the last parameter is a double which indicates we are being given cell size.
-    if (isNumeric(argv[6], 10)){
+    QString sArg2 = argv[6];
 
-        double dCellSize;
-        dCellSize = GetDouble(argc, argv, 5);
+    bool FileisNumeric;
+    double dCellSize = sArg2.toDouble(&FileisNumeric);
 
-        eResult = RasterManager::Raster::VectortoRaster( argv[3],    // sVectorSourcePath
-                argv[4],    // sRasterOutputPath
+    if (FileisNumeric){
+        eResult = RasterManager::Raster::VectortoRaster( argv[2],    // sVectorSourcePath
+                argv[3],    // sRasterOutputPath
                 dCellSize,  // dCellWidth
-                argv[5]     // LayerName
+                argv[4],    // LayerName
+                argv[5]     // FieldNAme
                 );
     }
     // Or we are using a template raster for the bounds
     else {
-        eResult = RasterManager::Raster::VectortoRaster( argv[3],  // sVectorSourcePath
-                argv[4],  // sRasterOutputPath
+        eResult = RasterManager::Raster::VectortoRaster( argv[2],  // sVectorSourcePath
+                argv[3],  // sRasterOutputPath
                 argv[6],  // sRasterTemplate
-                argv[5]   // LayerName
+                argv[4],  // LayerName
+                argv[5]   // FieldNAme
                 );
     }
 
