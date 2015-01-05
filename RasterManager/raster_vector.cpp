@@ -2,7 +2,7 @@
 
 #include <gdal_priv.h>
 #include <gdal_alg.h>
-#include <ogrsf_frmts.h>
+#include <ogr_api.h>
 
 #include "raster.h"
 #include "rastermeta.h"
@@ -30,11 +30,8 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
-
     OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
-    int layerCount = pDSVectorInput->GetLayerCount();
-    int featurecount = poLayer->GetFeatureCount();
     int fieldindex = poLayer->GetFeature(0)->GetFieldIndex(psFieldName);
 
     // The type of the field.
@@ -66,51 +63,50 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(sRasterOutputPath, p_rastermeta);
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*p_rastermeta->GetCols());
 
-    int i, j;
-    for (i = 0; i < p_rastermeta->GetRows(); i++)
-    {
-        for (j = 0; j < p_rastermeta->GetCols(); j++)
+    OGRFeature * ogrFeat;
+    std::vector<OGRGeometryH> ogrBurnGeometries;
+    std::vector<double> dBurnValues;
+
+    // Create a list of burn-in values
+    poLayer->ResetReading();
+    while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
+
+        OGRGeometry * ogrGeom;
+        // No geometry found. Move along.
+        if( ogrFeat->GetGeometryRef() == NULL )
         {
-            double xCoord = (j * fabs(p_rastermeta->GetCellWidth())) + p_rastermeta->GetLeft();
-            double yCoord = p_rastermeta->GetTop() - (i * fabs(p_rastermeta->GetCellHeight()));
-
-            OGRGeometry * XYPoint = new OGRPoint(xCoord,yCoord);
-
-            // This will filter out the geometries whose bounding boxes do not overlap the point
-            // It will cut way down on the computation time. We still need to do a geometry Within() call
-            // Though to be sure.
-            poLayer->ResetReading();
-            poLayer->SetSpatialFilter(XYPoint);
-            bool bFoundPoint = FALSE;
-            OGRFeature *poFeature;
-            while( (poFeature = poLayer->GetNextFeature()) != NULL && !bFoundPoint)
-            {
-                if (XYPoint->Within(poFeature->GetGeometryRef())){
-                    bFoundPoint = TRUE;
-                    // Handle field types according to their type:
-                    if (fieldType == OFTString){
-                        pOutputLine[j] = (double) poFeature->GetFID();
-                        double test = pOutputLine[j];
-                    }
-                    else {
-                        pOutputLine[j] = poFeature->GetFieldAsDouble(psFieldName);
-                        double test = pOutputLine[j];
-                    }
-                }
-                OGRFeature::DestroyFeature( poFeature );
-            }
-            delete XYPoint;
+            delete ogrFeat;
+            continue;
         }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, p_rastermeta->GetCols(), 1, pOutputLine, p_rastermeta->GetCols(), 1, OutputDataType, 0, 0);
-    }
+        ogrGeom = ogrFeat->GetGeometryRef()->clone();
+        ogrBurnGeometries.push_back( ogrGeom );
 
+        if (fieldType == OFTString){
+            dBurnValues.push_back( ogrFeat->GetFID() );
+        }
+        else {
+            dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
+        }
+        delete ogrFeat;
+    }
+    int band = 1;
+    char **papszRasterizeOptions = NULL;
+    papszRasterizeOptions =
+        CSLSetNameValue( papszRasterizeOptions, "ALL_TOUCHED", "TRUE" );
+
+    CPLErr err = GDALRasterizeGeometries( pDSOutput, 1, &band,
+                                          ogrBurnGeometries.size(),
+                                          &(ogrBurnGeometries[0]),
+                                          NULL, NULL,
+                                          &(dBurnValues[0]),
+                                          papszRasterizeOptions,
+                                          NULL, NULL );
 
     // Done. Calculate stats and close file
     CalculateStats(pDSOutput->GetRasterBand(1));
 
-//    CSLDestroy(options);
+    CSLDestroy(papszRasterizeOptions);
     GDALClose(pDSOutput);
     GDALClose(pDSVectorInput);
 
