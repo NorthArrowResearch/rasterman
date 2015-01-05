@@ -72,14 +72,14 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     poLayer->ResetReading();
     while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
 
-        OGRGeometry * ogrGeom;
+        OGRGeometryH ogrGeom;
         // No geometry found. Move along.
         if( ogrFeat->GetGeometryRef() == NULL )
         {
             delete ogrFeat;
             continue;
         }
-        ogrGeom = ogrFeat->GetGeometryRef()->clone();
+        ogrGeom = (OGRGeometryH) ogrFeat->GetGeometryRef();
         ogrBurnGeometries.push_back( ogrGeom );
 
         if (fieldType == OFTString){
@@ -166,10 +166,10 @@ void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const c
 
     int featurecount = poLayer->GetFeatureCount();
 
+    // use the filename with CSV added onto the end.
     QFileInfo sOutputFileInfo(sRasterOutputPath);
     QDir sNewDir = QDir(sOutputFileInfo.absolutePath());
-    QString csvbasename = sOutputFileInfo.completeBaseName();
-    QString sCSVFullPath = sNewDir.filePath(csvbasename + ".csv");
+    QString sCSVFullPath = sNewDir.filePath(sOutputFileInfo.completeBaseName() + ".csv");
 
     QFile csvFile(sCSVFullPath);
 
