@@ -30,8 +30,10 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
-    int layerCount = pDSVectorInput->GetLayerCount();
+
     OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
+
+    int layerCount = pDSVectorInput->GetLayerCount();
     int featurecount = poLayer->GetFeatureCount();
     int fieldindex = poLayer->GetFeature(0)->GetFieldIndex(psFieldName);
 
@@ -71,24 +73,33 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     {
         for (j = 0; j < p_rastermeta->GetCols(); j++)
         {
-            bool FoundIntersect = FALSE;
-            int counter = 0;
-            OGRGeometry * XYPoint = new OGRPoint(1,1);
-            while (counter < featurecount && !FoundIntersect){
-                OGRFeature * psFeat = poLayer->GetFeature(counter);
-                OGRGeometry * psGeom =  psFeat->GetGeometryRef();
-                if (psGeom->Contains(XYPoint)){
+            double xCoord = (j * fabs(p_rastermeta->GetCellWidth())) + p_rastermeta->GetLeft();
+            double yCoord = p_rastermeta->GetTop() - (i * fabs(p_rastermeta->GetCellHeight()));
 
-                    FoundIntersect = TRUE;
+            OGRGeometry * XYPoint = new OGRPoint(xCoord,yCoord);
+
+            // This will filter out the geometries whose bounding boxes do not overlap the point
+            // It will cut way down on the computation time. We still need to do a geometry Within() call
+            // Though to be sure.
+            poLayer->ResetReading();
+            poLayer->SetSpatialFilter(XYPoint);
+            bool bFoundPoint = FALSE;
+            OGRFeature *poFeature;
+            while( (poFeature = poLayer->GetNextFeature()) != NULL && !bFoundPoint)
+            {
+                if (XYPoint->Within(poFeature->GetGeometryRef())){
+                    bFoundPoint = TRUE;
                     // Handle field types according to their type:
                     if (fieldType == OFTString){
-                        pOutputLine[j] = (double) counter;
+                        pOutputLine[j] = (double) poFeature->GetFID();
+                        double test = pOutputLine[j];
                     }
                     else {
-                        pOutputLine[j] = psFeat->GetFieldAsDouble(psFieldName);
+                        pOutputLine[j] = poFeature->GetFieldAsDouble(psFieldName);
+                        double test = pOutputLine[j];
                     }
                 }
-
+                OGRFeature::DestroyFeature( poFeature );
             }
             delete XYPoint;
         }
@@ -173,10 +184,14 @@ void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const c
       //    Write CSV file header
       stream << "\"index\", " << "\""<< psFieldName << "\""<< "\n"; // this writes first line with two columns
 
-      for (int i= 0; i< featurecount; i++){
-          const char * sFieldVal = poLayer->GetFeature(i)->GetFieldAsString(psFieldName);
+      OGRFeature *poFeature;
+      poLayer->ResetReading();
+      poLayer->SetSpatialFilter(NULL);
+      while( (poFeature = poLayer->GetNextFeature()) != NULL){
+          const char * sFieldVal = poFeature->GetFieldAsString(psFieldName);
           //        write line to file
-          stream << i << ", " << "\"" << sFieldVal << "\"" << "\n"; // this writes first line with two columns
+          stream << poFeature->GetFID() << ", " << "\"" << sFieldVal << "\"" << "\n"; // this writes first line with two columns
+          OGRFeature::DestroyFeature( poFeature );
       }
 
       csvFile.close();
