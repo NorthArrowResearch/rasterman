@@ -4,6 +4,7 @@
 #include "rastermeta.h"
 #include "rastermanager_global.h"
 #include "rastermanager_interface.h"
+#include <ogrsf_frmts.h>
 #include <QString>
 #include <string>
 
@@ -304,6 +305,7 @@ public:
       */
      static int RasterMosaic(const char * csRasters, const char * psOutput);
 
+     static void OutputCSVFile(OGRLayer *poLayer, const char *psFieldName, const char *sRasterOutputPath);
 protected:
 
     /**
