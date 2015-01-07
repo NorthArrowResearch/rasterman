@@ -3,6 +3,7 @@
 #include <gdal_priv.h>
 #include <gdal_alg.h>
 #include <ogr_api.h>
+#include <QDebug>
 
 #include "raster.h"
 #include "rastermeta.h"
@@ -68,19 +69,21 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     std::vector<OGRGeometryH> ogrBurnGeometries;
     std::vector<double> dBurnValues;
 
+    OGRGeometryH hPolygon;
+
     // Create a list of burn-in values
     poLayer->ResetReading();
     while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
 
-        OGRGeometryH ogrGeom;
+        OGRGeometry * ogrGeom;
         // No geometry found. Move along.
         if( ogrFeat->GetGeometryRef() == NULL )
         {
             delete ogrFeat;
             continue;
         }
-        ogrGeom = (OGRGeometryH) ogrFeat->GetGeometryRef();
-        ogrBurnGeometries.push_back( ogrGeom );
+        ogrGeom = ogrFeat->GetGeometryRef();
+        ogrBurnGeometries.push_back( (OGRGeometryH) ogrGeom->clone() );
 
         if (fieldType == OFTString){
             dBurnValues.push_back( ogrFeat->GetFID() );
@@ -96,12 +99,15 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         CSLSetNameValue( papszRasterizeOptions, "ALL_TOUCHED", "TRUE" );
 
     CPLErr err = GDALRasterizeGeometries( pDSOutput, 1, &band,
-                                          ogrBurnGeometries.size(),
+                                          1,
                                           &(ogrBurnGeometries[0]),
                                           NULL, NULL,
                                           &(dBurnValues[0]),
-                                          papszRasterizeOptions,
+                                          NULL,
                                           NULL, NULL );
+
+    ogrBurnGeometries.clear();
+    dBurnValues.clear();
 
     // Done. Calculate stats and close file
     CalculateStats(pDSOutput->GetRasterBand(1));
@@ -155,7 +161,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     // For floats.
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
-    RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
+    RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, -dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
 
     GDALClose(pDSVectorInput);
     return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
