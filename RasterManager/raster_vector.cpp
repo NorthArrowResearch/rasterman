@@ -99,7 +99,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         CSLSetNameValue( papszRasterizeOptions, "ALL_TOUCHED", "TRUE" );
 
     CPLErr err = GDALRasterizeGeometries( pDSOutput, 1, &band,
-                                          1,
+                                          ogrBurnGeometries.size(),
                                           &(ogrBurnGeometries[0]),
                                           NULL, NULL,
                                           &(dBurnValues[0]),
