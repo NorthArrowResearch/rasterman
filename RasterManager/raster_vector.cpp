@@ -83,11 +83,12 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         ogrGeom = ogrFeat->GetGeometryRef();
         if( ogrGeom == NULL )
         {
-            delete ogrFeat;
+            OGRFeature::DestroyFeature( ogrFeat );
             continue;
         }
+        OGRGeometry * ogrClone = ogrGeom->clone();
 
-        ogrBurnGeometries.push_back( (OGRGeometryH) ogrGeom);
+        ogrBurnGeometries.push_back( (OGRGeometryH) ogrClone);
 
         if (fieldType == OFTString){
             dBurnValues.push_back( ogrFeat->GetFID() );
@@ -95,6 +96,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         else {
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
+        OGRFeature::DestroyFeature( ogrFeat );
 
     }
 
