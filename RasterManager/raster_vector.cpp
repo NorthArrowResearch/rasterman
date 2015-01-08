@@ -72,23 +72,20 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     std::vector<OGRGeometryH> ogrBurnGeometries;
     std::vector<double> dBurnValues;
 
-    OGRGeometryH hPolygon;
-
     // Create a list of burn-in values
     poLayer->ResetReading();
     while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
 
-        OGRGeometry * ogrGeom;
+        OGRGeometry * ogrGeom = ogrFeat->GetGeometryRef();
+
         // No geometry found. Move along.
-        ogrGeom = ogrFeat->GetGeometryRef();
         if( ogrGeom == NULL )
         {
             OGRFeature::DestroyFeature( ogrFeat );
             continue;
         }
-        OGRGeometry * ogrClone = ogrGeom->clone();
 
-        ogrBurnGeometries.push_back( (OGRGeometryH) ogrClone);
+        ogrBurnGeometries.push_back( static_cast<OGRGeometryH>(ogrGeom->clone()) );
 
         if (fieldType == OFTString){
             dBurnValues.push_back( ogrFeat->GetFID() );
