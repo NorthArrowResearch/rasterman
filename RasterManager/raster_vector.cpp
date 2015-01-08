@@ -33,10 +33,9 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
-    int fieldindex = poLayer->GetFeature(0)->GetFieldIndex(psFieldName);
-
     // The type of the field.
     OGRFeature * feat1 = poLayer->GetFeature(0);
+    int fieldindex = feat1->GetFieldIndex(psFieldName);
     OGRFieldType fieldType = feat1->GetFieldDefnRef(fieldindex)->GetType();
 
     // The data type we're going to use for the file
@@ -96,7 +95,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         else {
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
-        delete ogrFeat;
+//        delete ogrFeat;
     }
 
     int band = 1;
