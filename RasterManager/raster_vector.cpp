@@ -72,14 +72,14 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     // Create a list of burn-in values
     // -------------------------------------------------------
 
-    OGRFeature * ogrFeat;
+
     std::vector<OGRGeometryH> ogrBurnGeometries;
     std::vector<double> dBurnValues;
 
     poLayer->ResetReading();
+    OGRFeature * ogrFeat = poLayer->GetNextFeature();
 
-
-    while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
+    while( ogrFeat != NULL ){
 
         OGRGeometry * ogrGeom = ogrFeat->GetGeometryRef();
 
@@ -103,7 +103,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         }
         // GetNextFeature() creates a clone so we must delete it.
         OGRFeature::DestroyFeature( ogrFeat );
-
+        ogrFeat = poLayer->GetNextFeature();
     }
 
     // Do the Actual Burning of Geometries.
