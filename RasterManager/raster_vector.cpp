@@ -56,6 +56,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     }
 
     // Get our projection and set the rastermeta accordingly.
+    // -------------------------------------------------------
     char *pszWKT = NULL;
 
     OGRSpatialReference* poSRS = poLayer->GetSpatialRef();
@@ -68,12 +69,16 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(sRasterOutputPath, p_rastermeta);
 
+    // Create a list of burn-in values
+    // -------------------------------------------------------
+
     OGRFeature * ogrFeat;
     std::vector<OGRGeometryH> ogrBurnGeometries;
     std::vector<double> dBurnValues;
 
-    // Create a list of burn-in values
     poLayer->ResetReading();
+
+
     while( (ogrFeat = poLayer->GetNextFeature() ) != NULL ){
 
         OGRGeometry * ogrGeom = ogrFeat->GetGeometryRef();
@@ -85,17 +90,24 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             continue;
         }
 
-        ogrBurnGeometries.push_back( static_cast<OGRGeometryH>(ogrGeom->clone()) );
+        // Push a clone of this geometry onto the list of shapes to burn
+        ogrBurnGeometries.push_back( static_cast<OGRGeometryH>( ogrGeom->clone() ) );
 
         if (fieldType == OFTString){
+            // If it's a string type we burn the FID. The value is then placed in a CSV file
             dBurnValues.push_back( ogrFeat->GetFID() );
         }
         else {
+            // If it's a float type or a byte type we write it directly.
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
+        // GetNextFeature() creates a clone so we must delete it.
         OGRFeature::DestroyFeature( ogrFeat );
 
     }
+
+    // Do the Actual Burning of Geometries.
+    // -------------------------------------------------------
 
     int band = 1;
     char **papszRasterizeOptions = NULL;
@@ -150,6 +162,10 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
+    // Get the extents of the file before passing it off to the function that actually burns
+    // the geometries
+    // -------------------------------------------------------
+
     OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
 
     if (poLayer == NULL)
@@ -161,9 +177,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     int nRows = (int)((psExtent.MaxY - psExtent.MinY) / fabs(dCellWidth));
     int nCols = (int)((psExtent.MaxX - psExtent.MinX) / fabs(dCellWidth));
 \
-    // We're going to create them without projections but the projection will need to be set int he next step.
-
-    // For floats.
+    // We're going to create them without projections. The projections get set later.
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
     RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, -dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
 
@@ -173,8 +187,6 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 }
 
 void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const char * sRasterOutputPath){
-
-    int featurecount = poLayer->GetFeatureCount();
 
     // use the filename with CSV added onto the end.
     QFileInfo sOutputFileInfo(sRasterOutputPath);
@@ -187,7 +199,7 @@ void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const c
     {
       QTextStream stream(&csvFile);
 
-      //    Write CSV file header
+      // Write CSV file header
       stream << "\"index\", " << "\""<< psFieldName << "\""<< "\n"; // this writes first line with two columns
 
       OGRFeature *poFeature;
@@ -195,7 +207,7 @@ void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const c
       poLayer->SetSpatialFilter(NULL);
       while( (poFeature = poLayer->GetNextFeature()) != NULL){
           const char * sFieldVal = poFeature->GetFieldAsString(psFieldName);
-          //        write line to file
+          //  write line to file
           stream << poFeature->GetFID() << ", " << "\"" << sFieldVal << "\"" << "\n"; // this writes first line with two columns
           OGRFeature::DestroyFeature( poFeature );
       }
@@ -205,23 +217,6 @@ void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const c
     return;
 
 }
-
-/**
-<PolygonFilePath> <PolygonLayerName> <TemplateRasterPath> <OutputRasterPath>
-<PolygonFilePath> <PolygonLayerName> <CellSizeEtc> <OutputRasterPath>
-
-Output type should be detected.
-1) If string then byte with CSV legend
-2) If integer then byte with no legend
-3) if other than float32
-
-Validations:
-must be polygon geometry type (and not point or line).
-must have spatial reference.
-
-**/
-
-
 
 
 }
