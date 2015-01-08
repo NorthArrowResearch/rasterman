@@ -80,12 +80,12 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
         OGRGeometry * ogrGeom;
         // No geometry found. Move along.
-        if( ogrFeat->GetGeometryRef() == NULL )
+        ogrGeom = ogrFeat->GetGeometryRef();
+        if( ogrGeom == NULL )
         {
             delete ogrFeat;
             continue;
         }
-        ogrGeom = ogrFeat->GetGeometryRef()->clone();
 
         ogrBurnGeometries.push_back( (OGRGeometryH) ogrGeom);
 
@@ -95,7 +95,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         else {
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
-//        delete ogrFeat;
+
     }
 
     int band = 1;
