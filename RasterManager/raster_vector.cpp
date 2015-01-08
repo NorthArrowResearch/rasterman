@@ -36,7 +36,8 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     int fieldindex = poLayer->GetFeature(0)->GetFieldIndex(psFieldName);
 
     // The type of the field.
-    OGRFieldType fieldType = poLayer->GetFeature(0)->GetFieldDefnRef(fieldindex)->GetType();
+    OGRFeature * feat1 = poLayer->GetFeature(0);
+    OGRFieldType fieldType = feat1->GetFieldDefnRef(fieldindex)->GetType();
 
     // The data type we're going to use for the file
     GDALDataType OutputDataType = GDT_Byte;
@@ -58,9 +59,12 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     // Get our projection and set the rastermeta accordingly.
     char *pszWKT = NULL;
 
-    poLayer->GetSpatialRef()->exportToWkt(&pszWKT);
+    OGRSpatialReference* poSRS = poLayer->GetSpatialRef();
+
+    poSRS->exportToWkt(&pszWKT);
     p_rastermeta->SetProjectionRef(pszWKT);
     CPLFree(pszWKT);
+    OSRDestroySpatialReference(poSRS);
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(sRasterOutputPath, p_rastermeta);
@@ -82,8 +86,9 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             delete ogrFeat;
             continue;
         }
-        ogrGeom = ogrFeat->GetGeometryRef();
-        ogrBurnGeometries.push_back( (OGRGeometryH) ogrGeom->clone() );
+        ogrGeom = ogrFeat->GetGeometryRef()->clone();
+
+        ogrBurnGeometries.push_back( (OGRGeometryH) ogrGeom);
 
         if (fieldType == OFTString){
             dBurnValues.push_back( ogrFeat->GetFID() );
@@ -93,6 +98,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
         }
         delete ogrFeat;
     }
+
     int band = 1;
     char **papszRasterizeOptions = NULL;
     papszRasterizeOptions =
@@ -114,7 +120,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     CSLDestroy(papszRasterizeOptions);
     GDALClose(pDSOutput);
-    GDALClose(pDSVectorInput);
+    pDSVectorInput->Release();
 
     PrintRasterProperties(sRasterOutputPath);
 
@@ -163,7 +169,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
     RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, -dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
 
-    GDALClose(pDSVectorInput);
+    pDSVectorInput->Release();
     return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
 
 }
