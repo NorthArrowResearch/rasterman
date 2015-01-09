@@ -78,7 +78,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     std::vector<double> dBurnValues;
 
     poLayer->ResetReading();
-    OGRFeature * ogrFeat = poLayer->GetNextFeature();
+    OGRFeature * ogrFeat = poLayer->GetNextFeature();   // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
 
     while( ogrFeat != NULL ){
 
@@ -91,10 +91,10 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             continue;
         }
 
-        OGRGeometry * geoClone = ogrGeom->clone();
+        OGRGeometry * geoClone = ogrGeom->clone();  // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
 
         // Push a clone of this geometry onto the list of shapes to burn
-        ogrBurnGeometries.push_back( (OGRGeometryH)geoClone );
+        ogrBurnGeometries.push_back( (OGRGeometryH) geoClone );
 
         if (fieldType == OFTString){
             // If it's a string type we burn the FID. The value is then placed in a CSV file
@@ -105,8 +105,8 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
         // GetNextFeature() creates a clone so we must delete it.
-        OGRFeature::DestroyFeature( ogrFeat );
-        ogrFeat = poLayer->GetNextFeature();
+        OGRFeature::DestroyFeature( ogrFeat );      // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
+        ogrFeat = poLayer->GetNextFeature();        // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
     }
 
     // Do the Actual Burning of Geometries.
@@ -133,7 +133,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     CSLDestroy(papszRasterizeOptions);
     GDALClose(pDSOutput);
-    pDSVectorInput->Release();
+    pDSVectorInput->Release();  // <------- UNADDRESSABLE ACCESS beyond heap bounds:
 
     PrintRasterProperties(sRasterOutputPath);
 
