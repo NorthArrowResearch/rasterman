@@ -37,6 +37,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     OGRFeature * feat1 = poLayer->GetFeature(0);
     int fieldindex = feat1->GetFieldIndex(psFieldName);
     OGRFieldType fieldType = feat1->GetFieldDefnRef(fieldindex)->GetType();
+    OGRFeature::DestroyFeature( feat1 );
 
     // The data type we're going to use for the file
     GDALDataType OutputDataType = GDT_Byte;
@@ -90,8 +91,10 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             continue;
         }
 
+        OGRGeometry * geoClone = ogrGeom->clone();
+
         // Push a clone of this geometry onto the list of shapes to burn
-        ogrBurnGeometries.push_back( static_cast<OGRGeometryH>( ogrGeom->clone() ) );
+        ogrBurnGeometries.push_back( (OGRGeometryH)geoClone );
 
         if (fieldType == OFTString){
             // If it's a string type we burn the FID. The value is then placed in a CSV file
