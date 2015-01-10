@@ -91,7 +91,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             continue;
         }
 
-        OGRGeometry * geoClone = ogrGeom->clone();  // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
+        OGRGeometry * geoClone = ogrGeom->clone();  // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory AND LEAK 20 direct bytes
 
         // Push a clone of this geometry onto the list of shapes to burn
         ogrBurnGeometries.push_back( (OGRGeometryH) geoClone );
@@ -105,7 +105,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
             dBurnValues.push_back( ogrFeat->GetFieldAsDouble(psFieldName) );
         }
         // GetNextFeature() creates a clone so we must delete it.
-        OGRFeature::DestroyFeature( ogrFeat );      // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
+        OGRFeature::DestroyFeature( ogrFeat );      // <------- DRMEM!!! UNADDRESSABLE ACCESS beyond heap bounds:
         ogrFeat = poLayer->GetNextFeature();        // <------- DRMEM!!! UNADDRESSABLE ACCESS of freed memory
     }
 
@@ -133,7 +133,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     CSLDestroy(papszRasterizeOptions);
     GDALClose(pDSOutput);
-    pDSVectorInput->Release();  // <------- UNADDRESSABLE ACCESS beyond heap bounds:
+    pDSVectorInput->Release();  // <------- DRMEM!!! UNADDRESSABLE ACCESS beyond heap bounds:
 
     PrintRasterProperties(sRasterOutputPath);
 
