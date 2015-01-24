@@ -142,7 +142,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                         csvX = (int) floor((dVal - p_rastermeta->GetLeft() ) / p_rastermeta->GetCellWidth());
                     }
                     else if (ycol == ncolnumber){
-                        csvY = (int) ceil((p_rastermeta->GetTop() - dVal) / p_rastermeta->GetCellHeight() * -1);
+                        csvY = (int) floor((p_rastermeta->GetTop() - dVal) / p_rastermeta->GetCellHeight() * -1);
                     }
                     else if (zcol == ncolnumber){
                         csvDataVal = dVal;

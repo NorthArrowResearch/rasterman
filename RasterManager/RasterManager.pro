@@ -81,7 +81,7 @@ macx{
     # GDAL is required
     # GDALNIX = /Users/matt/Projects/nar/gdal/gdal-1.11-debug
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    SOURCES += /Users/matt/Projects/nar/gdal/gdal/alg/gdalrasterize.cpp
+    #    SOURCES += /Users/matt/Projects/nar/gdal/gdal/alg/gdalrasterize.cpp
     LIBS += -L$$GDALNIX/lib -lgdal
     INCLUDEPATH += $$GDALNIX/include
     DEPENDPATH  += $$GDALNIX/include
