@@ -103,4 +103,4 @@ sudo make
 
 ## License
 
-[GPL V3](./LICENSE.txt)
+[GPL V3](LICENSE.txt)
