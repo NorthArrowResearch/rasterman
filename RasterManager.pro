@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS += \
     RasterManager \
-    RasterManConsole
+    RasterManConsole \
+    Raster2PNG
