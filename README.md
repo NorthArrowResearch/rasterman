@@ -8,7 +8,7 @@ It does not depend on any of our other git repositories. GDAL 1.10 is required
 
 ```
  Rasterman
- Usage: rasterman <command> [paramters...]
+ Usage: rasterman <command> [parameters...]
 
  Commands (type rasterman followed by the command to retrieve parameter information):
 
@@ -63,7 +63,7 @@ All commands have in-depth help. Just type `rastermanager <command>`
 
 Currently Rastermanager builds on Win32, Win64, Ubuntu12.04 and OSX 10.10.
 
-### Folder structure:
+### Suggested Folder structure:
 
 In order to build this project alongside our [Habitat Model](https://bitbucket.org/northarrowresearch/habitat-model-console) tools you will need the following directory structure so that everything else can find rastermanager:
 
@@ -77,10 +77,15 @@ In order to build this project alongside our [Habitat Model](https://bitbucket.o
 
 ## Compiling:
 
+Once Qt5 and GDaL are installed it should just be a matter of running the following
+
 ```
 qmake -r RasterManager.pro
-sudo make
+make
+sudo make install
 ```
+
+Now you should have `rasterman` in your `/usr/bin` an the `libRasterManager.*` files in `/usr/lib`
 
 ## Contributing
 
