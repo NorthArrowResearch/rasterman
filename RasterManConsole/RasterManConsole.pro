@@ -75,7 +75,10 @@ macx{
 unix:!macx {
     message("Unix")
     # Compile to a central location
-    DESTDIR = /usr/bin
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
+    target.path = /usr/bin
+    INSTALLS += target
 
     # GDAL is required
     LIBS += -L/usr/lib -lgdal

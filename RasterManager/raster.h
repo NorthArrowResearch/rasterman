@@ -195,8 +195,7 @@ public:
 
 
     static int VectortoRaster(const char * sVectorSourcePath,
-                              const char * sRasterOutputPath,
-                              const char * LayerName, const char *FieldName,
+                              const char * sRasterOutputPath, const char *FieldName,
                               RasterMeta * p_rastermeta );
 
     /**
@@ -209,8 +208,7 @@ public:
      */
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath,
-                              const char * sRasterTemplate,
-                              const char * psLayerName , const char *psFieldName);
+                              const char * sRasterTemplate, const char *psFieldName);
 
     /**
      * @brief VectortoRaster Convenience method that takes a cell width
@@ -222,8 +220,7 @@ public:
      */
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath,
-                              double dCellWidth,
-                              const char * psLayerName, const char *psFieldName);
+                              double dCellWidth, const char *psFieldName);
 
 
 

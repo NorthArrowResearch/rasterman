@@ -620,7 +620,7 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {
-    if (argc < 7)
+    if (argc < 6)
     {
         std::cout << "\n Convert a Vector file into a raster.";
         std::cout << "\n    Usage: gcd vector2raster <vector_file_path> <output_raster_path> <vector_layer> <vector_field> [<cell_size> | <raster_template_path>]";
@@ -628,7 +628,6 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
         std::cout << "\n Arguments:";
         std::cout << "\n       vector_file_path: Absolute full path to existing .shp file.";
         std::cout << "\n     output_raster_path: Absolute full path to desired output raster file.";
-        std::cout << "\n           vector_layer: Name of the vector layer. use \"quotes\" for names with spaces.";
         std::cout << "\n           vector_field: Name of the field. use \"quotes\" for names with spaces.";
         std::cout << "\n";
         std::cout << "\n      cell_size: Cell size for the output raster.";
@@ -640,7 +639,7 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
     int eResult = PROCESS_OK;
 
     // Either the last parameter is a double which indicates we are being given cell size.
-    QString sArg2 = argv[6];
+    QString sArg2 = argv[5];
 
     bool FileisNumeric;
     double dCellSize = sArg2.toDouble(&FileisNumeric);
@@ -649,17 +648,15 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
         eResult = RasterManager::Raster::VectortoRaster( argv[2],    // sVectorSourcePath
                 argv[3],    // sRasterOutputPath
                 dCellSize,  // dCellWidth
-                argv[4],    // LayerName
-                argv[5]     // FieldNAme
+                argv[4]     // FieldNAme
                 );
     }
     // Or we are using a template raster for the bounds
     else {
         eResult = RasterManager::Raster::VectortoRaster( argv[2],  // sVectorSourcePath
                 argv[3],  // sRasterOutputPath
-                argv[6],  // sRasterTemplate
-                argv[4],  // LayerName
-                argv[5]   // FieldNAme
+                argv[5],  // sRasterTemplate
+                argv[4]   // FieldNAme
                 );
     }
 

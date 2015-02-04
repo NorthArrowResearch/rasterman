@@ -20,7 +20,6 @@ namespace RasterManager {
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
                    const char * sRasterOutputPath,
-                   const char * psLayerName,
                    const char * psFieldName,
                    RasterMeta * p_rastermeta ){
 
@@ -31,7 +30,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
 
-    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
+    OGRLayer * poLayer = pDSVectorInput->GetLayer(0);
 
     // The type of the field.
     OGRFeature * feat1 = poLayer->GetFeature(0);
@@ -145,18 +144,16 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 int Raster::VectortoRaster(const char * sVectorSourcePath,
                            const char * sRasterOutputPath,
                            const char * sRasterTemplate,
-                           const char * psLayerName,
                            const char * psFieldName){
 
     RasterMeta TemplateRaster(sRasterTemplate);
-    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psFieldName, &TemplateRaster);
 
 }
 
 int Raster::VectortoRaster(const char * sVectorSourcePath,
                            const char * sRasterOutputPath,
                            double dCellWidth,
-                           const char * psLayerName,
                            const char * psFieldName){
 
     OGRRegisterAll();
@@ -168,8 +165,9 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     // Get the extents of the file before passing it off to the function that actually burns
     // the geometries
     // -------------------------------------------------------
-
-    OGRLayer * poLayer = pDSVectorInput->GetLayerByName( psLayerName );
+    // Note: we're just grabbing the first layer here. If we get into needing multiple layers
+    // Then we'll need to re-think this.
+    OGRLayer * poLayer = pDSVectorInput->GetLayer(0);
 
     if (poLayer == NULL)
         return VECTOR_LAYER_NOT_FOUND;
@@ -177,15 +175,23 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     OGREnvelope psExtent;
     poLayer->GetExtent(&psExtent, TRUE);
 
-    int nRows = (int)((psExtent.MaxY - psExtent.MinY) / fabs(dCellWidth));
-    int nCols = (int)((psExtent.MaxX - psExtent.MinX) / fabs(dCellWidth));
+    double dMaxY, dMaxX, dMinY, dMinX;
+    double cellWidth =  fabs(dCellWidth);
+
+    dMaxY = ceil(psExtent.MaxY / cellWidth) * cellWidth;
+    dMaxX = ceil(psExtent.MaxX / cellWidth) * cellWidth;
+    dMinY = floor(psExtent.MinY / cellWidth) * cellWidth;
+    dMinX = floor(psExtent.MinX / cellWidth) * cellWidth;
+
+    int nRows = (int)((dMaxY - dMinY) / cellWidth);
+    int nCols = (int)((dMaxX - dMinX) / cellWidth);
 \
     // We're going to create them without projections. The projections get set later.
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
     RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, -dCellWidth, dCellWidth, fNoDataValue, "GTiff", GDT_Float32, "");
 
     pDSVectorInput->Release();
-    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psLayerName, psFieldName, &TemplateRaster);
+    return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psFieldName, &TemplateRaster);
 
 }
 
