@@ -2,7 +2,7 @@
 #define STRETCHRENDERERSTDEV_H
 
 #include "renderer.h"
-
+namespace Raster2PNG {
 class Renderer_StretchStdDev : public Renderer
 {
 public:
@@ -20,5 +20,5 @@ protected:
     void createLegend();
     void setZeroCenter(bool bValue);
 };
-
+}
 #endif // STRETCHRENDERERSTDEV_H

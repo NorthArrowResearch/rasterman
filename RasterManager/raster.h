@@ -263,18 +263,6 @@ public:
      */
     int Slope(const char *psOutputSlope, const char *psSlpType);
 
-    /**
-      * @brief RastertoPng
-      * @param psOutputPNG
-      * @param nQuality
-      * @param nLongLength
-      * @param nTransparency
-      * @param style
-      * @return
-      */
-     int RastertoPng(const char *psOutputPNG, int nQuality, int nLongLength,
-                     int nTransparency, Raster_SymbologyStyle style);
-
      /**
       * @brief Raster::RasterRootSumSquares
       * @param psRaster1
@@ -520,15 +508,6 @@ private:
                        double fNewCellSize, double fNewLeft, double fNewTop,
                        int nNewRows, int nNewCols);
 
-    /**
-     * @brief getColorTable
-     * @param colorTable
-     * @param style
-     * @param nTransparency
-     * @return
-     */
-    static int GetColorTable(GDALColorTable &colorTable, Raster_SymbologyStyle style,
-                             int nTransparency);
 
     /**
      * @brief resizeAndCompressImage

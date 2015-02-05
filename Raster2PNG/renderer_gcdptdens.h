@@ -2,7 +2,7 @@
 #define RENDERER_GCDPTDENS_H
 
 #include "renderer_classified.h"
-
+namespace Raster2PNG {
 class Renderer_GCDPtDens : public Renderer_Classified
 {
 public:
@@ -13,5 +13,5 @@ protected:
     void createByteRaster();
     void setClassBreaks();
 };
-
+}
 #endif // RENDERER_GCDPTDENS_H

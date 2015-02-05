@@ -27,7 +27,8 @@ SOURCES += \
     renderer_gcdslopeper.cpp \
     renderer_stretchminmax.cpp \
     renderer_stretchstddev.cpp \
-    renderer.cpp
+    renderer.cpp \
+    raster2png_interface.cpp
 
 HEADERS +=\
         raster2png_global.h \
@@ -39,7 +40,9 @@ HEADERS +=\
     renderer_gcdslopeper.h \
     renderer_stretchminmax.h \
     renderer_stretchstddev.h \
-    renderer.h
+    renderer.h \
+    raster2png_interface.h \
+    raster2png_exception.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug

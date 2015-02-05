@@ -1,4 +1,5 @@
 #include "renderer_bytedata.h"
+namespace Raster2PNG {
 
 Renderer_ByteData::Renderer_ByteData(const char *inputRasterPath,
                                      ColorRamp ramp,
@@ -28,4 +29,6 @@ void Renderer_ByteData::createByteRaster()
         pTempRaster->GetRasterBand(1)->RasterIO(GF_Write, 0, i, nCols, 1, newRow, nCols, 1, GDT_Byte, 0, 0);
     }
     CPLFree(byteRow);
+}
+
 }

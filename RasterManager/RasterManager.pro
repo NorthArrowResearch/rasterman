@@ -25,7 +25,6 @@ SOURCES += \
     rastermeta.cpp \
     raster_hillshade.cpp \
     raster_slope.cpp \
-    raster_png.cpp \
     raster_math.cpp \
     raster_csv.cpp \
     raster_concurrency.cpp \
@@ -125,5 +124,4 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 }
-
 message("Building to: $$DESTDIR")

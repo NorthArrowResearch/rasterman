@@ -602,7 +602,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
     case 8: eStyle = (Raster_SymbologyStyle) RasterManager::GetSymbologyStyleFromString(argv[7]); break;
     default:
         std::cout << "\n Create a PNG Image File:";
-        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <opacity> [<raster_type>]";
+        std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <Transparency> [<raster_type>]";
         std::cout << "\n   Command: PNG";
         std::cout << "\n";
         std::cout << "\n Arguments:";
@@ -610,7 +610,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
         std::cout << "\n    output_file_path: Absolute full path to output, hillshade raster file.";
         std::cout << "\n             quality: Image quality integer from 1 to 100. (100 is highest quality.)";
         std::cout << "\n           long_axis: Number of pixels on the longer of the width or height.";
-        std::cout << "\n             opacity: png opacity from 0 to 100. 100 is solid and 0 is transparent.";
+        std::cout << "\n        Transparency: png opacity from 0 to 100.";
         std::cout << "\n         raster_type: (optional) Known raster type. Specify to apply a color gradient.";
         std::cout << "\n                      Leave blank for grayscale PNG image.";
 //        std::cout << "\n                      Valid Options: DEM, DoD, Error, HillShade, PointDensity, SlopeDeg, SlopePC";

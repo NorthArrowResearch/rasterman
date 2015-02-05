@@ -2,7 +2,7 @@
 #define STRETCHRENDERERMINMAX_H
 
 #include "renderer.h"
-
+namespace Raster2PNG {
 class Renderer_StretchMinMax : public Renderer
 {
 public:
@@ -19,5 +19,5 @@ protected:
     void createLegend();
     void setZeroCenter(bool bValue);
 };
-
+}
 #endif // STRETCHRENDERERMINMAX_H

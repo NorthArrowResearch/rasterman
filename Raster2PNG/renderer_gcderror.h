@@ -2,7 +2,7 @@
 #define RENDERER_GCDERROR_H
 
 #include "renderer_classified.h"
-
+namespace Raster2PNG {
 class Renderer_GCDError : public Renderer_Classified
 {
 public:
@@ -13,5 +13,5 @@ protected:
     void createByteRaster();
     void setClassBreaks();
 };
-
+}
 #endif // RENDERER_GCDERROR_H

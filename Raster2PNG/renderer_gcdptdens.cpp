@@ -1,5 +1,5 @@
 #include "renderer_gcdptdens.h"
-
+namespace Raster2PNG {
 Renderer_GCDPtDens::Renderer_GCDPtDens(const char *rasterPath,
                                        int nTransparency):Renderer_Classified(rasterPath, 12, CR_GreenBlue, nTransparency, false, false)
 {
@@ -34,4 +34,5 @@ void Renderer_GCDPtDens::setClassBreaks()
         classBreaks[11] = 1.1;
         classBreaks[12] = 1.2;
     }
+}
 }

@@ -2,7 +2,7 @@
 #define RENDERER_BYTEDATA_H
 
 #include "renderer_stretchminmax.h"
-
+namespace Raster2PNG {
 class Renderer_ByteData : public Renderer_StretchMinMax
 {
 public:
@@ -13,5 +13,5 @@ public:
 protected:
     void createByteRaster();
 };
-
+}
 #endif // RENDERER_BYTEDATA_H

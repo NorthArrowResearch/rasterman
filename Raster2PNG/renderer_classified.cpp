@@ -1,11 +1,11 @@
 #include "renderer_classified.h"
-
+namespace Raster2PNG {
 Renderer_Classified::Renderer_Classified(const char *rasterPath,
-                                   int classCount,
-                                   ColorRamp ramp,
-                                   int nTransparency,
-                                   bool zeroCenter,
-                                   bool zeroNoData):Renderer(rasterPath, ramp, nTransparency, zeroNoData)
+                                         int classCount,
+                                         ColorRamp ramp,
+                                         int nTransparency,
+                                         bool zeroCenter,
+                                         bool zeroNoData):Renderer(rasterPath, ramp, nTransparency, zeroNoData)
 {
     nClasses = classCount;
     nOdd = nClasses % 2;
@@ -155,4 +155,5 @@ void Renderer_Classified::setZeroCenter(bool bValue)
             }
         }
     }
+}
 }

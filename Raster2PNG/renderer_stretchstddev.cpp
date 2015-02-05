@@ -1,5 +1,5 @@
 #include "renderer_stretchstddev.h"
-
+namespace Raster2PNG {
 Renderer_StretchStdDev::Renderer_StretchStdDev(const char *inputRasterPath,
                                            double stDevStretch,
                                            ColorRamp ramp,
@@ -142,4 +142,5 @@ void Renderer_StretchStdDev::setZeroCenter(bool bValue)
         }
         adjMean += corVal;
     }
+}
 }

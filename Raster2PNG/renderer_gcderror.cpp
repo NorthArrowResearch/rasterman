@@ -1,5 +1,5 @@
 #include "renderer_gcderror.h"
-
+namespace Raster2PNG {
 Renderer_GCDError::Renderer_GCDError(const char *rasterPath,
                                      int nTransparency):Renderer_Classified(rasterPath, 12, CR_PartialSpectrum, nTransparency, false, false)
 {
@@ -34,4 +34,5 @@ void Renderer_GCDError::setClassBreaks()
         classBreaks[11] = 1.1;
         classBreaks[12] = 1.2;
     }
+}
 }

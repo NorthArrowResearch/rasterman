@@ -1,5 +1,5 @@
 #include "renderer_stretchminmax.h"
-
+namespace Raster2PNG {
 Renderer_StretchMinMax::Renderer_StretchMinMax(const char *inputRasterPath,
                                              ColorRamp ramp,
                                              int nTransparency,
@@ -116,4 +116,5 @@ void Renderer_StretchMinMax::setZeroCenter(bool bValue)
         }
         range = (maxCalc + corVal) - (minCalc + corVal);
     }
+}
 }

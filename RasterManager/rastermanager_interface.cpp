@@ -955,7 +955,11 @@ extern "C" RM_DLL_API int GetStatFromString(const char * psStat)
         return -1;
 }
 
+<<<<<<< HEAD
 extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr)
+=======
+extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
+>>>>>>> I've done all I can for now. Need Philip to proceed
 {
     const char * pRMErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
     strncpy(sErr, pRMErr, ERRBUFFERSIZE);

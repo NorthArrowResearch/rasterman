@@ -1,5 +1,5 @@
 #include "renderer_gcdslopedeg.h"
-
+namespace Raster2PNG {
 Renderer_GCDSlopeDeg::Renderer_GCDSlopeDeg(const char *rasterPath,
                                            int nTransparency):Renderer_Classified(rasterPath, 10, CR_SlopeGCD, nTransparency, false, false)
 {
@@ -29,4 +29,4 @@ void Renderer_GCDSlopeDeg::setClassBreaks()
     classBreaks[9] = 80.0;
     classBreaks[10] = 90.0;
 }
-
+}

@@ -25,8 +25,6 @@ HEADERS += \
 INCLUDEPATH += $$PWD/../RasterManager
 DEPENDPATH += $$PWD/../RasterManager
 
-Libs += -L$$PWD/../RasterManager
-
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
@@ -72,9 +70,6 @@ macx{
 
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$DESTDIR -lRasterManager
 }
 unix:!macx {
     message("Unix")
@@ -89,8 +84,10 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
-    LIBS += -L$$DESTDIR -lRasterManager
 }
 
+# Tell it where to find compiled RasterManager.dll
+LIBS += -L$$DESTDIR -lRasterManager
+LIBS += -L$$DESTDIR -lRaster2PNG
 message("Building to: $$DESTDIR")
 

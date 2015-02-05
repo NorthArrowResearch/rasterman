@@ -2,7 +2,7 @@
 #define CLASSIFYRENDERER_H
 
 #include "renderer.h"
-
+namespace Raster2PNG {
 class Renderer_Classified : public Renderer
 {
 public:
@@ -25,5 +25,5 @@ protected:
     void setEqualIntervalBreaks();
     void setZeroCenter(bool bValue);
 };
-
+}
 #endif // CLASSIFYRENDERER_H

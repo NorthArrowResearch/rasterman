@@ -2,7 +2,7 @@
 #define RENDERER_GCDSLOPEPER_H
 
 #include "renderer_classified.h"
-
+namespace Raster2PNG {
 class Renderer_GCDSlopePer : public Renderer_Classified
 {
 public:
@@ -13,5 +13,5 @@ protected:
     void createByteRaster();
     void setClassBreaks();
 };
-
+}
 #endif // RENDERER_GCDSLOPEPER_H

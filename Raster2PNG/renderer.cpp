@@ -1,5 +1,5 @@
 #include "renderer.h"
-
+namespace Raster2PNG {
 
 Renderer::Renderer(const char *inputRasterPath,
                    ColorRamp ramp,
@@ -428,4 +428,7 @@ int Renderer::setupRaster(const char *inputRasterPath)
     setTempRasterPath(rasterPath);
 
     return 0;
+}
+
+
 }

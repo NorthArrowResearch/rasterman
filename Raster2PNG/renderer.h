@@ -5,8 +5,21 @@
 #include <QtGui>
 #include "raster2png_global.h"
 
-enum ColorRamp{CR_BlackWhite, CR_DEM, CR_DoD, CR_GrainSize, CR_GreenBlue, CR_LtBlueDkBlue, CR_PartialSpectrum, CR_Precipitation, CR_Slope, CR_SlopeGCD, CR_WhiteRed};
+enum ColorRamp{
+  CR_BlackWhite,
+  CR_DEM,
+  CR_DoD,
+  CR_GrainSize,
+  CR_GreenBlue,
+  CR_LtBlueDkBlue,
+  CR_PartialSpectrum,
+  CR_Precipitation,
+  CR_Slope,
+  CR_SlopeGCD,
+  CR_WhiteRed,
+};
 
+namespace Raster2PNG {
 class RASTER2PNGSHARED_EXPORT Renderer
 {
 public:
@@ -57,5 +70,5 @@ protected:
     void setup();
     int setupRaster(const char *inputRasterPath);
 };
-
+}
 #endif // RENDERER_H
