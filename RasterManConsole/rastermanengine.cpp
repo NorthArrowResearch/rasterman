@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <cstring>
-
+#include <QDebug>
 #include "raster.h"
 #include "rastermanager.h"
 #include "rastermanager_interface.h"
@@ -19,13 +19,13 @@ RasterManEngine::RasterManEngine()
 
 void RasterManEngine::CheckRasterManVersion(){
 
-//    QString sVersion = QString(EXEVERSION);
-//    QString sLibVersion = QString(RasterManager::GetVersion());
+    QString sVersion = QString(EXEVERSION);
+    QString sLibVersion = QString(RasterManager::GetLibVersion());
 
-//    if (sVersion.compare(sLibVersion, Qt::CaseInsensitive) != 0){
-//        QString sErr = QString("Exe is at: %1, Library is at %2").arg(sVersion).arg(sLibVersion);
-//        throw RasterManager::RasterManagerException(RASTERMAN_VERSION, sErr);
-//    }
+    if (sVersion.compare(sLibVersion, Qt::CaseInsensitive) != 0){
+        QString sErr = QString("Exe is at: %1, Library is at %2").arg(sVersion).arg(sLibVersion);
+        throw RasterManager::RasterManagerException(RASTERMAN_VERSION, sErr);
+    }
 }
 
 int RasterManEngine::Run(int argc, char * argv[])
@@ -478,10 +478,10 @@ int RasterManEngine::Slope(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    int nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_DEGREES;
+    int nSlopeType = RasterManager::SLOPE_DEGREES;
     QString sType(argv[2]);
     if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
-        nSlopeType = RasterManager::RasterManagerInputCodes::SLOPE_PERCENT;
+        nSlopeType = RasterManager::SLOPE_PERCENT;
 
     RasterManager::Raster rOriginal(argv[3]);
     int eResult = rOriginal.Slope(argv[4], nSlopeType);
@@ -550,7 +550,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
 
 int RasterManEngine::CSVToRaster(int argc, char * argv[])
 {
-    if (argc < 8)
+    if (argc != 8 && argc != 13)
     {
         std::cout << "\n Convert a CSV file into a raster.";
         std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_raster_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";

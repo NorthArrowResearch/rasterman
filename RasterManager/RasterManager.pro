@@ -16,7 +16,6 @@ VERSION = 6.1.5
 DEFINES += LIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
 
-CONFIG += c++11
 DEFINES += RASTERMANAGER_LIBRARY
 
 SOURCES += \

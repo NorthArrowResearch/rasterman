@@ -196,7 +196,7 @@ int  Raster::Copy(const char *pOutputRaster,
      */
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
-    char * psDR = NULL;
+    std::string psDR = NULL;
     const char * pSuffix = ExtractFileExt(pOutputRaster);
     if (pSuffix == NULL)
         return OUTPUT_FILE_EXT_ERROR;
@@ -205,13 +205,13 @@ int  Raster::Copy(const char *pOutputRaster,
         if (strcmp(pSuffix, ".tif") == 0)
         {
             psDR = "GTiff";
-            pDR = GetGDALDriverManager()->GetDriverByName(psDR);
+            pDR = GetGDALDriverManager()->GetDriverByName(psDR.c_str());
             papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
             //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
         }
         else if (strcmp(pSuffix, ".img") == 0){
             psDR = "HFA";
-            pDR = GetGDALDriverManager()->GetDriverByName(psDR);
+            pDR = GetGDALDriverManager()->GetDriverByName(psDR.c_str());
         }
         else
             return OUTPUT_UNHANDLED_DRIVER;
@@ -219,7 +219,7 @@ int  Raster::Copy(const char *pOutputRaster,
 
     double dNewCellHeight = dNewCellSize * -1;
     RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, dNewCellHeight,
-                          dNewCellSize, GetNoDataValue(), psDR, GetGDALDataType(), GetProjectionRef() );
+                          dNewCellSize, GetNoDataValue(), psDR.c_str(), GetGDALDataType(), GetProjectionRef() );
 
     //const char * pC = pDR->GetDescription();
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);

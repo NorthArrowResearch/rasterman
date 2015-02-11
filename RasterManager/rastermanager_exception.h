@@ -49,6 +49,8 @@ class RasterManagerException :public std::exception
 public:
     inline RasterManagerException(int nErrorCode){ Init(nErrorCode, "");}
     inline RasterManagerException(int nErrorCode, QString sMsg){ Init(nErrorCode, sMsg); }
+
+    inline ~RasterManagerException() _NOEXCEPT {}
     /**
      * @brief init
      */

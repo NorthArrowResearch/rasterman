@@ -46,6 +46,9 @@ enum Raster_SymbologyStyle{
     GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
 };
 
+extern "C" RM_DLL_API const char * GetLibVersion();
+
+
 //!Extract File Extension
 //* Take a full file path and return just the file extension, excluding the period */
 /**

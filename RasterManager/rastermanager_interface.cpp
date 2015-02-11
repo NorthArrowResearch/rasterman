@@ -21,6 +21,8 @@
 
 namespace RasterManager {
 
+extern "C" RM_DLL_API const char * GetLibVersion(){ return LIBVERSION; }
+
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
@@ -462,5 +464,6 @@ extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char *
     strncpy(sErr, pHabErr, iBufferSize);
     sErr[ iBufferSize - 1 ] = 0;
 }
+
 
 } // namespace
