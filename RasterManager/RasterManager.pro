@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       += widgets
+QT       += core widgets
 QT       -= gui
 
 TARGET = RasterManager
@@ -94,7 +93,7 @@ unix:!macx {
     INSTALLS += target
 
     # GDAL is required
-    LIBS += -L/usr/lib -lgdal
+    LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 }

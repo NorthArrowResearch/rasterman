@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
-QT       += xml
-
+QT       += core xml
 QT       -= gui
 
 VERSION = 6.1.5
@@ -80,7 +78,7 @@ unix:!macx {
     INSTALLS += target
 
     # GDAL is required
-    LIBS += -L/usr/lib -lgdal
+    LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
