@@ -84,10 +84,15 @@ int Raster::ReSampleRaster(GDALRasterBand * pRBInput, GDALRasterBand * pRBOutput
                 if (nOldLeftCol >= 0 && nOldLeftCol < pRBInput->GetXSize())
                 {
                     double Z01 = pTopLine[nOldLeftCol];
-                    double Z11 = pTopLine[nOldLeftCol + 1];
+                    double Z11 = dNoData;
+                    double Z10 = dNoData;
+
+                    if (nOldLeftCol < pRBInput->GetXSize() ){
+                        Z11 = pTopLine[nOldLeftCol + 1];
+                        Z10 = pBotLine[nOldLeftCol + 1];
+                    }
 
                     double Z00 = pBotLine[nOldLeftCol];
-                    double Z10 = pBotLine[nOldLeftCol + 1];
 
                     // On some dirty rasters there seems to be a loss of precision in the way they show
                     // The nodata value from the raster is -3.402823e+38
