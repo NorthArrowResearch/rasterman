@@ -196,7 +196,7 @@ int  Raster::Copy(const char *pOutputRaster,
      */
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
-    std::string psDR = NULL;
+    std::string psDR = "";
     const char * pSuffix = ExtractFileExt(pOutputRaster);
     if (pSuffix == NULL)
         return OUTPUT_FILE_EXT_ERROR;

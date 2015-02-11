@@ -50,7 +50,7 @@ public:
     inline RasterManagerException(int nErrorCode){ Init(nErrorCode, "");}
     inline RasterManagerException(int nErrorCode, QString sMsg){ Init(nErrorCode, sMsg); }
 
-    inline ~RasterManagerException() _NOEXCEPT {}
+    inline ~RasterManagerException() throw() {}
     /**
      * @brief init
      */
