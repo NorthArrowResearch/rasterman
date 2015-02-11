@@ -21,7 +21,7 @@
 
 namespace RasterManager {
 
-extern "C" RM_DLL_API const char * GetLibVersion(){ return LIBVERSION; }
+RM_DLL_API const char * GetLibVersion(){ return LIBVERSION; }
 
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,

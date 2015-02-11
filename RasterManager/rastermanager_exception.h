@@ -168,8 +168,7 @@ public:
             return "Insufficient GDAL version detected.";
             break;
         default:
-            std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((long long)eErrorCode);
-            return errMsg.c_str();
+            return "Unhandled Raster Manager Error.";
             break;
         }
     };
