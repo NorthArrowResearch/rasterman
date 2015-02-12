@@ -16,7 +16,8 @@ int Raster::Hillshade(const char * psOutputHillshade){
     // This is a byte Raster so the nodataval must be 0
     RasterMeta OutputRasterMeta(m_sFilePath);
     OutputRasterMeta.SetNoDataValue(0);
-    OutputRasterMeta.SetGDALDataType(GDT_Byte);
+    GDALDataType nDtype = GDT_Byte;
+    OutputRasterMeta.SetGDALDataType(&nDtype);
 
     GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
     GDALDataset * pHsDS = CreateOutputDS(psOutputHillshade, &OutputRasterMeta);

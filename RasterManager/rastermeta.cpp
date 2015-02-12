@@ -11,19 +11,20 @@ namespace RasterManager
 {
 
 const char * DEFAULT_RASTER_DRIVER = "GTiff";
+GDALDataType nDType = GDT_Float32;
 
 RasterMeta::RasterMeta() : ExtentRectangle()
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
     double fNoDataValue = (double) std::numeric_limits<float>::lowest();
-    Init(fNoDataValue, DEFAULT_RASTER_DRIVER, GDT_Float32, NULL);
+    Init(&fNoDataValue, DEFAULT_RASTER_DRIVER, &nDType, NULL);
 }
 
 RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
-                       double dCellHeight, double dCellWidth, double fNoData,
-                       const char * psDriver, GDALDataType eDataType, const char * psProjection)
-    : ExtentRectangle(fTop, fLeft,  nRows, nCols, dCellHeight, dCellWidth)
+                       double *dCellHeight, double *dCellWidth, double *fNoData,
+                       const char * psDriver, GDALDataType * eDataType, const char * psProjection)
+    : ExtentRectangle(fTop, fLeft,  nRows, nCols, *dCellHeight, *dCellWidth)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
@@ -41,7 +42,7 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
+    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
 RasterMeta::~RasterMeta()
@@ -54,7 +55,7 @@ RasterMeta::~RasterMeta()
 }
 
 
-void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType eDataType, const char * psProjection)
+void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType * eDataType, const char * psProjection)
 {
     SetNoDataValue(fNoDataValue);
 
@@ -69,12 +70,12 @@ void RasterMeta::Init(double fNoDataValue, const char * psDriver, GDALDataType e
 void RasterMeta::operator=(RasterMeta &source)
 {
     ExtentRectangle::operator =(source);
-    Init(source.GetNoDataValue(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
+    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
 }
 
-GDALDataType RasterMeta::GetGDALDataType() { return m_eDataType; }
+GDALDataType * RasterMeta::GetGDALDataType() { return &m_eDataType; }
 
-void RasterMeta::SetGDALDataType(GDALDataType fDataType) { m_eDataType = fDataType; }
+void RasterMeta::SetGDALDataType(GDALDataType * fDataType) { m_eDataType = *fDataType; }
 
 void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 {
@@ -99,7 +100,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
         b_HasNoData = false;
         dNoData = DEFAULT_NO_DATA;
     }
-    Init(dNoData, psDriver, gdDataType, psProjection);
+    Init(&dNoData, psDriver, &gdDataType, psProjection);
 
     GDALClose(pDS);
 
@@ -115,8 +116,14 @@ int RasterMeta::IsOthogonal(){
     return false;
 }
 
-void RasterMeta::SetNoDataValue(double fNoData) {
-    m_fNoDataValue = fNoData;
+void RasterMeta::SetNoDataValue(double * fNoData) {
+    // Weird case. 0 is the same as NULL for pointers.
+    if (fNoData == NULL ){
+        m_fNoDataValue = 0;
+    }
+    else {
+       m_fNoDataValue = *fNoData;
+    }
     b_HasNoData = true;
 }
 

@@ -29,9 +29,9 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
 
     double dCellHeight = dCellWidth * -1;
     const char * psDriver = GetDriverFromFileName(sOutput);
-
-    RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, dCellHeight, dCellWidth,
-                               dNoDataVal, psDriver, GDT_Float32, NULL);
+    GDALDataType nDType = GDT_Float32;
+    RasterMeta inputRasterMeta(dTop, dLeft, nRows, nCols, &dCellHeight, &dCellWidth,
+                               &dNoDataVal, psDriver, &nDType, NULL);
 
     CSVtoRaster(sCSVSourcePath, sOutput, sXField, sYField, sDataField, &inputRasterMeta);
 

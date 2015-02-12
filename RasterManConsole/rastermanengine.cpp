@@ -210,7 +210,7 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
 
         int eResult = PROCESS_OK;
         RasterManager::Raster rOriginal(argv[2]);
-        eResult = rOriginal.Copy(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
+        eResult = rOriginal.Copy(argv[3], &fCellSize, fLeft, fTop, nRows, nCols);
         return eResult;
 }
 
@@ -243,7 +243,7 @@ int RasterManEngine::RasterAdd(int argc, char * argv[])
     }
     else {
         eResult =  RasterManager::BasicMath(argv[2],
-                NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
     }
     return eResult;
@@ -278,7 +278,7 @@ int RasterManEngine::RasterSubtract(int argc, char * argv[])
     }
     else {
         eResult =  RasterManager::BasicMath(argv[2],
-                NULL, dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
     }
     return eResult;
@@ -313,7 +313,7 @@ int RasterManEngine::RasterDivide(int argc, char * argv[])
     }
     else {
         eResult =  RasterManager::BasicMath(argv[2],
-                NULL, dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
+                NULL, &dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
                 argv[4]);
     }
     return eResult;
@@ -349,7 +349,7 @@ int RasterManEngine::RasterMultiply(int argc, char * argv[])
     }
     else {
         eResult =  RasterManager::BasicMath(argv[2],
-                NULL, dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
+                NULL, &dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
                 argv[4]);
     }
     return eResult;
@@ -373,7 +373,7 @@ int RasterManEngine::RasterPower(int argc, char * argv[])
     double dPower = GetDouble(argc, argv, 3);
     int eResult = PROCESS_OK;
 
-    eResult = RasterManager::BasicMath(argv[2], NULL, dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
+    eResult = RasterManager::BasicMath(argv[2], NULL, &dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
     return eResult;
 }
 int RasterManEngine::RasterSqrt(int argc, char * argv[])

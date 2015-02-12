@@ -20,8 +20,8 @@ public:
 
     // Build a RasterMeta from first principles
     RasterMeta(double fTop, double fLeft, int nRows, int nCols,
-               double dCellHeight, double dCellWidth, double fNoData,
-               const char * psDriver, GDALDataType eDataType, const char *psProjection);
+               double * dCellHeight, double * dCellWidth, double * fNoData,
+               const char * psDriver, GDALDataType *eDataType, const char *psProjection);
 
     // Build a RasterMeta from an existing raster file path
     RasterMeta(const char * psFilePath);
@@ -43,12 +43,17 @@ public:
      * @return
      */
     inline double GetNoDataValue() { return m_fNoDataValue; }
+    /**
+     * @brief GetNoDataValuePtr
+     * @return
+     */
+    inline double * GetNoDataValuePtr() { return &m_fNoDataValue; }
 
     /**
      * @brief GetGDALDataType
      * @return
      */
-    GDALDataType GetGDALDataType();
+    GDALDataType *GetGDALDataType();
 
     /**
      * @brief GetProjectionRef
@@ -66,13 +71,13 @@ public:
      * @brief SetGDALDataType
      * @param fDataType
      */
-    void SetGDALDataType(GDALDataType fDataType);
+    void SetGDALDataType(GDALDataType *fDataType);
 
     /**
      * @brief SetNoDataValue
      * @param fNoData
      */
-    void SetNoDataValue(double fNoData);
+    void SetNoDataValue(double *fNoData);
     /**
      * @brief IsOthogonal
      * @return
@@ -97,7 +102,7 @@ protected:
 
 private:
 
-    void Init(double fNoData, const char * psDriver, GDALDataType eDataType, const char *psProjection);
+    void Init(double *fNoData, const char * psDriver, GDALDataType *eDataType, const char *psProjection);
     void GetPropertiesFromExistingRaster(const char * psFilePath);
 
     char * m_psGDALDriver;

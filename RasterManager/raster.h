@@ -128,7 +128,7 @@ public:
      * @param nCols
      * @return
      */
-    int Copy(const char * pOutputRaster, double fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
+    int Copy(const char * pOutputRaster, double *fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
 
     /**
      * @brief CSVCellClean
@@ -279,7 +279,7 @@ public:
       */
      static int RasterMath(const char * psRaster1,
                     const char * psRaster2,
-                    const double dOperator,
+                    const double *dOperator,
                     const int iOperation,
                     const char * psOutput);
 

@@ -140,7 +140,7 @@ void Raster::CopyObject(Raster &src)
     SetRows(src.GetRows());
     SetCols(src.GetCols());
 
-    SetNoDataValue(src.GetNoDataValue());
+    SetNoDataValue(src.GetNoDataValuePtr());
 
     xBlockSize = src.xBlockSize;
     yBlockSize = src.yBlockSize;
@@ -166,8 +166,8 @@ void Raster::Size(int& xSize, int& ySize)
     ySize = GetRows();
 }
 
-int  Raster::Copy(const char *pOutputRaster,
-                  double dNewCellSize,
+int  Raster::Copy(const char * pOutputRaster,
+                  double * dNewCellSize,
                   double fLeft, double fTop, int nRows, int nCols)
 {
     if (fLeft <=0)
@@ -217,12 +217,12 @@ int  Raster::Copy(const char *pOutputRaster,
             return OUTPUT_UNHANDLED_DRIVER;
     }
 
-    double dNewCellHeight = dNewCellSize * -1;
-    RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, dNewCellHeight,
-                          dNewCellSize, GetNoDataValue(), psDR.c_str(), GetGDALDataType(), GetProjectionRef() );
+    double dNewCellHeight = (*dNewCellSize) * -1;
+    RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, &dNewCellHeight,
+                          dNewCellSize, GetNoDataValuePtr(), psDR.c_str(), GetGDALDataType(), GetProjectionRef() );
 
     //const char * pC = pDR->GetDescription();
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, GetGDALDataType(), papszOptions);
+    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, *GetGDALDataType(), papszOptions);
     CSLDestroy( papszOptions );
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
@@ -373,7 +373,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
             return OUTPUT_UNHANDLED_DRIVER;
     }
 
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1,  GetGDALDataType(), papszOptions);
+    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1,  *GetGDALDataType(), papszOptions);
     CSLDestroy( papszOptions );
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;

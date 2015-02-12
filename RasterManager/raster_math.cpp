@@ -22,7 +22,7 @@ namespace RasterManager {
 
 int Raster::RasterMath(const char * psRaster1,
                const char * psRaster2,
-               const double dOperator,
+               const double * dOperator,
                const int iOperation,
                const char * psOutput){
 
@@ -163,25 +163,25 @@ int Raster::RasterMath(const char * psRaster1,
                 else
                 {
                     if (iOperation == RM_BASIC_MATH_ADD)
-                        pOutputLine[j] = pInputLine1[j] + dOperator;
+                        pOutputLine[j] = pInputLine1[j] + *dOperator;
 
                     else if (iOperation == RM_BASIC_MATH_SUBTRACT)
-                        pOutputLine[j] = pInputLine1[j] - dOperator;
+                        pOutputLine[j] = pInputLine1[j] - *dOperator;
 
                     else if (iOperation == RM_BASIC_MATH_MULTIPLY)
-                        pOutputLine[j] = pInputLine1[j] * dOperator;
+                        pOutputLine[j] = pInputLine1[j] * (*dOperator);
 
                     else if (iOperation == RM_BASIC_MATH_DIVIDE){
                         // Remember to cover the divide by zero case
                         if(dOperator != 0)
-                            pOutputLine[j] = pInputLine1[j] / dOperator;
+                            pOutputLine[j] = pInputLine1[j] / *dOperator;
                         else
                             pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_POWER){
                         // We're throwing away imaginary numbers
                         if (dOperator >= 0)
-                            pOutputLine[j] = pow(pInputLine1[j], dOperator);
+                            pOutputLine[j] = pow(pInputLine1[j], *dOperator);
                         else
                             pOutputLine[j] = fNoDataValue;
                     }

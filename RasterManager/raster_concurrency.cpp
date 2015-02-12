@@ -68,8 +68,9 @@ int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOu
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
             MasterMeta = erRasterInput;
-            MasterMeta.SetNoDataValue(dNoDataValue);
-            MasterMeta.SetGDALDataType(GDT_Float32);
+            MasterMeta.SetNoDataValue(&dNoDataValue);
+            GDALDataType nDataType = GDT_Float32;
+            MasterMeta.SetGDALDataType(&nDataType);
         }
         else{
             if (erRasterInput.IsOthogonal() == 0){

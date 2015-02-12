@@ -29,7 +29,7 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          double fNoDataValue,
                          int nCols, int nRows, double * newTransform, const char * projectionRef){
 
-    RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, newTransform[5], newTransform[1], fNoDataValue, NULL, eDataType, projectionRef);
+    RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, &newTransform[5], &newTransform[1], &fNoDataValue, NULL, &eDataType, projectionRef);
 
    return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
@@ -63,7 +63,7 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta *
                                           pTemplateRastermeta->GetCols(),
                                           pTemplateRastermeta->GetRows(),
                                           1,
-                                          pTemplateRastermeta->GetGDALDataType(),
+                                          *pTemplateRastermeta->GetGDALDataType(),
                                           papszOptions);
 
     CSLDestroy( papszOptions );
@@ -128,7 +128,7 @@ extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
 
 extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
                                  const char * psRaster2,
-                                 const double dOperator,
+                                 const double * dOperator,
                                  const int iOperation,
                                  const char * psOutput)
 {
@@ -247,7 +247,7 @@ extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
         nCols = r.GetCols();
         fNoData = r.GetNoDataValue();
         bHasNoData = (int) r.HasNoDataValue();
-        nDataType = (int) r.GetGDALDataType();
+        nDataType = (int) *r.GetGDALDataType();
     }
     catch (RasterManagerException e){
         // e.GetErrorCode();
@@ -289,7 +289,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         orthogonal = r.IsOthogonal();
         fNoData = r.GetNoDataValue();
         bHasNoData = (int) r.HasNoDataValue();
-        nDataType = (int) r.GetGDALDataType();
+        nDataType = (int) *r.GetGDALDataType();
 
         printLine( QString("     Raster: %1").arg(ppszRaster));
         printLine( QString("       Left: %1   Right: %2").arg(fLeft).arg(fRight));
@@ -357,7 +357,7 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
 {
     try{
         RasterManager::Raster ra(ppszOriginalRaster);
-        return ra.Copy(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
+        return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols);
     }
     catch (RasterManagerException e){
         return e.GetErrorCode();

@@ -161,7 +161,7 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                  const char * ppszOriginalRaster2,
-                                 const double dOperator,
+                                 const double *dOperator,
                                  const int iOperation,
                                  const char * psOutput);
 
@@ -277,7 +277,7 @@ bool EndsWith(const char * psFullString, const char * psEnding);
  * @brief printString
  * @param theString
  */
-static void printLine(QString theString);
+void printLine(QString theString);
 
 
 /**

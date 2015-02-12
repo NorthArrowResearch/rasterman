@@ -51,8 +51,9 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
         // First time round set the bounds to the first raster we give it.
         if (counter==1){
             OutputMeta = erRasterInput;
-            OutputMeta.SetNoDataValue(fNoDataValue);
-            OutputMeta.SetGDALDataType(GDT_Float32);
+            OutputMeta.SetNoDataValue(&fNoDataValue);
+            GDALDataType nDType = GDT_Float32;
+            OutputMeta.SetGDALDataType(&nDType);
         }
         else{
             OutputMeta.Union(&erRasterInput);
