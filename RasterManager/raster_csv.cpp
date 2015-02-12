@@ -137,7 +137,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                     }
 
                     // Assign our CSV values to an appropriate place in the raster
-                    double dVal = std::stod(csvItem);
+                    double dVal = QString::fromStdString(csvItem).toDouble();
                     if (xcol == ncolnumber){
                         csvX = (int) floor((dVal - p_rastermeta->GetLeft() ) / p_rastermeta->GetCellWidth());
                     }
