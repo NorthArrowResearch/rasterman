@@ -273,8 +273,6 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         int orthogonal = 0;
         int nDataType;
 
-
-
         RasterManager::Raster r(ppszRaster);
         std::string projection = r.GetProjectionRef();
 
@@ -293,19 +291,21 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         bHasNoData = (int) r.HasNoDataValue();
         nDataType = (int) r.GetGDALDataType();
 
+        printLine( QString("     Raster: %1").arg(ppszRaster));
+        printLine( QString("       Left: %1   Right: %2").arg(fLeft).arg(fRight));
 
-        std::cout << "\n     Raster: " << ppszRaster;
-        std::printf( "\n       Left: %.8lf      Right: %.8lf", fLeft, fRight);
-        std::printf( "\n        Top: %.8lf     Bottom: %.8lf", fTop, fBottom);
-        std::cout << "\n       Rows: " << nRows << "    Cols: " << nCols;
-        std::cout << "\n      ";
-        std::printf( "\n     Cell Width: %.1lf", fCellWidth);
-        std::printf( "\n     Min: %.3lf     Max: %.3lf", dRasterMin, dRasterMax);
+        printLine( QString("        Top: %1     Bottom: %2").arg(fTop).arg(fBottom));
+        printLine( QString("       Rows: %1    Cols: %2").arg(nRows).arg(nCols));
+        printLine( QString("        "));
+        printLine( QString("       Cell Width: %1").arg(fCellWidth));
+        printLine( QString("              Min: %1      Max: %2").arg(dRasterMin).arg(dRasterMax));
+        printLine( QString("             Left: %1      Right: %2").arg(fLeft).arg(fRight));
+
         if (orthogonal == 1 ){
-            std::printf( "\n     Orthogonal: True");
+            printLine( QString("       Orthogonal: True" ) );
         }
         else {
-            std::printf( "\n     Orthogonal: False");
+            printLine( QString("       Orthogonal: False" ) );
         }
         std::cout << "\n";
         switch (nDataType)
@@ -329,7 +329,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         else
             std::cout << "\n        No Data: none";
 
-        std::cout << "\n      Projection: " << projection.substr(0,70) << "...";
+        std::cout << "\n     Projection: " << projection.substr(0,70) << "...";
         std::cout << "\n ";
 
     }
@@ -464,6 +464,14 @@ extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char *
     strncpy(sErr, pHabErr, iBufferSize);
     sErr[ iBufferSize - 1 ] = 0;
 }
+
+static void printLine(QString theString)
+{
+    std::string sString = theString.toStdString();
+    std::cout << "\n" << sString;
+}
+
+
 
 
 } // namespace

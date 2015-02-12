@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
+#include <QString>
 
 class GDALDataset;
 
@@ -301,6 +302,12 @@ inline RM_DLL_API std::string stringify(double x) {
         throw BadConversion("stringify(double)");
     return o.str();
 }
+
+/**
+ * @brief printString
+ * @param theString
+ */
+static void printLine(QString theString);
 
 inline float roundf(float x)
 {
