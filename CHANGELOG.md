@@ -1,5 +1,31 @@
 --------------------------------
 
+## 6.1.5
+
+This release is a big refactor of Rasterman. There are several new features and loads of fixes.
+
+### New Features
+
+* "C" interface has changed extensively. This will affect all our C# tools that consume this.
+* Linux building is now much easier.
+* Vector to raster is added but is still temperamental.
+
+### Fixes
+
+* Better exception handling
+* Better return codes.
+* Lots of memory optimization fixes.
+* Fixes to the way projections and set and retrieved.
+* Fixed a problem with NoDataVals on CSV inputs.
+
+--------------------------------
+
+## 6.1.4
+
+This was an intermediate version that we didn't ship. The main features of this version were a fix to an "off-by-one" error in csvtoraster
+
+--------------------------------
+
 ## 6.1.3
 
 ### New Features

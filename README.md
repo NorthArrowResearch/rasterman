@@ -32,7 +32,7 @@ It does not depend on any of our other git repositories. GDAL 1.10 is required
     png             Create a PNG image copy of a raster.
 
     csv2raster      Create a raster from a .csv file
-    vector2raster   Create a raster from a vector file.
+    vector2raster   Create a raster from a vector file. (BETA)
 
 ```
 
