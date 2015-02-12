@@ -7,7 +7,7 @@
 QT       += core xml
 QT       -= gui
 
-VERSION = 6.1.5
+VERSION = 6.1.6
 DEFINES += EXEVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 
 TARGET = rasterman
