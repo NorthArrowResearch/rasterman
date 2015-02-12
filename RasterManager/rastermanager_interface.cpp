@@ -465,7 +465,7 @@ extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char *
     sErr[ iBufferSize - 1 ] = 0;
 }
 
-static void printLine(QString theString)
+void printLine(QString theString)
 {
     std::string sString = theString.toStdString();
     std::cout << "\n" << sString;

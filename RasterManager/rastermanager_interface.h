@@ -274,6 +274,13 @@ extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const ch
 bool EndsWith(const char * psFullString, const char * psEnding);
 
 /**
+ * @brief printString
+ * @param theString
+ */
+static void printLine(QString theString);
+
+
+/**
  * @brief Exception class for when a bad conversion happens.
  *
  * TODO: complete this documentation. Is this from Chris Gerard's
@@ -302,12 +309,6 @@ inline RM_DLL_API std::string stringify(double x) {
         throw BadConversion("stringify(double)");
     return o.str();
 }
-
-/**
- * @brief printString
- * @param theString
- */
-static void printLine(QString theString);
 
 inline float roundf(float x)
 {
