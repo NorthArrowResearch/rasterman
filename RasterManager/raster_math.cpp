@@ -56,7 +56,7 @@ int Raster::RasterMath(const char * psRaster1,
 
     double fNoDataValue;
     if (rmRasterMeta1.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) std::numeric_limits<float>::lowest();
+        fNoDataValue = (double) -std::numeric_limits<float>::max();
     }
     else {
         fNoDataValue = rmRasterMeta1.GetNoDataValue();

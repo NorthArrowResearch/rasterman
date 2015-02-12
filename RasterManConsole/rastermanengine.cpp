@@ -591,7 +591,7 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
         QString sNoDataVal = argv[12];
         if (sNoDataVal.compare("min", Qt::CaseInsensitive) == 0)
-            dNoDataVal = (double) std::numeric_limits<float>::lowest();
+            dNoDataVal = (double) -std::numeric_limits<float>::max();
         else
             dNoDataVal = sNoDataVal.toDouble();
 

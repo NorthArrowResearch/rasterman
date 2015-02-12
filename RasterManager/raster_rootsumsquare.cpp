@@ -66,7 +66,7 @@ int Raster::RasterRootSumSquares(const char * psRaster1, const char * psRaster2,
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
-    float fNoDataValue = (float) std::numeric_limits<float>::lowest();
+    float fNoDataValue = (float) -std::numeric_limits<float>::max();
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDSfromRef(psOutput, GDT_Float32, true, fNoDataValue, pDS1);

@@ -41,7 +41,7 @@ int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOu
     // It will be the boolean intersect of all
     RasterMeta MasterMeta;
 
-    double dNoDataValue = (double) std::numeric_limits<float>::lowest();
+    double dNoDataValue = (double) -std::numeric_limits<float>::max();
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.

@@ -188,7 +188,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     int nCols = (int)((dMaxX - dMinX) / cellWidth);
 \
     // We're going to create them without projections. The projections get set later.
-    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
     GDALDataType nDType = GDT_Float32;
     double dCellHeight = -dCellWidth;
     RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, &dCellHeight, &dCellWidth, &fNoDataValue, "GTiff", &nDType, "");

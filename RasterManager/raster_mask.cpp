@@ -50,7 +50,7 @@ int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, co
 
     double fNoDataValue;
     if (!rmInputMeta.HasNoDataValue()){
-        fNoDataValue = (double) std::numeric_limits<float>::lowest();
+        fNoDataValue = (double) -std::numeric_limits<float>::max();
     }
     else {
         fNoDataValue = rmInputMeta.GetNoDataValue();

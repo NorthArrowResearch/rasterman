@@ -30,7 +30,7 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
     // The output raster info
     RasterMeta OutputMeta;
 
-    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
 
     /*****************************************************************************************
      * Open all the relevant files and figure out the bounds of the final file.

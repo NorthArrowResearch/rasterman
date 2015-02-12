@@ -17,7 +17,7 @@ RasterMeta::RasterMeta() : ExtentRectangle()
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    double fNoDataValue = (double) std::numeric_limits<float>::lowest();
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
     Init(&fNoDataValue, DEFAULT_RASTER_DRIVER, &nDType, NULL);
 }
 
