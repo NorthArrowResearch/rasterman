@@ -22,18 +22,18 @@ namespace RasterManager {
  *
  */
 enum RasterManagerInputCodes {
-    SLOPE_DEGREES = 0,
-    SLOPE_PERCENT = 1
+    SLOPE_DEGREES,
+    SLOPE_PERCENT
 };
 
 enum RasterManagerOperators {
-    RM_BASIC_MATH_ADD = 1
-    , RM_BASIC_MATH_SUBTRACT = 2
-    , RM_BASIC_MATH_MULTIPLY = 3
-    , RM_BASIC_MATH_DIVIDE = 4
-    , RM_BASIC_MATH_POWER = 5
-    , RM_BASIC_MATH_SQRT = 6
-    , RM_BASIC_MATH_THRESHOLD_PROP_ERROR = 7
+    RM_BASIC_MATH_ADD
+    , RM_BASIC_MATH_SUBTRACT
+    , RM_BASIC_MATH_MULTIPLY
+    , RM_BASIC_MATH_DIVIDE
+    , RM_BASIC_MATH_POWER
+    , RM_BASIC_MATH_SQRT
+    , RM_BASIC_MATH_THRESHOLD_PROP_ERROR
 };
 
 enum Raster_SymbologyStyle{

@@ -88,7 +88,7 @@ int Raster::Hillshade(const char * psOutputHillshade){
                     }
                     else
                     {
-                        aspectRad = aspectRad;
+//                        aspectRad = aspectRad;
                     }
                 }
                 hlsdByte = roundf(254 * ((cos(zenRad) * cos(slopeRad)) + (sin(zenRad) * sin(slopeRad) * cos(azimuthRad - aspectRad)))) + 1.0;

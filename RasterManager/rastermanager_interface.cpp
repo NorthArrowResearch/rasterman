@@ -30,7 +30,9 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          int nCols, int nRows, double * newTransform, const char * projectionRef){
 
     RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, &newTransform[5], &newTransform[1], &fNoDataValue, NULL, &eDataType, projectionRef);
+    if (bHasNoData){
 
+    }
    return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
 
@@ -79,6 +81,7 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta *
     }
     else{
         CPLErr er = pDSOutput->GetRasterBand(1)->SetNoDataValue(0);
+        if (er) { }
     }
 
     double * newTransform = pTemplateRastermeta->GetGeoTransform();

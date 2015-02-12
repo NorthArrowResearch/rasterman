@@ -26,7 +26,7 @@ int Raster::RasterMath(const char * psRaster1,
                const int iOperation,
                const char * psOutput){
 
-    if (iOperation == NULL)
+    if (iOperation < 0)
         return NO_OPERATION_SPECIFIED;
 
     // Everything except square root needs at least one other parameter (raster or doube)
@@ -55,7 +55,7 @@ int Raster::RasterMath(const char * psRaster1,
     rmOutputMeta = rmRasterMeta1;
 
     double fNoDataValue;
-    if (rmRasterMeta1.GetNoDataValue() == NULL){
+    if (rmRasterMeta1.GetNoDataValuePtr() == NULL){
         fNoDataValue = (double) std::numeric_limits<float>::lowest();
     }
     else {

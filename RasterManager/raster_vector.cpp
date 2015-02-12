@@ -124,6 +124,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
                                           NULL,
                                           NULL, NULL );
 
+    if (err) { }
     ogrBurnGeometries.clear();
     dBurnValues.clear();
 
