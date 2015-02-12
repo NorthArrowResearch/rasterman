@@ -82,7 +82,7 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
-    LIBS += -L$$DESTDIR/../lib -lRasterManager
+    LIBS += -L$$DESTDIR -lRasterManager
 }
 
 message("Building to: $$DESTDIR")
