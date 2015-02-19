@@ -184,7 +184,16 @@ void Raster::CSVCellClean(std::string & value){
     }
     else value.erase(value.begin(), value.end());
 
-    // first strip quotes
+    // Now strip white space
+    pos = value.find_last_not_of(' ');
+    if(pos != std::string::npos) {
+      value.erase(pos + 1);
+      pos = value.find_first_not_of(' ');
+      if(pos != std::string::npos) value.erase(0, pos);
+    }
+    else value.erase(value.begin(), value.end());
+
+    // Then strip quotes
     pos = value.find_last_not_of('"');
     if(pos != std::string::npos) {
       value.erase(pos + 1);
@@ -193,7 +202,7 @@ void Raster::CSVCellClean(std::string & value){
     }
     else value.erase(value.begin(), value.end());
 
-    // Now strip white space
+    // Now strip white space again
     pos = value.find_last_not_of(' ');
     if(pos != std::string::npos) {
       value.erase(pos + 1);
