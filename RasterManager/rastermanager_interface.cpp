@@ -147,6 +147,36 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
     }
 }
 
+extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
+                                 const char * psRaster2,
+                                 double dValue)
+{
+    try {
+        return Raster::InvertRaster(
+                    psRaster1,
+                    psRaster2,
+                    dValue);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
+
+extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
+                                 const char * psRaster2)
+{
+    try {
+        return Raster::NormalizeRaster(
+                    psRaster1,
+                    psRaster2);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
+
 extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 
     try {

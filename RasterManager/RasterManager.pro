@@ -34,7 +34,9 @@ SOURCES += \
     raster_rootsumsquare.cpp \
     raster_mosaic.cpp \
     rastermanager.cpp \
-    raster_vector.cpp
+    raster_vector.cpp \
+    raster_invert.cpp \
+    raster_normalize.cpp
 
 HEADERS +=\
     rastermanager_global.h \

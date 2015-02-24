@@ -255,6 +255,36 @@ extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char
  */
 extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
 
+/**
+ * @brief RasterInvert
+ * @param psRaster1
+ * @param psRaster2
+ * @param dValue
+ * @return
+ */
+extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
+                                 const char * psRaster2,
+                                 double dValue);
+
+/**
+ * @brief RasterNormalize
+ * @param psRaster1
+ * @param psRaster2
+ * @return
+ */
+extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
+                                 const char * psRaster2);
+
+/**
+ * @brief CreatePNG
+ * @param psInputRaster
+ * @param psOutputPNG
+ * @param nImageQuality
+ * @param nLongAxisPixels
+ * @param nOpacity
+ * @param eRasterType
+ * @return
+ */
 extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
 
 /**
@@ -263,6 +293,8 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
  * @return
  */
 extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
+
+
 
 /**
  * @brief

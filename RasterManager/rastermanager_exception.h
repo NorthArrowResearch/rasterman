@@ -36,6 +36,8 @@ enum RasterManagerOutputCodes {
     , VECTOR_LAYER_NOT_POLYGON
     , VECTOR_FIELD_NOT_VALID
 
+    , DIVISION_BY_ZERO
+
     , RM_PNG_QUALITY
     , RM_PNG_TRANSPARENCY
     , RM_PNG_LONG_AXIS
@@ -166,6 +168,9 @@ public:
 
         case GDALVERSION:
             return "Insufficient GDAL version detected.";
+            break;
+        case DIVISION_BY_ZERO:
+            return "Division by Zero.";
             break;
         default:
             return "Unhandled Raster Manager Error.";

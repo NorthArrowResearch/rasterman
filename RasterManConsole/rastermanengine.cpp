@@ -91,6 +91,19 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "PNG", Qt::CaseInsensitive) == 0)
             eResult = PNG(argc, argv);
 
+        else if (QString::compare(sCommand, "invert", Qt::CaseInsensitive) == 0)
+            eResult = invert(argc, argv);
+//        else if (QString::compare(sCommand, "extractpoints", Qt::CaseInsensitive) == 0)
+//            eResult = extractpoints(argc, argv);
+//        else if (QString::compare(sCommand, "smooth", Qt::CaseInsensitive) == 0)
+//            eResult = smooth(argc, argv);
+        else if (QString::compare(sCommand, "normalize", Qt::CaseInsensitive) == 0)
+            eResult = normalize(argc, argv);
+//        else if (QString::compare(sCommand, "fill", Qt::CaseInsensitive) == 0)
+//            eResult = fill(argc, argv);
+//        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
+//            eResult = consetnull(argc, argv);
+
         else
             bRecognizedCommand = false;
 
@@ -553,7 +566,7 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     if (argc != 8 && argc != 13)
     {
         std::cout << "\n Convert a CSV file into a raster.";
-        std::cout << "\n    Usage: gcd csv2raster <csv_file_path> <output_raster_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";
+        std::cout << "\n    Usage: rasterman csv2raster <csv_file_path> <output_raster_path> <XField> <YField> <DataField> [<top> <left> <rows> <cols> <cell_size> <no_data_val>] | <raster_template>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       csv_file_path: Absolute full path to existing .csv file.";
@@ -617,13 +630,68 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 }
 
+int RasterManEngine::invert(int argc, char * argv[])
+{
+    if (argc != 3 && argc != 4)
+    {
+        std::cout << "\n Reassigns all NoData values to a constant value.";
+        std::cout << "\n    Usage: rasterman invert <input_raster_path> <output_raster_path> [<value>]";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n               value: (optional) The value to use. 1 is the default";
+        std::cout << "\n\n";
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+    double dValue = 1;
+
+    // The user specifies a value
+    if (argc == 4){
+        dValue = GetDouble(argc, argv, 4);
+    }
+
+    eResult = RasterManager::Raster::InvertRaster(
+            argv[2],
+            argv[3],
+            dValue );
+
+    return eResult;
+
+}
+
+
+int RasterManEngine::normalize(int argc, char * argv[])
+{
+    if (argc != 3 && argc != 4)
+    {
+        std::cout << "\n Divide a raster by its maximum value.";
+        std::cout << "\n    Usage: rasterman normalize <input_raster_path> <output_raster_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+    eResult = RasterManager::Raster::NormalizeRaster(
+            argv[2],
+            argv[3] );
+
+    return eResult;
+
+}
+
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {
     if (argc < 6)
     {
         std::cout << "\n Convert a Vector file into a raster.";
-        std::cout << "\n    Usage: gcd vector2raster <vector_file_path> <output_raster_path> <vector_layer> <vector_field> [<cell_size> | <raster_template_path>]";
+        std::cout << "\n    Usage: rasterman vector2raster <vector_file_path> <output_raster_path> <vector_layer> <vector_field> [<cell_size> | <raster_template_path>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       vector_file_path: Absolute full path to existing .shp file.";

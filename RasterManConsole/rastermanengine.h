@@ -155,6 +155,21 @@ private:
      */
     int MakeConcurrent(int argc, char *argv[]);
 
+    /**
+     * @brief invert
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int invert(int argc, char *argv[]);
+
+    /**
+     * @brief normalize
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int normalize(int argc, char *argv[]);
 
 };
 

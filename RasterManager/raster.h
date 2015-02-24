@@ -303,6 +303,28 @@ public:
      static int RasterMosaic(const char * csRasters, const char * psOutput);
 
      static void OutputCSVFile(OGRLayer *poLayer, const char *psFieldName, const char *sRasterOutputPath);
+
+     /**
+      * @brief Raster::InvertRaster
+      * @param psInputRaster
+      * @param psOutputRaster
+      * @param dValue
+      * @return
+      */
+     static int InvertRaster(const char * psInputRaster,
+                              const char * psOutputRaster,
+                              double dValue);
+
+     /**
+      * @brief NormalizeRaster
+      * @param psInputRaster
+      * @param psOutputRaster
+      * @param dValue
+      * @return
+      */
+     static int NormalizeRaster(const char * psInputRaster,
+                              const char * psOutputRaster);
+
 protected:
 
     /**
