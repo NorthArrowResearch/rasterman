@@ -632,7 +632,7 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
 
 int RasterManEngine::invert(int argc, char * argv[])
 {
-    if (argc != 3 && argc != 4)
+    if (argc != 4 && argc != 5)
     {
         std::cout << "\n Reassigns all NoData values to a constant value.";
         std::cout << "\n    Usage: rasterman invert <input_raster_path> <output_raster_path> [<value>]";
@@ -648,7 +648,7 @@ int RasterManEngine::invert(int argc, char * argv[])
     double dValue = 1;
 
     // The user specifies a value
-    if (argc == 4){
+    if (argc == 5){
         dValue = GetDouble(argc, argv, 4);
     }
 
@@ -690,8 +690,8 @@ int RasterManEngine::filter(int argc, char * argv[])
 
     // The user specifies values for window shape
     if (argc == 6){
-        nWindowHeight = GetInteger(argc,argv, 5);
-        nWindowWidth = GetInteger(argc,argv, 6);
+        nWindowHeight = GetInteger(argc,argv, 4);
+        nWindowWidth = GetInteger(argc,argv, 5);
     }
 
     eResult = RasterManager::Raster::FilterRaster(
@@ -708,7 +708,7 @@ int RasterManEngine::filter(int argc, char * argv[])
 
 int RasterManEngine::normalize(int argc, char * argv[])
 {
-    if (argc != 3 && argc != 4)
+    if (argc != 4)
     {
         std::cout << "\n Divide a raster by its maximum value.";
         std::cout << "\n    Usage: rasterman normalize <input_raster_path> <output_raster_path>";

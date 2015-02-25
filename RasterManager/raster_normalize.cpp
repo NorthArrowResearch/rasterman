@@ -36,8 +36,16 @@ int Raster::NormalizeRaster(const char * psInputRaster,
     double dRMin, dRMax, dRMean, dRStdDev;
     pRBInput->GetStatistics( 0 , true, &dRMin, &dRMax, &dRMean, &dRStdDev );
 
-    if (dRMax == 0)
-        throw RasterManagerException(INPUT_FILE_NOT_VALID, "The raster maximum value was zero");
+    double fNoDataValue;
+    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
+        fNoDataValue = (double) -std::numeric_limits<float>::max();
+    }
+    else {
+        fNoDataValue = rmRasterMeta.GetNoDataValue();
+    }
+
+    if (dRMax == 0 || dRMax == fNoDataValue)
+        throw RasterManagerException(INPUT_FILE_NOT_VALID, QString("The raster maximum value was invalid: ").arg(dRMax) );
 
     double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols());
 
@@ -47,13 +55,6 @@ int Raster::NormalizeRaster(const char * psInputRaster,
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta;
 
-    double fNoDataValue;
-    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) -std::numeric_limits<float>::max();
-    }
-    else {
-        fNoDataValue = rmRasterMeta.GetNoDataValue();
-    }
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
