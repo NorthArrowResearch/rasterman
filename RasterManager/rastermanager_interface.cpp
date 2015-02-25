@@ -163,6 +163,27 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
 }
 
 
+extern "C" RM_DLL_API int RasterFilter(
+        const char * psOperation,
+        const char * psInputRaster,
+        const char * psOutputRaster,
+        int nWidth,
+        int nHeight )
+{
+    try {
+        return Raster::FilterRaster(
+                    psOperation,
+                    psInputRaster,
+                    psOutputRaster,
+                    nWidth,
+                    nHeight);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
+
 extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
                                  const char * psRaster2)
 {

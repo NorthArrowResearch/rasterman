@@ -325,6 +325,22 @@ public:
      static int NormalizeRaster(const char * psInputRaster,
                               const char * psOutputRaster);
 
+     /**
+      * @brief Raster::FilterRaster
+      * @param psOperation
+      * @param psRaster1
+      * @param psRaster2
+      * @param psWidth
+      * @param psWidth
+      * @return
+      */
+     static int FilterRaster(
+             const char * psOperation,
+             const char * psInputRaster,
+             const char * psOutputRaster,
+             int nWindowWidth,
+             int nWindowHeight);
+
 protected:
 
     /**

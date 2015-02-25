@@ -171,6 +171,15 @@ private:
      */
     int normalize(int argc, char *argv[]);
 
+    /**
+     * @brief filter
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int filter(int argc, char *argv[]);
+
+
 };
 
 }

@@ -276,6 +276,21 @@ extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
                                  const char * psRaster2);
 
 /**
+ * @brief RasterFilter
+ * @param psOperation
+ * @param psRaster1
+ * @param psRaster2
+ * @param psWidth
+ * @param psHeight
+ * @return
+ */
+extern "C" RM_DLL_API int RasterFilter(const char * psOperation,
+        const char * psInputRaster,
+        const char * psOutputRaster,
+        int nWidth,
+        int nHeight );
+
+/**
  * @brief CreatePNG
  * @param psInputRaster
  * @param psOutputPNG

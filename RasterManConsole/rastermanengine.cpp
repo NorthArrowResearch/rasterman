@@ -95,8 +95,8 @@ int RasterManEngine::Run(int argc, char * argv[])
             eResult = invert(argc, argv);
 //        else if (QString::compare(sCommand, "extractpoints", Qt::CaseInsensitive) == 0)
 //            eResult = extractpoints(argc, argv);
-//        else if (QString::compare(sCommand, "smooth", Qt::CaseInsensitive) == 0)
-//            eResult = smooth(argc, argv);
+        else if (QString::compare(sCommand, "filter", Qt::CaseInsensitive) == 0)
+            eResult = filter(argc, argv);
         else if (QString::compare(sCommand, "normalize", Qt::CaseInsensitive) == 0)
             eResult = normalize(argc, argv);
 //        else if (QString::compare(sCommand, "fill", Qt::CaseInsensitive) == 0)
@@ -661,6 +661,50 @@ int RasterManEngine::invert(int argc, char * argv[])
 
 }
 
+
+int RasterManEngine::filter(int argc, char * argv[])
+{
+    if (argc != 6 && argc != 3)
+    {
+        std::cout << "\n Filter computes an operation on a moving window.";
+        std::cout << "\n    Usage: rasterman filter <operation> <input_raster_path> <output_raster_path> [<window_width> <window_height>]";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n           operation: What to do over a movine window. For now \"mean\" is the only option.";
+        std::cout << "\n           ";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n           ";
+        std::cout << "\n        window_width: (optional) Width (in cells) of moving window. Default is 3. Must be odd.";
+        std::cout << "\n       window_height: (optional) Height (in cells) of moving window. Default is 3. Must be odd";
+        std::cout << "\n                NOTE: The maximum widths allowed are 15 pixels or equivalent length in units";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    // Default window shape
+    int nWindowHeight = 3;
+    int nWindowWidth = 3;
+
+    // The user specifies values for window shape
+    if (argc == 6){
+        nWindowHeight = GetInteger(argc,argv, 5);
+        nWindowWidth = GetInteger(argc,argv, 6);
+    }
+
+    eResult = RasterManager::Raster::FilterRaster(
+                argv[2],
+            argv[3],
+            argv[4],
+            nWindowWidth,
+            nWindowHeight);
+
+
+    return eResult;
+
+}
 
 int RasterManEngine::normalize(int argc, char * argv[])
 {

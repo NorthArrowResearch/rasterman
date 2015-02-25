@@ -25,7 +25,8 @@ int Raster::NormalizeRaster(const char * psInputRaster,
 
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
     if (pDSInput == NULL)
-        return INPUT_FILE_ERROR;
+        throw RasterManagerException(INPUT_FILE_ERROR, "Could not open input Raster");
+
 
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
