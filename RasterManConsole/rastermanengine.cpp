@@ -691,8 +691,8 @@ int RasterManEngine::filter(int argc, char * argv[])
 
     // The user specifies values for window shape
     if (argc == 7){
-        nWindowHeight = GetInteger(argc,argv, 5);
-        nWindowWidth = GetInteger(argc,argv, 6);
+        nWindowWidth = GetInteger(argc,argv, 5);
+        nWindowHeight = GetInteger(argc,argv, 6);
     }
 
     eResult = RasterManager::Raster::FilterRaster(

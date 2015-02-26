@@ -5,7 +5,6 @@
  * 28 February 2015
  *
 */
-#include <QFileInfo> //REMOVE
 
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
@@ -32,10 +31,6 @@ int Raster::FilterRaster(
         int nWindowHeight ){
 
 
-    //DELETE ME: FOR DEBUG ONLY
-    if (QFileInfo(psOutputRaster).exists()){
-        QFile::remove(QFileInfo(psOutputRaster).absoluteFilePath());
-    }
 
 
 
@@ -142,18 +137,18 @@ int Raster::FilterRaster(
             int nWindowMiddleColAdj = nWindowMiddleCol;
 
             if ( nWindowLeftCol < 0 ){
-                nWindowWidthAdj = abs( nWindowWidth - nWindowLeftCol );
+                nWindowWidthAdj = nWindowWidth + nWindowLeftCol;
                 nWindowLeftCol = 0;
             }
             else if( nWindowLeftCol + nWindowWidth >= rmRasterMeta.GetCols() ){
-                nWindowWidthAdj = abs( nWindowLeftCol );
+                nWindowWidthAdj = rmRasterMeta.GetCols() - nWindowLeftCol;
             }
             if ( nWindowMiddleCol > nOutCol ){
                 nWindowMiddleColAdj = 0;
             }
 
             // if the output row is nodataval then just set that.
-            int nMiddleWindowInd = ( (nWindowMiddleRowAdj * rmRasterMeta.GetCols()) + ( nWindowMiddleCol ) ) + nOutCol;
+            int nMiddleWindowInd = ( nWindowMiddleRowAdj * rmRasterMeta.GetCols()) + ( nWindowLeftCol + nWindowMiddleColAdj);
 
             if ( pInputWindow[ nMiddleWindowInd ] == rmRasterMeta.GetNoDataValue() )
             {
@@ -164,21 +159,29 @@ int Raster::FilterRaster(
                 // Loop over the window for this particular output cell (i,j)
                 double dSum = 0;
                 int nCells = 0;
-                for ( int nWrow = 0; nWrow < ( nWindowWidthAdj ); nWrow++ ){
-                    for ( int nWcol = 0; nWcol < ( nWindowHeightAdj ); nWcol++ ){
+                for ( int nWrow = 0; nWrow < nWindowHeightAdj; nWrow++ ){
+                    for ( int nWcol = 0; nWcol < nWindowWidthAdj; nWcol++ ){
 
                         // Translate the window coords into raster coords
                         int nWindowRasterInd = ( nWrow * rmRasterMeta.GetCols() ) + (nWcol + nWindowLeftCol);
-                        nCells++;
-                        dSum += pInputWindow[ nWindowRasterInd ];
+                        if (pInputWindow[ nWindowRasterInd ] != fNoDataValue){
+                            nCells++;
+                            dSum += pInputWindow[ nWindowRasterInd ];
+                        }
+
                     }
                 }
                 if (nFilterOp == FILTER_MEAN)
                     pOutputLine[nOutCol] = dSum / nCells;
+                    int a = 1;
             }
         }
 
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  nOutRow, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, *rmRasterMeta.GetGDALDataType() , 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  nOutRow,
+                                              rmOutputMeta.GetCols(), 1,
+                                              pOutputLine,
+                                              rmOutputMeta.GetCols(), 1,
+                                              GDT_Float64, 0, 0);
     }
 
     // Free our buffers
