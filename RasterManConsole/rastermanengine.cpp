@@ -664,7 +664,7 @@ int RasterManEngine::invert(int argc, char * argv[])
 
 int RasterManEngine::filter(int argc, char * argv[])
 {
-    if (argc != 6 && argc != 3)
+    if (argc != 7 && argc != 5)
     {
         std::cout << "\n Filter computes an operation on a moving window.";
         std::cout << "\n    Usage: rasterman filter <operation> <input_raster_path> <output_raster_path> [<window_width> <window_height>]";
@@ -685,13 +685,14 @@ int RasterManEngine::filter(int argc, char * argv[])
     int eResult = PROCESS_OK;
 
     // Default window shape
-    int nWindowHeight = 3;
     int nWindowWidth = 3;
+    int nWindowHeight = 3;
+
 
     // The user specifies values for window shape
-    if (argc == 6){
-        nWindowHeight = GetInteger(argc,argv, 4);
-        nWindowWidth = GetInteger(argc,argv, 5);
+    if (argc == 7){
+        nWindowHeight = GetInteger(argc,argv, 5);
+        nWindowWidth = GetInteger(argc,argv, 6);
     }
 
     eResult = RasterManager::Raster::FilterRaster(

@@ -5,6 +5,8 @@
  * 28 February 2015
  *
 */
+#include <QFileInfo> //REMOVE
+
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "raster.h"
@@ -29,11 +31,20 @@ int Raster::FilterRaster(
         int nWindowWidth,
         int nWindowHeight ){
 
+
+    //DELETE ME: FOR DEBUG ONLY
+    if (QFileInfo(psOutputRaster).exists()){
+        QFile::remove(QFileInfo(psOutputRaster).absoluteFilePath());
+    }
+
+
+
     // Check for input and output files
     CheckFile(psInputRaster, true);
     CheckFile(psOutputRaster, false);
 
     RasterManagerFilterOperations nFilterOp;
+
 
     /*****************************************************************************************
      * Basic validation on files and parameters passed in
@@ -83,16 +94,14 @@ int Raster::FilterRaster(
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
 
     // Our Read Buffer is 2D: [nWindowHeight x entire row legnth]
-    double * pInputWindow[nWindowHeight];
-    for (int i = 0; i < nWindowHeight; i++)
-        pInputWindow[i] = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols());
+    double * pInputWindow = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols() * nWindowHeight);
 
     // Our write buffer is a regular line
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols());
 
-    // Specify the middle pixel of the window with these two coords
-    int nWindowMiddleWidth = (nWindowWidth / 2) + 1;
-    int nWindowMiddleHeight = (nWindowHeight / 2) + 1;
+    // Specify the middle index of the window with these two coords
+    int nWindowMiddleRow = (nWindowHeight / 2);
+    int nWindowMiddleCol = (nWindowWidth / 2);
 
     /*****************************************************************************************
      * Start looping over the raster
@@ -100,56 +109,68 @@ int Raster::FilterRaster(
 
     for (int nOutRow = 0; nOutRow < rmOutputMeta.GetRows(); nOutRow++)
     {
-        int nWindowRow = nOutRow - nWindowMiddleHeight;
-        int nWindowTrimRow = 0;
+        // If the top of the window is below the top of the raster then nothing changes
+        int nWindowTopRow = nOutRow - nWindowMiddleRow;
+        int nWindowHeightAdj = nWindowHeight;
+        int nWindowMiddleRowAdj = nWindowMiddleRow;
 
         // At the top and bottom we need to shrink our reading windows so we don't overlap the edge of the file.
-        if (nWindowRow < 0){
-            nWindowTrimRow = abs(nWindowRow);
-            nWindowRow = 0;
+        if (nWindowTopRow < 0){
+            nWindowHeightAdj = nWindowHeight + nWindowTopRow;
+            nWindowTopRow = 0;
         }
-        else if( nWindowRow + nWindowHeight >= rmRasterMeta.GetRows() ){
-            nWindowTrimRow = abs(nWindowRow);
+        else if( nWindowTopRow + nWindowHeight >= rmRasterMeta.GetRows() ){
+            nWindowHeightAdj = rmRasterMeta.GetRows() - nWindowTopRow;
+        }
+        if ( nWindowMiddleRow > nOutRow ){
+            nWindowMiddleRowAdj = 0;
         }
 
         // Read a 2D swath of the input, adjusting if any of the window top or bottom falls over the edge.
-        pRBInput->RasterIO(GF_Read, 0,  nWindowRow, nWindowWidth, (nWindowHeight - nWindowTrimRow), pInputWindow, rmRasterMeta.GetCols(), nWindowHeight, GDT_Float64, 0, 0);
+        pRBInput->RasterIO(GF_Read,
+                           0, nWindowTopRow,
+                           rmRasterMeta.GetCols(), nWindowHeightAdj,
+                           pInputWindow,
+                           rmRasterMeta.GetCols(), nWindowHeightAdj,
+                           GDT_Float64, 0, 0);
 
-        for (int nOutCol = 0; nOutCol < rmOutputMeta.GetCols(); nOutCol++)
+        for ( int nOutCol = 0; nOutCol < rmOutputMeta.GetCols(); nOutCol++ )
         {
-            if ( pInputWindow[nOutRow][nOutCol] == rmRasterMeta.GetNoDataValue() )
+            // At the left and right we need to shrink our reading windows so we don't overlap the edge of the file.
+            int nWindowLeftCol = nOutCol - nWindowMiddleCol;
+            int nWindowWidthAdj = nWindowWidth;
+            int nWindowMiddleColAdj = nWindowMiddleCol;
+
+            if ( nWindowLeftCol < 0 ){
+                nWindowWidthAdj = abs( nWindowWidth - nWindowLeftCol );
+                nWindowLeftCol = 0;
+            }
+            else if( nWindowLeftCol + nWindowWidth >= rmRasterMeta.GetCols() ){
+                nWindowWidthAdj = abs( nWindowLeftCol );
+            }
+            if ( nWindowMiddleCol > nOutCol ){
+                nWindowMiddleColAdj = 0;
+            }
+
+            // if the output row is nodataval then just set that.
+            int nMiddleWindowInd = ( (nWindowMiddleRowAdj * rmRasterMeta.GetCols()) + ( nWindowMiddleCol ) ) + nOutCol;
+
+            if ( pInputWindow[ nMiddleWindowInd ] == rmRasterMeta.GetNoDataValue() )
             {
-                pInputWindow[nOutRow][nOutCol] = pOutputLine[nOutCol] = rmOutputMeta.GetNoDataValue();
+                pOutputLine[nOutCol] = rmOutputMeta.GetNoDataValue();
             }
             else{
-
-                // At the left and rightwe need to shrink our reading windows so we don't overlap the edge of the file.
-                int nWindowCol = nOutCol - nWindowMiddleWidth;
-                int nWindowTrimCol = 0;
-                if (nWindowCol < 0){
-                    nWindowTrimCol = abs( nWindowCol );
-                    nWindowCol = 0;
-                }
-                else if( nWindowCol + nWindowWidth >= rmRasterMeta.GetCols() ){
-                    nWindowTrimCol = abs( nWindowCol );
-                }
 
                 // Loop over the window for this particular output cell (i,j)
                 double dSum = 0;
                 int nCells = 0;
-                for ( int nWrow = 0; nWrow < ( nWindowHeight - nWindowTrimRow ); nWrow++ ){
-                    for ( int nWcol = 0; nWrow < ( nWindowWidth - nWindowTrimCol ); nWcol++ ){
+                for ( int nWrow = 0; nWrow < ( nWindowWidthAdj ); nWrow++ ){
+                    for ( int nWcol = 0; nWcol < ( nWindowHeightAdj ); nWcol++ ){
 
                         // Translate the window coords into raster coords
-                        int nRasterRow = nOutRow;
-                        int nRasterCol = nOutCol;
-                        if ( nRasterRow >= 0 && nRasterRow < rmRasterMeta.GetRows() &&
-                                nRasterCol >= 0 && nRasterCol < rmRasterMeta.GetCols() ){
-                            if (pInputWindow[nRasterRow][nRasterCol] != fNoDataValue){
-                                nCells++;
-                                dSum += pInputWindow[nRasterRow][nRasterCol];
-                            }
-                        }
+                        int nWindowRasterInd = ( nWrow * rmRasterMeta.GetCols() ) + (nWcol + nWindowLeftCol);
+                        nCells++;
+                        dSum += pInputWindow[ nWindowRasterInd ];
                     }
                 }
                 if (nFilterOp == FILTER_MEAN)
@@ -160,11 +181,8 @@ int Raster::FilterRaster(
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  nOutRow, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, *rmRasterMeta.GetGDALDataType() , 0, 0);
     }
 
-    // Free our 2D buffer
-    for (int t=0; t< nWindowHeight; t++)
-         CPLFree(pInputWindow[t]);
-
-    // Free our 1D Output buffer
+    // Free our buffers
+    CPLFree(pInputWindow);
     CPLFree(pOutputLine);
 
     CalculateStats(pDSOutput->GetRasterBand(1));
