@@ -9,9 +9,10 @@
 
 #include <limits>
 #include <math.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <QFile>
+#include <QStringList>
+#include <QTextStream>
+#include <QFileInfo>
 
 namespace RasterManager {
 
@@ -60,52 +61,44 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * sDataField,
                          RasterMeta * p_rastermeta){
 
+
+
+
+
+    //DELETE ME: FOR DEBUG ONLY
+    if (QFileInfo(psOutput).exists()){
+        QFile::remove(QFileInfo(psOutput).absoluteFilePath());
+    }
+
     // Validate that the files are there
     CheckFile(sCSVSourcePath, true);
+    CheckFile(psOutput, false);
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, p_rastermeta);
 
-    // open the csv file and count the lines
-    int csvNumLines = 0;
-    std::ifstream inputCSVFile(sCSVSourcePath);
-    if (!inputCSVFile)
-    {
-        throw RasterManagerException(INPUT_FILE_ERROR, "Couldn't open csv file.");
-    }
-
-    std::string unused;
-    while ( std::getline(inputCSVFile, unused) )
-        ++csvNumLines;
-
-    // Reset the pointer back to the top
-    inputCSVFile.clear();
-    inputCSVFile.seekg(0);
-
     int xcol=-1, ycol=-1, zcol=-1;
 
     // Read CSV file into 3 different arrays
-    std::string fsLine;
     int nlinenumber = 0;
-
-    // Buffer for Writing
-    if (inputCSVFile.is_open()) {
-        while (std::getline(inputCSVFile,fsLine)) {
-
+    QFile file(sCSVSourcePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        while (!file.atEnd())
+        {
             nlinenumber++;
+            QString csvline = file.readLine();
+            QStringList lstLine = csvline.split(",");
 
             // prepare our buffers
             int csvX = -1;
             int csvY = -1;
             double csvDataVal = p_rastermeta->GetNoDataValue();
 
-            std::istringstream isLine (fsLine);
-            int ncolnumber = 0;
-            std::string uncleanCell;
-            while(getline(isLine, uncleanCell, ',')) {
-                ncolnumber++;
-                std::string csvItem = uncleanCell;
-                Raster::CSVCellClean(csvItem);
+            for (int ncolnumber = 0; ncolnumber < lstLine.size(); ncolnumber++){
+
+                QString csvItem = lstLine.at(ncolnumber);
+                CSVCellClean(csvItem);
 
                 //Strip the quotes off the
                 // First line is the header
@@ -137,7 +130,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                     }
 
                     // Assign our CSV values to an appropriate place in the raster
-                    double dVal = QString::fromStdString(csvItem).toDouble();
+                    double dVal = csvItem.toDouble();
                     if (xcol == ncolnumber){
                         csvX = (int) floor((dVal - p_rastermeta->GetLeft() ) / p_rastermeta->GetCellWidth());
                     }
@@ -159,11 +152,13 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
             }
 
         }
+        file.close();
+    }
+    else{
+        throw RasterManagerException(INPUT_FILE_ERROR, "Couldn't open input csv file.");
     }
 
     CalculateStats(pDSOutput->GetRasterBand(1));
-
-    inputCSVFile.close();
     GDALClose(pDSOutput);
 
     PrintRasterProperties(psOutput);
@@ -172,45 +167,33 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
 
 }
 
+void Raster::CSVWriteLine(QString sCSVFullPath, QString sCSVLine){
 
-void Raster::CSVCellClean(std::string & value){
+    QFile csvFile(sCSVFullPath);
 
-    std::string::size_type pos;
+    if (csvFile.open(QFile::WriteOnly|QFile::Append))
+    {
+      QTextStream stream(&csvFile);
 
-    // First strip line endings
-    pos = value.find_last_not_of('\r');
-    if(pos != std::string::npos) {
-      value.erase(pos + 1);
+      stream << sCSVLine << "\n"; // this writes first line with two columns
+      csvFile.close();
     }
-    else value.erase(value.begin(), value.end());
+    return;
 
-    // Now strip white space
-    pos = value.find_last_not_of(' ');
-    if(pos != std::string::npos) {
-      value.erase(pos + 1);
-      pos = value.find_first_not_of(' ');
-      if(pos != std::string::npos) value.erase(0, pos);
+}
+
+void Raster::CSVCellClean(QString & value){
+
+    // Strip whitespace outside the quotes
+    value = value.simplified();
+
+    // Then strip double quotes
+    if (value.startsWith("\"") && value.endsWith("\"")){
+        value=value.mid(1, value.length() -2);
     }
-    else value.erase(value.begin(), value.end());
 
-    // Then strip quotes
-    pos = value.find_last_not_of('"');
-    if(pos != std::string::npos) {
-      value.erase(pos + 1);
-      pos = value.find_first_not_of('"');
-      if(pos != std::string::npos) value.erase(0, pos);
-    }
-    else value.erase(value.begin(), value.end());
-
-    // Now strip white space again
-    pos = value.find_last_not_of(' ');
-    if(pos != std::string::npos) {
-      value.erase(pos + 1);
-      pos = value.find_first_not_of(' ');
-      if(pos != std::string::npos) value.erase(0, pos);
-    }
-    else value.erase(value.begin(), value.end());
-
+    // Now strip white space again instide the quotes
+    value = value.simplified();
 }
 
 }

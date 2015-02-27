@@ -173,7 +173,6 @@ int Raster::FilterRaster(
                 }
                 if (nFilterOp == FILTER_MEAN)
                     pOutputLine[nOutCol] = dSum / nCells;
-                    int a = 1;
             }
         }
 

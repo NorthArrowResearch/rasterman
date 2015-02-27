@@ -134,7 +134,14 @@ public:
      * @brief CSVCellClean
      * @param value
      */
-    static void CSVCellClean(std::string &value);
+    static void CSVCellClean(QString &value);
+
+    /**
+     * @brief CSVWriteLine
+     * @param sCSVFullPath
+     * @param sCSVLine
+     */
+    static void CSVWriteLine(QString sCSVFullPath, QString sCSVLine);
 
     /**
      * @brief CSVtoRaster
@@ -302,7 +309,7 @@ public:
       */
      static int RasterMosaic(const char * csRasters, const char * psOutput);
 
-     static void OutputCSVFile(OGRLayer *poLayer, const char *psFieldName, const char *sRasterOutputPath);
+     static void CSVWriteVectorValues(OGRLayer *poLayer, const char *psFieldName, const char *sRasterOutputPath);
 
      /**
       * @brief Raster::InvertRaster
@@ -340,6 +347,22 @@ public:
              const char * psOutputRaster,
              int nWindowWidth,
              int nWindowHeight);
+
+     /**
+      * @brief ExtractPoints
+      * @param sCSVInputSourcePath
+      * @param sRasterInputSourcePath
+      * @param sCSVOutputPath
+      * @param sXField
+      * @param sYField
+      * @return
+      */
+     static int ExtractPoints(const char * sCSVInputSourcePath,
+                       const char * sRasterInputSourcePath,
+                       const char * sCSVOutputPath,
+                       QString sXField,
+                       QString sYField, QString sNoData);
+
 
 protected:
 

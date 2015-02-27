@@ -291,6 +291,23 @@ extern "C" RM_DLL_API int RasterFilter(const char * psOperation,
         int nHeight );
 
 /**
+ * @brief ExtractRasterPoints
+ * @param sCSVInputSourcePath
+ * @param sRasterInputSourcePath
+ * @param sCSVOutputPath
+ * @param sXField
+ * @param sYField
+ * @param sNodata
+ * @return
+ */
+extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
+                                              const char * sRasterInputSourcePath,
+                                              const char * sCSVOutputPath,
+                                              const char * sXField,
+                                              const char * sYField,
+                                              const char * sNodata);
+
+/**
  * @brief CreatePNG
  * @param psInputRaster
  * @param psOutputPNG

@@ -37,7 +37,8 @@ SOURCES += \
     raster_vector.cpp \
     raster_invert.cpp \
     raster_normalize.cpp \
-    raster_filter.cpp
+    raster_filter.cpp \
+    raster_extractvals.cpp
 
 HEADERS +=\
     rastermanager_global.h \

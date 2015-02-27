@@ -44,7 +44,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     // Handle field types according to their type:
     switch (fieldType) {
     case OFTString:
-        OutputCSVFile(poLayer, psFieldName, sRasterOutputPath);
+        CSVWriteVectorValues(poLayer, psFieldName, sRasterOutputPath);
         break;
     case OFTInteger:
         break;
@@ -198,7 +198,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
 }
 
-void Raster::OutputCSVFile(OGRLayer * poLayer, const char * psFieldName, const char * sRasterOutputPath){
+void Raster::CSVWriteVectorValues(OGRLayer * poLayer, const char * psFieldName, const char * sRasterOutputPath){
 
     // use the filename with CSV added onto the end.
     QFileInfo sOutputFileInfo(sRasterOutputPath);

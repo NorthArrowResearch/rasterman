@@ -93,8 +93,8 @@ int RasterManEngine::Run(int argc, char * argv[])
 
         else if (QString::compare(sCommand, "invert", Qt::CaseInsensitive) == 0)
             eResult = invert(argc, argv);
-//        else if (QString::compare(sCommand, "extractpoints", Qt::CaseInsensitive) == 0)
-//            eResult = extractpoints(argc, argv);
+        else if (QString::compare(sCommand, "extractpoints", Qt::CaseInsensitive) == 0)
+            eResult = extractpoints(argc, argv);
         else if (QString::compare(sCommand, "filter", Qt::CaseInsensitive) == 0)
             eResult = filter(argc, argv);
         else if (QString::compare(sCommand, "normalize", Qt::CaseInsensitive) == 0)
@@ -670,7 +670,7 @@ int RasterManEngine::filter(int argc, char * argv[])
         std::cout << "\n    Usage: rasterman filter <operation> <input_raster_path> <output_raster_path> [<window_width> <window_height>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
-        std::cout << "\n           operation: What to do over a movine window. For now \"mean\" is the only option.";
+        std::cout << "\n           operation: What to do over a moving window. For now \"mean\" is the only option.";
         std::cout << "\n           ";
         std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
         std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
@@ -705,6 +705,54 @@ int RasterManEngine::filter(int argc, char * argv[])
 
     return eResult;
 
+}
+
+int RasterManEngine::extractpoints(int argc, char * argv[]){
+    if (argc != 8 && argc != 7 && argc != 5)
+    {
+        std::cout << "\n Extract cell values from a raster.";
+        std::cout << "\n    Usage: rasterman extractpoints <input_csv_path> <input_raster_path> <output_csv_path> [<x_field> <y_field>] [<nodata>]";
+        std::cout << "\n               ";
+        std::cout << "\n Arguments:    ";
+        std::cout << "\n      input_csv_path: Absolute full path to existing csv file with points we want to extract.";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n     output_csv_path: Absolute full path to desired output csv file containing the extracted values.";
+        std::cout << "\n               ";
+        std::cout << "\n        x_field: If your CSV has a header row you can specify an X field name.";
+        std::cout << "\n        y_field: If your CSV has a header row you can specify an Y field name.";
+        std::cout << "\n         nodata: (Optional) The string to use for nodata. Default is \"-9999\" ";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    QString XField = "";
+    QString YField = "";
+    QString Nodata = "";
+
+    // IF no XY specified but there is a nodata value
+    if (argc == 5){
+        Nodata = QString(argv[5]);
+    }
+    // If XY and nodata valu specified
+    else if (argc == 8){
+        XField = QString(argv[5]);
+        YField = QString(argv[6]);
+        Nodata = QString(argv[7]);
+    }
+
+
+
+    eResult = RasterManager::Raster::ExtractPoints(
+                argv[2],
+            argv[3],
+            argv[4],
+            XField,
+            XField,
+            Nodata );
+
+    return eResult;
 }
 
 int RasterManEngine::normalize(int argc, char * argv[])

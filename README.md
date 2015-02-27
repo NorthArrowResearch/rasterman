@@ -87,6 +87,10 @@ sudo make install
 
 Now you should have `rasterman` in your `/usr/bin` an the `libRasterManager.*` files in `/usr/lib`
 
+## Known Issues / Caveats
+
+* At present this tool only works on rasters with a single band.
+
 ## Contributing
 
 1. Fork it!

@@ -184,6 +184,29 @@ extern "C" RM_DLL_API int RasterFilter(
 }
 
 
+extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
+                                              const char * sRasterInputSourcePath,
+                                              const char * sCSVOutputPath,
+                                              const char * sXField,
+                                              const char * sYField,
+                                              const char * sNodata)
+{
+    try {
+        return Raster::ExtractPoints(
+                    sCSVInputSourcePath,
+                    sRasterInputSourcePath,
+                    sCSVOutputPath,
+                    QString(sXField),
+                    QString(sYField),
+                    QString(sNodata) );
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
+
+
 extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
                                  const char * psRaster2)
 {

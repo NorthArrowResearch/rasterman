@@ -179,7 +179,13 @@ private:
      */
     int filter(int argc, char *argv[]);
 
-
+    /**
+     * @brief extractpoints
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int extractpoints(int argc, char *argv[]);
 };
 
 }
