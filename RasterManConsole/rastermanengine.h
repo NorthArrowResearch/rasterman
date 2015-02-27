@@ -186,6 +186,14 @@ private:
      * @return
      */
     int extractpoints(int argc, char *argv[]);
+
+    /**
+     * @brief RasterToCSV
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int RasterToCSV(int argc, char *argv[]);
 };
 
 }

@@ -167,16 +167,67 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
 
 }
 
-void Raster::CSVWriteLine(QString sCSVFullPath, QString sCSVLine){
+int Raster::RasterToCSV(const char * sRasterSourcePath,
+                       const char * sOutputCSVPath){
 
-    QFile csvFile(sCSVFullPath);
+    CheckFile(sRasterSourcePath, true);
+    CheckFile(sOutputCSVPath, false);
 
-    if (csvFile.open(QFile::WriteOnly|QFile::Append))
+    RasterMeta rmRasterMeta(sRasterSourcePath);
+
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(sRasterSourcePath, GA_ReadOnly);
+    if (pDSInput == NULL)
+        throw RasterManagerException(INPUT_FILE_ERROR, "Could not open input Raster");
+
+
+    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
+
+    double fNoDataValue;
+    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
+        fNoDataValue = (double) -std::numeric_limits<float>::max();
+    }
+    else {
+        fNoDataValue = rmRasterMeta.GetNoDataValue();
+    }
+
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols());
+
+    QFile CSVfile(sOutputCSVPath);
+    if ( CSVfile.open(QFile::WriteOnly|QFile::Append) )
     {
-      QTextStream stream(&csvFile);
+        CSVWriteLine(&CSVfile, "X,Y,Value");
 
+        for (int i = 0; i < rmRasterMeta.GetRows(); i++)
+        {
+            pRBInput->RasterIO(GF_Read, 0,  i, rmRasterMeta.GetCols(), 1, pInputLine, rmRasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
+            for (int j = 0; j < rmRasterMeta.GetCols(); j++)
+            {
+                if ( pInputLine[j] != rmRasterMeta.GetNoDataValue())
+                {
+                    double dX = ( i * rmRasterMeta.GetCellWidth() ) + rmRasterMeta.GetLeft();
+                    double dY = rmRasterMeta.GetTop() - ( j * rmRasterMeta.GetCellHeight() );
+
+                    QString csvLine = QString("%s,%s,%s").arg(dX).arg(dY).arg(pInputLine[j]);
+                    CSVWriteLine(&CSVfile, csvLine);
+                }
+            }
+        }
+        CSVfile.close();
+    }
+    else{
+        throw RasterManagerException(OUTPUT_FILE_ERROR, "Could not open output CSV");
+    }
+    CPLFree(pInputLine);
+    GDALClose(pDSInput);
+    return PROCESS_OK;
+}
+
+void Raster::CSVWriteLine(QFile * csvFile, QString sCSVLine){
+
+    if (csvFile->open(QFile::WriteOnly|QFile::Append))
+    {
+      QTextStream stream(csvFile);
       stream << sCSVLine << "\n"; // this writes first line with two columns
-      csvFile.close();
     }
     return;
 

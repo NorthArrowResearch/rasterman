@@ -183,6 +183,56 @@ extern "C" RM_DLL_API int RasterFilter(
     }
 }
 
+extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
+                                                   const char * psOutput,
+                                                   const char * sRasterTemplate,
+                                                   const char * sXField,
+                                                   const char * sYField,
+                                                   const char * sDataField ){
+
+    try {
+        return  RasterManager::Raster::CSVtoRaster(sCSVSourcePath,
+                                                   psOutput,
+                                                   sRasterTemplate,
+                                                   sXField,
+                                                   sYField,
+                                                   sDataField );
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
+}
+
+extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
+                                                  const char * sOutput,
+                                                  double dTop,
+                                                  double dLeft,
+                                                  int nRows,
+                                                  int nCols,
+                                                  double dCellWidth,
+                                                  double dNoDataVal,
+                                                  const char * sXField,
+                                                  const char * sYField,
+                                                  const char * sDataField){
+
+    try {
+        return  RasterManager::Raster::CSVtoRaster(sCSVSourcePath,
+                                                   sOutput,
+                                                   dTop,
+                                                   dLeft,
+                                                   nRows,
+                                                   nCols,
+                                                   dCellWidth,
+                                                   dNoDataVal,
+                                                   sXField,
+                                                   sYField,
+                                                   sDataField);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
 
 extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
                                               const char * sRasterInputSourcePath,

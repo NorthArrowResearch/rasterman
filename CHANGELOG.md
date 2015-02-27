@@ -1,5 +1,25 @@
 --------------------------------
 
+## 6.1.6
+
+This release is in preparation for our GUT tool and contains a lot of new features for ways to process raster files.
+
+### New Features
+
+* RasterMan Now has an Icon. Added source in SVG format
+* **New Operation**: `normalize`: Normalize the raster
+* **New Operation**: `invert`: Turn all nodata points into a value.
+* **New Operation**: `raster2csv`: complement to csv2raster
+* **New Operation**: `filter`: perform operations like "smooth" over a moving window of arbitrary size (less than 16 cells).
+* Added a C interface for csv2raster and raster2csv
+
+### Fixes
+
+* Fixed a bug to do with whitespace inside CSV cell quotes
+* Completely refactored `csv2raster` to work faster.
+
+--------------------------------
+
 ## 6.1.5
 
 This release is a big refactor of Rasterman. There are several new features and loads of fixes.

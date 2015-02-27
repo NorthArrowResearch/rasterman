@@ -70,6 +70,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "csv2raster", Qt::CaseInsensitive) == 0)
             eResult = CSVToRaster(argc, argv);
 
+        else if (QString::compare(sCommand, "raster2csv", Qt::CaseInsensitive) == 0)
+            eResult = RasterToCSV(argc, argv);
+
         else if (QString::compare(sCommand, "vector2raster", Qt::CaseInsensitive) == 0)
             eResult = VectorToRaster(argc, argv);
 
@@ -134,13 +137,19 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    multiply     Multiply a raster by a number or another raster.";
         std::cout << "\n    power        Raise a raster to a power.";
         std::cout << "\n    sqrt         Get the square root of a raster.";
+        std::cout << "\n    invert       Create a raster from nodata values of another.";
+        std::cout << "\n    filter       Perform operations like \"smooth\" over a moving window.";
+        std::cout << "\n    normalize    Normalize a raster.";
         std::cout << "\n";
-        std::cout << "\n    hillshade       Create a hillshade raster.";
-        std::cout << "\n    slope           Create a slope raster.";
-        std::cout << "\n    png             Create a PNG image copy of a raster.";
+        std::cout << "\n    hillshade    Create a hillshade raster.";
+        std::cout << "\n    slope        Create a slope raster.";
+        std::cout << "\n    png          Create a PNG image copy of a raster.";
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
+        std::cout << "\n    raster2csv      Create a raster from a .csv file";
         std::cout << "\n    vector2raster   Create a raster from a vector file.";
+        std::cout << "\n ";
+        std::cout << "\n    extractpoints   Extract point values from a raster using a csv.";
         std::cout << "\n ";
     }
     return PROCESS_OK;
@@ -629,6 +638,30 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
     return eResult;
 
 }
+
+
+
+int RasterManEngine::RasterToCSV(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Convert a CSV file into a raster.";
+        std::cout << "\n    Usage: rasterman raster2csv <input_raster_path> <csv_file_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing raster file.";
+        std::cout << "\n       csv_file_path: Absolute full path to desired output .csv file.";
+        std::cout << "\n\n";
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    eResult = RasterManager::Raster::RasterToCSV( argv[2], argv[3] );
+
+    return eResult;
+
+}
+
 
 int RasterManEngine::invert(int argc, char * argv[])
 {

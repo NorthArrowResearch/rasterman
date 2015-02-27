@@ -327,6 +327,49 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
 extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
 
 
+/**
+ * @brief RasterFromCSVandTemplate
+ * @param sCSVSourcePath
+ * @param psOutput
+ * @param sRasterTemplate
+ * @param sXField
+ * @param sYField
+ * @param sDataField
+ * @return
+ */
+extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
+                                                   const char * psOutput,
+                                                   const char * sRasterTemplate,
+                                                   const char * sXField,
+                                                   const char * sYField,
+                                                   const char * sDataField );
+/**
+ * @brief RasterFromCSVandExtents
+ * @param sCSVSourcePath
+ * @param sOutput
+ * @param dTop
+ * @param dLeft
+ * @param nRows
+ * @param nCols
+ * @param dCellWidth
+ * @param dNoDataVal
+ * @param sXField
+ * @param sYField
+ * @param sDataField
+ * @return
+ */
+extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
+                                                  const char * sOutput,
+                                                  double dTop,
+                                                  double dLeft,
+                                                  int nRows,
+                                                  int nCols,
+                                                  double dCellWidth,
+                                                  double dNoDataVal,
+                                                  const char * sXField,
+                                                  const char * sYField,
+                                                  const char * sDataField);
+
 
 /**
  * @brief

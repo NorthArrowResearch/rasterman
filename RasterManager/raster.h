@@ -6,6 +6,7 @@
 #include "rastermanager_interface.h"
 #include <ogrsf_frmts.h>
 #include <QString>
+#include <QFile>
 #include <string>
 
 class GDALRasterBand;
@@ -141,7 +142,7 @@ public:
      * @param sCSVFullPath
      * @param sCSVLine
      */
-    static void CSVWriteLine(QString sCSVFullPath, QString sCSVLine);
+    static void CSVWriteLine(QFile *csvFile, QString sCSVLine);
 
     /**
      * @brief CSVtoRaster
@@ -200,6 +201,15 @@ public:
                            const char * sYField,
                            const char * sDataField);
 
+    /**
+     * @brief RasterToCSV
+     * @param sRasterSourcePath
+     * @param sOutputCSVPath
+     * @return
+     */
+    static int RasterToCSV(const char * sRasterSourcePath,
+                           const char * sOutputCSVPath);
+
 
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath, const char *FieldName,
@@ -216,6 +226,7 @@ public:
     static int VectortoRaster(const char * sVectorSourcePath,
                               const char * sRasterOutputPath,
                               const char * sRasterTemplate, const char *psFieldName);
+
 
     /**
      * @brief VectortoRaster Convenience method that takes a cell width
