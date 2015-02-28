@@ -59,16 +59,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                          const char * sXField,
                          const char * sYField,
                          const char * sDataField,
-                         RasterMeta * p_rastermeta){
-
-
-
-
-
-    //DELETE ME: FOR DEBUG ONLY
-    if (QFileInfo(psOutput).exists()){
-        QFile::remove(QFileInfo(psOutput).absoluteFilePath());
-    }
+                         RasterMeta * p_rastermeta ){
 
     // Validate that the files are there
     CheckFile(sCSVSourcePath, true);
@@ -140,10 +131,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                     else if (zcol == ncolnumber){
                         csvDataVal = dVal;
                     }
-
-
                 }
-
             }
             // here's where we need to get the correct row of the output. Replace
             if (csvX >= 0 && csvX < p_rastermeta->GetCols()
@@ -204,10 +192,14 @@ int Raster::RasterToCSV(const char * sRasterSourcePath,
             {
                 if ( pInputLine[j] != rmRasterMeta.GetNoDataValue())
                 {
-                    double dX = ( i * rmRasterMeta.GetCellWidth() ) + rmRasterMeta.GetLeft();
-                    double dY = rmRasterMeta.GetTop() - ( j * rmRasterMeta.GetCellHeight() );
+                    double dX = ( j * rmRasterMeta.GetCellWidth() ) + rmRasterMeta.GetLeft();
+                    double dY = ( i * rmRasterMeta.GetCellHeight() ) + rmRasterMeta.GetTop();
 
-                    QString csvLine = QString("%s,%s,%s").arg(dX).arg(dY).arg(pInputLine[j]);
+                    QString csvLine = QString("%1,%2,%3")
+                            .arg( dX, 0, 'f', rmRasterMeta.GetHorizontalPrecision() )
+                            .arg( dY, 0, 'f', rmRasterMeta.GetVerticalPrecision() )
+                            .arg( pInputLine[j], 0, 'f', 10, '0' );
+
                     CSVWriteLine(&CSVfile, csvLine);
                 }
             }
@@ -224,7 +216,7 @@ int Raster::RasterToCSV(const char * sRasterSourcePath,
 
 void Raster::CSVWriteLine(QFile * csvFile, QString sCSVLine){
 
-    if (csvFile->open(QFile::WriteOnly|QFile::Append))
+    if (csvFile->isOpen() && csvFile->isWritable())
     {
       QTextStream stream(csvFile);
       stream << sCSVLine << "\n"; // this writes first line with two columns

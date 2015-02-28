@@ -10,6 +10,7 @@ This release is in preparation for our GUT tool and contains a lot of new featur
 * **New Operation**: `normalize`: Normalize the raster
 * **New Operation**: `invert`: Turn all nodata points into a value.
 * **New Operation**: `raster2csv`: complement to csv2raster
+* **New Operation**: `extractvalue`: get a csv full of values extracted.
 * **New Operation**: `filter`: perform operations like "smooth" over a moving window of arbitrary size (less than 16 cells).
 * Added a C interface for csv2raster and raster2csv
 

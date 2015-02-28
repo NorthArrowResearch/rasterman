@@ -782,7 +782,7 @@ int RasterManEngine::extractpoints(int argc, char * argv[]){
             argv[3],
             argv[4],
             XField,
-            XField,
+            YField,
             Nodata );
 
     return eResult;

@@ -116,6 +116,44 @@ int RasterMeta::IsOthogonal(){
     return false;
 }
 
+int RasterMeta::GetPrecision(double num){
+    int count = 0;
+    num = fabs(num);
+    num = num - int(num);
+    while ( fabs(num) >= 0.0000001 ){
+        num = num * 10;
+        num = num - int(num);
+        count++;
+    }
+    return count;
+}
+
+int RasterMeta::GetVerticalPrecision()
+{
+
+    int leftPrecision = GetPrecision( GetLeft() );
+    int cellWidth = GetPrecision( GetCellHeight() );
+
+    if (leftPrecision > cellWidth)
+        return leftPrecision;
+    else
+        return cellWidth;
+
+}
+
+int RasterMeta::GetHorizontalPrecision()
+{
+
+    int topPrecision = GetPrecision( GetTop() );
+    int cellHeight = GetPrecision( GetCellWidth() );
+
+    if (topPrecision > cellHeight)
+        return topPrecision;
+    else
+        return cellHeight;
+
+}
+
 void RasterMeta::SetNoDataValue(double * fNoData) {
     // Weird case. 0 is the same as NULL for pointers.
     if (fNoData == NULL ){

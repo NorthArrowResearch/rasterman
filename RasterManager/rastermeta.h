@@ -68,6 +68,18 @@ public:
     inline bool HasNoDataValue() const {return b_HasNoData;}
 
     /**
+     * @brief GetVerticalPrecision
+     * @return
+     */
+    int GetVerticalPrecision();
+
+    /**
+     * @brief GetHorizontalPrecision
+     * @return
+     */
+    int GetHorizontalPrecision();
+
+    /**
      * @brief SetGDALDataType
      * @param fDataType
      */
@@ -114,7 +126,12 @@ private:
                      // actual raster.
     GDALDataType m_eDataType;
 
-
+    /**
+     * @brief GetPrecision
+     * @param num
+     * @return
+     */
+    static int GetPrecision(double num);
 
 };
 

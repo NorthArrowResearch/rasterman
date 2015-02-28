@@ -62,6 +62,8 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
     // Our buffer only has to be one pixel
     double pInputPt;
 
+    bool bHeaderRow = true;
+
     // Open the output file for writing
     QFile CSVOutputfile(sCSVOutputPath);
     if ( CSVOutputfile.open(QFile::WriteOnly|QFile::Append) )
@@ -69,7 +71,7 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
         // Write the header line output CSV
         // --------------------------------------------------
         if (bHasXYField){
-            CSVWriteLine(&CSVOutputfile, QString("%s,%s,Value")
+            CSVWriteLine(&CSVOutputfile, QString("%1,%2,Value")
                          .arg(sXField)
                          .arg(sYField) );
         }
@@ -93,7 +95,9 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
 
                 int csvX = -1;
                 int csvY = -1;
-                bool bHeaderRow = true;
+
+                double dCSVX = -1;
+                double dCSVY = -1;
 
                 // Figure out if line one is a header line
                 if (nlinenumber == 1){
@@ -107,11 +111,13 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
                         }
                     }
                 }
+                else {
+                    bHeaderRow = false;
+                }
 
                 // Loop over cells
                 for (int ncolnumber = 0; ncolnumber < lstLine.size(); ncolnumber++){
 
-                    ncolnumber++;
                     QString csvItem = lstLine.at(ncolnumber);
                     CSVCellClean(csvItem);
 
@@ -139,31 +145,31 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
 
                         double dVal = csvItem.toDouble();
                         if (xcol == ncolnumber){
-                            csvX = dVal;
+                            dCSVX = dVal;
+                            csvX = (int) floor((dVal - rmRasterMeta.GetLeft() ) / rmRasterMeta.GetCellWidth());
                         }
                         else if (ycol == ncolnumber){
-                            csvY = dVal;
+                            dCSVY = dVal;
+                            csvY = (int) floor((rmRasterMeta.GetTop() - dVal) / rmRasterMeta.GetCellHeight() * -1);
                         }
 
-                    }
-
-                    // here's where we need to get the correct row of the output. Replace
-                    if (csvX >= 0 && csvX < rmRasterMeta.GetCols()
-                            && csvY >=0 && csvY < rmRasterMeta.GetRows() ){
-
-                        pRBInput->RasterIO(GF_Read, csvX,  csvY, 1, 1, &pInputPt, 1, 1, GDT_Float64, 0, 0);
-                        QString value = sNoData;
-
-                        if (pInputPt != rmRasterMeta.GetNoDataValue() )
-                            value = QString::number(pInputPt);
-
-                        CSVWriteLine( &CSVOutputfile, QString("%s,%s,%s")
-                                      .arg(QString::number(csvX))
-                                      .arg(QString::number(csvY))
-                                      .arg(value) );
                     }
 
                 }
+                if (!bHeaderRow){
+                    // here's where we need to get the correct row of the output. Replace
+                    pRBInput->RasterIO(GF_Read, csvX,  csvY, 1, 1, &pInputPt, 1, 1, GDT_Float64, 0, 0);
+                    QString value = sNoData;
+
+                    if (pInputPt != rmRasterMeta.GetNoDataValue() )
+                        value = QString("%1").arg(pInputPt, 0, 'f', 10, '0');
+
+                    CSVWriteLine( &CSVOutputfile, QString("%1,%2,%3")
+                                  .arg(dCSVX, 0, 'f', rmRasterMeta.GetHorizontalPrecision() )
+                                  .arg(dCSVY, 0, 'f', rmRasterMeta.GetHorizontalPrecision() )
+                                  .arg(value) );
+                }
+
             }
             file.close();
         }

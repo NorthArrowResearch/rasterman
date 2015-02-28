@@ -30,10 +30,6 @@ int Raster::FilterRaster(
         int nWindowWidth,
         int nWindowHeight ){
 
-
-
-
-
     // Check for input and output files
     CheckFile(psInputRaster, true);
     CheckFile(psOutputRaster, false);
@@ -191,6 +187,8 @@ int Raster::FilterRaster(
 
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
+
+    PrintRasterProperties(psOutputRaster);
 
     return PROCESS_OK;
 

@@ -77,6 +77,8 @@ int Raster::InvertRaster(const char * psInputRaster,
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
 
+    PrintRasterProperties(psOutputRaster);
+
     return PROCESS_OK;
 
 }
