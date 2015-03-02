@@ -49,7 +49,8 @@ HEADERS +=\
     extentrectangle.h \
     rastermeta.h \
     rastermanager_exception.h \
-    rastermanager.h
+    rastermanager.h \
+    raster_fill.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug

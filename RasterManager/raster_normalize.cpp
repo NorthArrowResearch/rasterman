@@ -55,7 +55,6 @@ int Raster::NormalizeRaster(const char * psInputRaster,
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta;
 
-
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
 

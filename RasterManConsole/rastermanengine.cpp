@@ -7,6 +7,7 @@
 #include <QDebug>
 #include "raster.h"
 #include "rastermanager.h"
+#include "raster_fill.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 
@@ -723,11 +724,9 @@ int RasterManEngine::fill(int argc, char * argv[])
         nMethod = (RasterManagerFillMode) GetFillMethodFromString(argv[4]);
     }
 
-    eResult = RasterManager::Raster::RasterPitRemoval(
-                argv[2],
-            argv[3],
-            nMethod );
+    RasterPitRemoval rasterPit( argv[2], argv[3], nMethod );
 
+    eResult = rasterPit.Run();
 
     return eResult;
 
