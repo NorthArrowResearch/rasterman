@@ -563,7 +563,7 @@ bool EndsWith(const char * psFullString, const char * psEnding)
     }
 }
 
-extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle)
+extern "C" RM_DLL_API int GetSymbologyStyleFromString(const char * psStyle)
 {
     QString sStyle(psStyle);
 
@@ -582,8 +582,23 @@ extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const ch
     else if (QString::compare(sStyle , "SlopePC", Qt::CaseInsensitive) == 0)
         return GSS_SlopePer;
     else
-        return GSS_Unknown;
+        return -1;
 }
+
+extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod)
+{
+    QString sMethod(psMethod);
+
+    if (QString::compare(sMethod , "mincost", Qt::CaseInsensitive) == 0)
+        return FILL_MINCOST;
+    else if (QString::compare(sMethod , "bal", Qt::CaseInsensitive) == 0)
+        return FILL_BAL;
+    else if (QString::compare(sMethod , "cut", Qt::CaseInsensitive) == 0)
+        return FILL_CUT;
+    else
+        return -1;
+}
+
 
 extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
 {

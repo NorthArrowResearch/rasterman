@@ -194,6 +194,15 @@ private:
      * @return
      */
     int RasterToCSV(int argc, char *argv[]);
+
+    /**
+     * @brief fill
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int fill(int argc, char *argv[]);
+
 };
 
 }

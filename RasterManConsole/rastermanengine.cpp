@@ -102,8 +102,8 @@ int RasterManEngine::Run(int argc, char * argv[])
             eResult = filter(argc, argv);
         else if (QString::compare(sCommand, "normalize", Qt::CaseInsensitive) == 0)
             eResult = normalize(argc, argv);
-//        else if (QString::compare(sCommand, "fill", Qt::CaseInsensitive) == 0)
-//            eResult = fill(argc, argv);
+        else if (QString::compare(sCommand, "fill", Qt::CaseInsensitive) == 0)
+            eResult = fill(argc, argv);
 //        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
 //            eResult = consetnull(argc, argv);
 
@@ -539,7 +539,7 @@ int RasterManEngine::PNG(int argc, char * argv[])
 
     switch (argc) {
     case 7: break;
-    case 8: eStyle = RasterManager::GetSymbologyStyleFromString(argv[7]); break;
+    case 8: eStyle = (Raster_SymbologyStyle) RasterManager::GetSymbologyStyleFromString(argv[7]); break;
     default:
         std::cout << "\n Create a PNG Image File:";
         std::cout << "\n    Syntax: rasterman png <raster_file_path> <output_file_path> <quality> <long_axis> <opacity> [<raster_type>]";
@@ -693,6 +693,46 @@ int RasterManEngine::invert(int argc, char * argv[])
     return eResult;
 
 }
+
+int RasterManEngine::fill(int argc, char * argv[])
+{
+    if (argc != 5 && argc != 6)
+    {
+        std::cout << "\n Fill - Optimized Pit Removal.";
+        std::cout << "\n    Usage: rasterman fill <input_raster_path> <output_raster_path> [<method>]";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n           ";
+        std::cout << "\n              method: (optional)";
+        std::cout << "\n                        mincost: (default) for Minimize Absolute Elevation Change";
+        std::cout << "\n                        bal: for Minimize Net Elevation Change";
+        std::cout << "\n                        cut: for Cut Only";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    //    Mincost is the default
+    RasterManagerFillMode nMethod = FILL_MINCOST;
+
+    // The user specifies values for window shape
+    if (argc == 6){
+        nMethod = (RasterManagerFillMode) GetFillMethodFromString(argv[4]);
+    }
+
+    eResult = RasterManager::Raster::RasterPitRemoval(
+                argv[2],
+            argv[3],
+            nMethod );
+
+
+    return eResult;
+
+}
+
 
 
 int RasterManEngine::filter(int argc, char * argv[])

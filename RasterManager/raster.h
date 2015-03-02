@@ -374,6 +374,17 @@ public:
                        QString sXField,
                        QString sYField, QString sNoData);
 
+     /**
+      * @brief RasterPitRemoval
+      * @param sRasterInput
+      * @param sRasterOutput
+      * @param sXField
+      * @return
+      */
+     static int RasterPitRemoval(const char * sRasterInput,
+                                 const char * sRasterOutput,
+                                 RasterManagerFillMode eMethod);
+
 
 protected:
 

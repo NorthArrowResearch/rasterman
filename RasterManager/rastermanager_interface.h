@@ -26,6 +26,13 @@ enum RasterManagerInputCodes {
     SLOPE_PERCENT
 };
 
+enum RasterManagerFillMode {
+    FILL_MINCOST
+    , FILL_BAL
+    , FILL_CUT
+};
+
+
 enum RasterManagerOperators {
     RM_BASIC_MATH_ADD
     , RM_BASIC_MATH_SUBTRACT
@@ -324,8 +331,14 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
  * @param psStyle
  * @return
  */
-extern "C" RM_DLL_API Raster_SymbologyStyle GetSymbologyStyleFromString(const char * psStyle);
+extern "C" RM_DLL_API int GetSymbologyStyleFromString(const char * psStyle);
 
+/**
+ * @brief GetFillMethodFromString
+ * @param psMethod
+ * @return
+ */
+extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod);
 
 /**
  * @brief RasterFromCSVandTemplate
