@@ -38,6 +38,13 @@ int RasterManEngine::Run(int argc, char * argv[])
     {
         int eResult = PROCESS_OK;
 
+        // For Debug only! ----------------------------------
+        QString sProcname = "Unknown";
+        if (argc >= 2)
+            sProcname = QString(argv[1]);
+        RasterManager::ProcessTimer benchProcess(sProcname);
+        // ---------------------------------------------------
+
         RasterManager::RegisterGDAL();
         QString sCommand(argv[1]);
 
@@ -112,6 +119,10 @@ int RasterManEngine::Run(int argc, char * argv[])
             bRecognizedCommand = false;
 
         RasterManager::DestroyGDAL();
+
+        // For Debug only! ----------------------------------
+        benchProcess.Output();
+        // -------------------------------------------------
 
         return eResult;
     }

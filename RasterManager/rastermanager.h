@@ -3,7 +3,9 @@
 
 #include "rastermanager_global.h"
 #include "gdal_priv.h"
+#include "benchmark.h"
 #include <QString>
+
 
 namespace RasterManager {
 
@@ -25,7 +27,7 @@ void RM_DLL_API CheckFile(QString sFile, bool bMustExist);
  */
 void RM_DLL_API LibCheck();
 
-
 }
+
 
 #endif // TOOLS_H

@@ -50,7 +50,8 @@ HEADERS +=\
     rastermeta.h \
     rastermanager_exception.h \
     rastermanager.h \
-    raster_pitremove.h
+    raster_pitremove.h \
+    benchmark.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug

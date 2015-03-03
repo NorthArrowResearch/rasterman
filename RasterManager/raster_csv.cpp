@@ -75,6 +75,9 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
     QFile file(sCSVSourcePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        LoopTimer LineLoop("CSV Line");  //DEBUG Only
+        LoopTimer cellLoop("ProcessCell");  //DEBUG Only
+
         while (!file.atEnd())
         {
             nlinenumber++;
@@ -132,6 +135,7 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                         csvDataVal = dVal;
                     }
                 }
+                cellLoop.Tick(); //DEBUG Only
             }
             // here's where we need to get the correct row of the output. Replace
             if (csvX >= 0 && csvX < p_rastermeta->GetCols()
@@ -139,8 +143,12 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                 pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, csvX,  csvY, 1, 1, &csvDataVal, 1, 1, GDT_Float64, 0, 0);
             }
 
+            LineLoop.Tick(); //DEBUG Only
         }
         file.close();
+
+        LineLoop.Output();  //DEBUG Only
+        cellLoop.Output();  //DEBUG Only
     }
     else{
         throw RasterManagerException(INPUT_FILE_ERROR, "Couldn't open input csv file.");

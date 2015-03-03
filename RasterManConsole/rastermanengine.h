@@ -13,6 +13,7 @@ public:
     int Run(int argc, char *argv[]);
 
 private:
+
     /**
      * @brief CheckRasterManVersion
      */

@@ -40,6 +40,11 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
                                    const char * sRasterOutput,
                                    FillMode eMethod){
 
+
+    ProcessTimer initTimer("");
+    QueueItem = new LoopTimer("Queue Item");
+
+    // Basic File existence Checking
     CheckFile(sRasterInput, true);
     CheckFile(sRasterOutput, false);
 
@@ -124,6 +129,7 @@ int RasterPitRemoval::Run(){
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
     }
     return PROCESS_OK;
+
 }
 
 

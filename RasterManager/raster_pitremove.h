@@ -7,6 +7,8 @@
 #include <rastermanager_exception.h>
 #include <rastermanager_global.h>
 #include <queue>
+#include "benchmark.h"
+
 
 namespace RasterManager {
 
@@ -21,30 +23,36 @@ public:
     ~RasterPitRemoval();
 
     int Run();
+
 private:
 
-    enum FlowDirection { DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
+    // DEBUG Variables
+    LoopTimer * QueueItem;
 
-    //Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
+    // Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
+    enum FlowDirection { DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
     enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
 
-    // Main functions
+    // Main work function
     void InitializeMainQueue();
-    void IterateMainQueue();
 
     // Queue Functions
+    void IterateMainQueue();
     void AddToMainQueue(int ID, bool ConfirmDescend);
 
-    double GetCrestElevation(int PitID);
+    // Utility Functions
     void SetFlowDirection(int FromID, int ToID);
     int TraceFlow(int FromID, int FlowDirection);
     void FillToElevation(int PitID, double FillElev);
     void CutToElevation(int PitID);
-    bool CheckCell(int ID, int Direction, int &CurNeighborID, double CrestElev);
     int TraceFlow(int FromID, FlowDirection eFlowDir);
     void CreateFillFunction(int PitID, double CrestElev);
-    double GetIdealFillLevel(double CrestElev);
 
+    double GetIdealFillLevel(double CrestElev);
+    double GetCrestElevation(int PitID);
+
+    // Testing Functions
+    bool CheckCell(int ID, int Direction, int &CurNeighborID, double CrestElev);
     bool IsLocalMinimum(int CurID);
     bool IsBorder(int ID);
 
@@ -58,7 +66,6 @@ private:
     bool SavePits; // Input (ignored for now)
 
     FillMode Mode; // Input. See enum in rastermanager_interface.h
-
 
     void CreateCutFunction(int PitID, double CrestElev);
     void GetDepressionExtent(int PitID, double CrestElev);

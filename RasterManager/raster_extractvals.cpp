@@ -23,7 +23,6 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
                           QString sYField,
                           QString sNoData){
 
-
     // "" is a special case here. We can opt not to have a header line
     bool bHasXYField = true;
     if (sXField.compare("") == 0 ||
@@ -87,6 +86,9 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
         {
 
             // Line loop
+            LoopTimer rowLoop("Row");
+            LoopTimer colLoop("Column");
+
             while (!file.atEnd())
             {
                 nlinenumber++;
@@ -154,7 +156,7 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
                         }
 
                     }
-
+                    colLoop.Tick(); //DEBUG Only
                 }
                 if (!bHeaderRow){
                     // here's where we need to get the correct row of the output. Replace
@@ -169,9 +171,12 @@ int Raster::ExtractPoints(const char * sCSVInputSourcePath,
                                   .arg(dCSVY, 0, 'f', rmRasterMeta.GetHorizontalPrecision() )
                                   .arg(value) );
                 }
-
+                rowLoop.Tick();
             }
             file.close();
+
+            rowLoop.Output();
+            colLoop.Output();
         }
         else{
             throw RasterManagerException(INPUT_FILE_ERROR, "Couldn't open input csv file.");

@@ -18,6 +18,7 @@ void RM_DLL_API LibCheck(){
 
 }
 
+
 void RM_DLL_API CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments
