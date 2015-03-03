@@ -5,6 +5,8 @@
 #include "rastermanager_global.h"
 #include <QFile>
 #include <QDir>
+#include <QFileInfo>
+#include <QDebug>
 
 namespace RasterManager {
 
@@ -42,7 +44,16 @@ void RM_DLL_API CheckFile(QString sFile, bool bMustExist)
         else {
             if (QFile::exists(sFile)){
                 QString sErr = "The specified output file already exists." + sFile;
+
+#ifdef QT_DEBUG
+                // Delete a file if it already exists. ONLY IN DEBUG MODE
+                if (QFileInfo(sFile).exists()){
+                    QFile::remove(QFileInfo(sFile).absoluteFilePath());
+                }
+                qWarning() << sErr << QString("\n<<--:::DEBUG MODE::::-->>  Deleting existing file: %1").arg(sFile);;
+#else
                 throw  RasterManagerException(INPUT_FILE_ERROR, sErr);
+#endif
             }
         }
     }
