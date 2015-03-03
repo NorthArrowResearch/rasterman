@@ -7,7 +7,7 @@
 #include <QDebug>
 #include "raster.h"
 #include "rastermanager.h"
-#include "raster_fill.h"
+#include "raster_pitremove.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 
@@ -780,7 +780,7 @@ int RasterManEngine::filter(int argc, char * argv[])
 }
 
 int RasterManEngine::extractpoints(int argc, char * argv[]){
-    if (argc != 8 && argc != 7 && argc != 5)
+    if (argc < 5 || argc > 8)
     {
         std::cout << "\n Extract cell values from a raster.";
         std::cout << "\n    Usage: rasterman extractpoints <input_csv_path> <input_raster_path> <output_csv_path> [<x_field> <y_field>] [<nodata>]";
@@ -804,8 +804,12 @@ int RasterManEngine::extractpoints(int argc, char * argv[]){
     QString Nodata = "";
 
     // IF no XY specified but there is a nodata value
-    if (argc == 5){
+    if (argc == 6){
         Nodata = QString(argv[5]);
+    }
+    else if (argc == 7){
+        XField = QString(argv[5]);
+        YField = QString(argv[6]);
     }
     // If XY and nodata valu specified
     else if (argc == 8){
@@ -813,8 +817,6 @@ int RasterManEngine::extractpoints(int argc, char * argv[]){
         YField = QString(argv[6]);
         Nodata = QString(argv[7]);
     }
-
-
 
     eResult = RasterManager::Raster::ExtractPoints(
                 argv[2],
