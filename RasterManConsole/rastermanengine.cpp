@@ -717,11 +717,11 @@ int RasterManEngine::fill(int argc, char * argv[])
     int eResult = PROCESS_OK;
 
     //    Mincost is the default
-    RasterManagerFillMode nMethod = FILL_MINCOST;
+    FillMode nMethod = FILL_MINCOST;
 
     // The user specifies values for window shape
     if (argc == 6){
-        nMethod = (RasterManagerFillMode) GetFillMethodFromString(argv[4]);
+        nMethod = (FillMode) GetFillMethodFromString(argv[4]);
     }
 
     RasterPitRemoval rasterPit( argv[2], argv[3], nMethod );

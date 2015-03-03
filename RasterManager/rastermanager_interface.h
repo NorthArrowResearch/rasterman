@@ -21,17 +21,9 @@ namespace RasterManager {
  * @brief
  *
  */
-enum RasterManagerInputCodes {
-    SLOPE_DEGREES,
-    SLOPE_PERCENT
-};
+enum RasterManagerInputCodes { SLOPE_DEGREES, SLOPE_PERCENT };
 
-enum RasterManagerFillMode {
-    FILL_MINCOST
-    , FILL_BAL
-    , FILL_CUT
-};
-
+enum FillMode { FILL_MINCOST, FILL_BAL , FILL_CUT };
 
 enum RasterManagerOperators {
     RM_BASIC_MATH_ADD

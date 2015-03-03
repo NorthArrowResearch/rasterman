@@ -46,7 +46,7 @@ public:
 
     RasterPitRemoval(const char * sRasterInput,
                      const char * sRasterOutput,
-                     RasterManagerFillMode eMethod);
+                     FillMode eMethod);
     ~RasterPitRemoval();
 
     int Run();
@@ -81,17 +81,21 @@ private:
 
     void PitRemoveHybrid(int PitID);
 
-    bool SavePits;
-    RasterManagerFillMode Mode;
+    bool SavePits; // Input (ignored for now)
+
+    FillMode Mode; // Input. See enum in rastermanager_interface.h
+
 
     void CreateCutFunction(int PitID, double CrestElev);
     void GetDepressionExtent(int PitID, double CrestElev);
 
-    Raster * rInputRaster;
-    QString sOutputPath;
-    QString sInputPath;
+    Raster * rInputRaster;      // The object that contains all our raster properties
+    QString sOutputPath;        // Path to output raster
+    QString sInputPath;         // Path to Input raster
 
-    double dNoDataValue;
+    double dNoDataValue;        // The nodata value we will use throughout
+    double PitElev;
+    int TotalCells;             // Number of elements in the array
 
     std::vector<double> Terrain; //This begins as the input DEM and is modified by the algorithm.
     std::vector<int> Direction; //8-direction indicator of which cell caused the current cell to become flooded
@@ -103,19 +107,13 @@ private:
     std::vector<int> Neighbors; //Stores the ID of the current cell's eight neighbors
     std::vector<double> IsPit; //Optional binary record of which cells were identified as local minima.
 
-    std::map<double,double> CutFunction; //Stores paired elevation/cost data
-    std::map<double,double> FillFunction; //Stores paired elevation/cost data
-    std::map<double,double> BlankMap; //Used to reset Cut and Fill Functions
+    std::map<double, double> CutFunction; //Stores paired elevation/cost data
+    std::map<double, double> FillFunction; //Stores paired elevation/cost data
+    std::map<double, double> BlankMap; //Used to reset Cut and Fill Functions
 
     std::priority_queue<point, std::vector<point>, ComparePoint> MainQueue;
     std::priority_queue<point, std::vector<point>, ComparePoint> NeighborQueue;
-    std::priority_queue<point, std::vector<point>, ComparePoint> DepressionExtent;
-    std::priority_queue<point, std::vector<point>, ComparePoint> EmptyQueue;
-    std::priority_queue<point, std::vector<point>, ComparePoint> FillStepQueue;
-
-    //Common variables which would otherwise be passed back and forth frequently
-    double PitElev;
-    int Size;             // Number of elements in the array
+    std::priority_queue<point, std::vector<point>, ComparePoint> DepressionQueue;
 
 };
 

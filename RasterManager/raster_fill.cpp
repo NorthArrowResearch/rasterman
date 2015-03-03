@@ -38,7 +38,7 @@ int readoutlets(char *outletsfile, int *noutlets, double*& x, double*& y, int*& 
 
 RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
                                    const char * sRasterOutput,
-                                   RasterManagerFillMode eMethod){
+                                   FillMode eMethod){
 
     CheckFile(sRasterInput, true);
     CheckFile(sRasterOutput, false);
@@ -58,6 +58,7 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
         dNoDataValue = rInputRaster->GetNoDataValue();
 
     int nNumCells = rInputRaster->GetCols()*rInputRaster->GetRows();
+
     //Resize vectors
     Terrain.resize(nNumCells); //Values input from file, modified throughout program
     Direction.resize(nNumCells);  //Starts empty
@@ -66,7 +67,7 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
     BlankBool.resize(nNumCells);
     IsPit.resize(nNumCells);
 
-    Size = Terrain.size();
+    TotalCells = Terrain.size();
 
 }
 
@@ -96,7 +97,7 @@ int RasterPitRemoval::Run(){
     //The entire DEM is scanned and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
     //This allows internal points of no data to be used as outlets
-    for (size_t i=0; i < (size_t) Size; i++)
+    for (size_t i=0; i < (size_t) TotalCells; i++)
     {
         //Test if cell is on border or if cell has a neighbor with no data
         if(IsBorder(i) || NeighborNoValue(i)){
@@ -152,7 +153,6 @@ void RasterPitRemoval::IterateMainQueue()
         //Check Cell to determine if it is a Pit Minimum
         if(IsLocalMinimum(CurCell.id))
         {
-            //printf("\nRemoving Pit: %i", CurPitNum);
             //User-selected method for removing pit
             if(Mode == FILL_CUT)
             {
@@ -162,7 +162,6 @@ void RasterPitRemoval::IterateMainQueue()
             {
                 PitRemoveHybrid(CurCell.id);
             }
-            //printf(".");
             CurPitNum++;
         }
         else //Some cells within a depression may still be classified as Flooded=1 after pit has been removed. Need to correct this
@@ -635,21 +634,18 @@ double RasterPitRemoval::GetIdealFillLevel(double CrestElev)
 bool RasterPitRemoval::IsBorder(int ID)
 {
     //Tests if cell is on the outer edge of the grid, and thus is an outlet
-    bool border = 0;
     int numCols = rInputRaster->GetCols();
-    if (ID < numCols)
-        border=1;
-    else if (Size-ID <numCols + 1)
-        border=1;
-    else if (!(ID % numCols))
-        border=1;
-    else if (!((ID+1) % numCols))
-        border = 1;
-    else
-        border=0;
-
-    return border;
+    if (ID < numCols ||                 // In the top row
+            TotalCells - ID < numCols + 1 ||  // In the Last Row
+            ! (ID % numCols) ||         // In the Right Col
+            ! ((ID+1) % numCols) ){     // In the Left Col
+        return true;
+    }
+    else {
+        return false;
+    }
 }
+
 bool RasterPitRemoval::NeighborNoValue(int ID)
 {
     //Tests if cell is next to a cell with no_data, and thus is an outlet
@@ -727,7 +723,6 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
     int CurID;
     point CurPoint;
     point NeighborPoint;
-    std::priority_queue<point, std::vector<point>, ComparePoint> DepressionQueue;
 
     CurPoint.id = PitID;
     CurPoint.elev = Terrain.at(PitID);
@@ -825,7 +820,7 @@ void RasterPitRemoval::GetNeighbors(int ID)
         Neighbors.at(3)=ID+1;
 
     //Southeast
-    if (Size-ID <numCols + 1)
+    if (TotalCells-ID <numCols + 1)
         Neighbors.at(4)=-1;
     else if (!((ID+1) % numCols))
         Neighbors.at(4)=-1;
@@ -833,13 +828,13 @@ void RasterPitRemoval::GetNeighbors(int ID)
         Neighbors.at(4)=ID+1+numCols;
 
     //South
-    if (Size-ID <numCols + 1)
+    if (TotalCells-ID <numCols + 1)
         Neighbors.at(5)=-1;
     else
         Neighbors.at(5)=ID+numCols;
 
     //Southwest
-    if (Size-ID <numCols + 1)
+    if (TotalCells-ID <numCols + 1)
         Neighbors.at(6)=-1;
     else if (!(ID % numCols))
         Neighbors.at(6)=-1;

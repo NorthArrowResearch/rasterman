@@ -383,7 +383,7 @@ public:
       */
      static int RasterPitRemoval(const char * sRasterInput,
                                  const char * sRasterOutput,
-                                 RasterManagerFillMode eMethod);
+                                 FillMode eMethod);
 
 
 protected:
