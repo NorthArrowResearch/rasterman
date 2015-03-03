@@ -17,7 +17,7 @@
  *
 */
 
-#include "raster_fill.h"
+#include "raster_pitremove.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "raster.h"
@@ -222,7 +222,6 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
         }
     }
 }
-
 
 double RasterPitRemoval::GetCrestElevation(int PitID)
 {
@@ -711,8 +710,6 @@ void RasterPitRemoval::PitRemoveHybrid(int PitID)
     FillFunction = BlankMap;
     Depression = BlankInt;
 }
-
-
 
 void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
 {

@@ -39,7 +39,7 @@ SOURCES += \
     raster_normalize.cpp \
     raster_filter.cpp \
     raster_extractvals.cpp \
-    raster_fill.cpp
+    raster_pitremove.cpp
 
 HEADERS +=\
     rastermanager_global.h \
@@ -50,7 +50,7 @@ HEADERS +=\
     rastermeta.h \
     rastermanager_exception.h \
     rastermanager.h \
-    raster_fill.h
+    raster_pitremove.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug

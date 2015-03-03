@@ -1,5 +1,5 @@
-#ifndef RASTER_FILL_H
-#define RASTER_FILL_H
+#ifndef RASTER_PITREMOVE_H
+#define RASTER_PITREMOVE_H
 
 #endif // RASTER_FILL_H
 
@@ -9,35 +9,6 @@
 #include <queue>
 
 namespace RasterManager {
-
-
-
-// ====== CLASSES AND STRUCTURES ================================
-struct point
-{
-  //A point contains a raster cell location in 1-D array format (0-based, starting from upper left corner) and the associated elevation
-  int id; //0-based grid cell number in a 1-D array
-  double elev; //Elevation associated with the point
-};
-class ComparePoint
-{
-  public:
-    bool operator()(point& p1, point& p2) // Returns true if p1 is greater than p2. This makes the priority queue return low elevations first
-    {
-       if (p1.elev > p2.elev) return true;
-       return false;
-    }
-};
-class CompareElevation
-{
-  public:
-    bool operator()(double e1, double e2) // Returns true if p1 is greater than p2. This makes the priority queue return low elevations first
-    {
-       if (e1 > e2) return true;
-       return false;
-    }
-};
-
 
 
 class RasterPitRemoval {
@@ -53,8 +24,9 @@ public:
 private:
 
     enum FlowDirection { DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
+
     //Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
-    enum FloodedState {UNFLOODED, FLOODED, FLOODEDDESC};
+    enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
 
     // Main functions
     void InitializeMainQueue();
@@ -113,10 +85,28 @@ private:
     std::map<double, double> FillFunction;  // Stores paired elevation/cost data
     std::map<double, double> BlankMap;      // Used to reset Cut and Fill Functions
 
+    // ====== CLASSES AND STRUCTURES ================================
+    struct point
+    {
+      //A point contains a raster cell location in 1-D array format (0-based, starting from upper left corner) and the associated elevation
+      int id; //0-based grid cell number in a 1-D array
+      double elev; //Elevation associated with the point
+    };
+    class ComparePoint
+    {
+      public:
+        inline bool operator()(point& p1, point& p2) // Returns true if p1 is greater than p2. This makes the priority queue return low elevations first
+        {
+           if (p1.elev > p2.elev) return true;
+           return false;
+        }
+    };
+
     std::priority_queue<point, std::vector<point>, ComparePoint> MainQueue;
     std::priority_queue<point, std::vector<point>, ComparePoint> NeighborQueue;
     std::priority_queue<point, std::vector<point>, ComparePoint> DepressionQueue;
 
 };
+
 
 }
