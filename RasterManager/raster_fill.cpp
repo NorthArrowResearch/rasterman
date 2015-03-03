@@ -76,7 +76,6 @@ RasterPitRemoval::~RasterPitRemoval()
     delete rInputRaster;
 }
 
-
 int RasterPitRemoval::Run(){
 
     // Set up the GDal Dataset and rasterband info
@@ -120,7 +119,7 @@ int RasterPitRemoval::Run(){
     for (int i = 0; i < rInputRaster->GetRows(); i++)
     {
         for (int j = 0; j < rInputRaster->GetCols(); j++)
-            pOutputLine[j] = 1;
+            pOutputLine[j] = Terrain.at(i*rInputRaster->GetCols() + j);
 
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
     }
@@ -166,7 +165,7 @@ void RasterPitRemoval::IterateMainQueue()
         }
         else //Some cells within a depression may still be classified as Flooded=1 after pit has been removed. Need to correct this
         {
-            if(Flooded.at(CurCell.id)==1)
+            if(Flooded.at(CurCell.id) == FLOODED)
             {
                 GetNeighbors(CurCell.id);
                 int i;
@@ -174,9 +173,9 @@ void RasterPitRemoval::IterateMainQueue()
                 {
                     if (Neighbors.at(i)>-1)
                     {
-                        if ((Flooded.at(Neighbors.at(i))==2)&&(Terrain.at(Neighbors.at(i))<=Terrain.at(CurCell.id)))
+                        if ((Flooded.at(Neighbors.at(i)) == FLOODEDDESC ) && (Terrain.at(Neighbors.at(i))<=Terrain.at(CurCell.id)))
                         {
-                            Flooded.at(CurCell.id)=2;
+                            Flooded.at(CurCell.id) = FLOODEDDESC;
                             break;
                         }
                     }
@@ -192,7 +191,7 @@ void RasterPitRemoval::IterateMainQueue()
             NeighborQueue.pop();
 
             ConfirmDescend=false;
-            if(Terrain.at(CurNeighbor.id)>=Terrain.at(CurCell.id)&&(Flooded.at(CurCell.id)==2))
+            if(Terrain.at(CurNeighbor.id)>=Terrain.at(CurCell.id)&&(Flooded.at(CurCell.id)== FLOODEDDESC))
                 ConfirmDescend=true;
             AddToMainQueue(CurNeighbor.id, ConfirmDescend);
             SetFlowDirection(CurNeighbor.id, CurCell.id);
@@ -207,7 +206,7 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
     //The vector Flooded is a permanent record of whether each cell has been flooded and whether there is a known path to an outlet
 
     point CurCell;
-    if (Flooded.at(ID)==0)
+    if (Flooded.at(ID) == UNFLOODED)
     {
         CurCell.id = ID;
         CurCell.elev = Terrain.at(ID);
@@ -215,11 +214,11 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
 
         if(ConfirmDescend)
         {
-            Flooded.at(ID)=2;
+            Flooded.at(ID)= FLOODEDDESC;
         }
         else
         {
-            Flooded.at(ID) = 1;
+            Flooded.at(ID) = FLOODED;
         }
     }
 }
@@ -243,7 +242,7 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
             ReachedOutlet = 1;
-        else if((Terrain.at(NextID) < Terrain.at(PitID))&&(Flooded.at(NextID)==2)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
+        else if((Terrain.at(NextID) < Terrain.at(PitID))&&(Flooded.at(NextID)==FLOODEDDESC)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
             ReachedOutlet = 1;
         else
         {
@@ -407,7 +406,7 @@ void RasterPitRemoval::GetDryNeighbors(int ID)
     {
         if (Neighbors.at(i)>-1)
         {
-            if (!Flooded.at(Neighbors.at(i)))
+            if (Flooded.at(Neighbors.at(i)) == UNFLOODED)
             {
                 DryNeighbor.id = Neighbors.at(i);
                 DryNeighbor.elev = Terrain.at(Neighbors.at(i));
@@ -452,13 +451,13 @@ void RasterPitRemoval::CutToElevation(int PitID)
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
             ReachedOutlet = 1;
-        else if((Terrain.at(NextID) < PitElev)&&(Flooded.at(NextID)==2)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
+        else if((Terrain.at(NextID) < PitElev)&&(Flooded.at(NextID)==FLOODEDDESC)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
             ReachedOutlet = 1;
         else
         {
             if ((Terrain.at(NextID) > PitElev) && (Terrain.at(NextID) != dNoDataValue))
                 Terrain.at(NextID) = PitElev;
-            Flooded.at(NextID) = 2; //Confirm that cell has descending path to outlet
+            Flooded.at(NextID) = FLOODEDDESC; //Confirm that cell has descending path to outlet
         }
         CurID = NextID;
     }
@@ -541,7 +540,7 @@ void RasterPitRemoval::CreateCutFunction(int PitID, double CrestElev)
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
             ReachedOutlet = 1;
-        else if((Terrain.at(NextID) < PitElev)&&(Flooded.at(NextID)==2)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
+        else if((Terrain.at(NextID) < PitElev)&&(Flooded.at(NextID)==FLOODEDDESC)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
             ReachedOutlet = 1;
         else
         {
@@ -705,7 +704,7 @@ void RasterPitRemoval::PitRemoveHybrid(int PitID)
         CutToElevation(PitID);
     }
 
-    Flooded.at(PitID) = 2; //Confirm that cell has descending path to outlet (i.e. Pit has been removed)
+    Flooded.at(PitID) = FLOODEDDESC; //Confirm that cell has descending path to outlet (i.e. Pit has been removed)
 
     //Reset global variables
     CutFunction = BlankMap;
@@ -760,7 +759,7 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
     //This means for a wide pit with a flat bottom, the last flooded cell (roughly farthest from the outlet) is considered the minimum.
 
     bool IsMinimum = true;
-    if (Flooded.at(CurID)==2)  //Cell is on confirmed path to outlet
+    if (Flooded.at(CurID)==FLOODEDDESC)  //Cell is on confirmed path to outlet
     {
         IsMinimum = false;
     }
@@ -774,7 +773,7 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
             {
                 if( Terrain.at(Neighbors.at(i)) < Terrain.at(CurID))
                     IsMinimum = false;
-                if((Terrain.at(Neighbors.at(i)) == Terrain.at(CurID)) && (Flooded.at(Neighbors.at(i)) == 0))
+                if((Terrain.at(Neighbors.at(i)) == Terrain.at(CurID)) && (Flooded.at(Neighbors.at(i)) == UNFLOODED))
                     IsMinimum = false;
             }
             i++;
