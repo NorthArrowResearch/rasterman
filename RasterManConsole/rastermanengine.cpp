@@ -112,7 +112,9 @@ int RasterManEngine::Run(int argc, char * argv[])
             eResult = normalize(argc, argv);
         else if (QString::compare(sCommand, "fill", Qt::CaseInsensitive) == 0)
             eResult = fill(argc, argv);
-//        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(sCommand, "dist", Qt::CaseInsensitive) == 0)
+            eResult = dist(argc, argv);
+        //        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
 //            eResult = consetnull(argc, argv);
 
         else
@@ -152,6 +154,8 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    invert       Create a raster from nodata values of another.";
         std::cout << "\n    filter       Perform operations like \"smooth\" over a moving window.";
         std::cout << "\n    normalize    Normalize a raster.";
+        std::cout << "\n    fill         Optimized Pit Removal.";
+        std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
         std::cout << "\n    slope        Create a slope raster.";
@@ -863,6 +867,29 @@ int RasterManEngine::normalize(int argc, char * argv[])
 
 }
 
+
+int RasterManEngine::dist(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Euclidean distance calculation.";
+        std::cout << "\n    Usage: rasterman dist <input_raster_path> <output_raster_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+    eResult = RasterManager::Raster::EuclideanDistance(
+            argv[2],
+            argv[3] );
+
+    return eResult;
+
+}
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {

@@ -270,6 +270,18 @@ extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
     }
 }
 
+extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
+                                 const char * psRaster2)
+{
+    try {
+        return Raster::EuclideanDistance(
+                    psRaster1,
+                    psRaster2);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
 
 extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
 

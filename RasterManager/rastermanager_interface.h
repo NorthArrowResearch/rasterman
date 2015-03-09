@@ -99,9 +99,9 @@ extern "C" RM_DLL_API void DestroyGDAL();
  * @param nDataType
  */
 extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
-                                                          double & fCellHeight, double & fCellWidth,
-                                                          double & fLeft, double & fTop, int & nRows, int & nCols,
-                                                          double & fNoData, int & bHasNoData, int & nDataType);
+                                               double & fCellHeight, double & fCellWidth,
+                                               double & fLeft, double & fTop, int & nRows, int & nCols,
+                                               double & fNoData, int & bHasNoData, int & nDataType);
 /**
  * @brief PrintRasterProperties
  *
@@ -131,8 +131,8 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster);
  * @return int
  */
 extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
-                                                      const char *ppszOutputRaster, double fNewCellSize,
-                                                      double fLeft, double fTop, int nRows, int nCols);
+                                           const char *ppszOutputRaster, double fNewCellSize,
+                                           double fLeft, double fTop, int nRows, int nCols);
 
 /**
  * @brief Copy
@@ -147,8 +147,8 @@ extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
  * @return int
  */
 extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
-                                          const char *ppszOutputRaster, double fNewCellSize,
-                                          double fLeft, double fTop, int nRows, int nCols);
+                               const char *ppszOutputRaster, double fNewCellSize,
+                               double fLeft, double fTop, int nRows, int nCols);
 
 
 /**
@@ -159,10 +159,10 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
  * @param ppszOutputRaster
  */
 extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
-                                 const char * ppszOriginalRaster2,
-                                 const double *dOperator,
-                                 const int iOperation,
-                                 const char * psOutput);
+                                    const char * ppszOriginalRaster2,
+                                    const double *dOperator,
+                                    const int iOperation,
+                                    const char * psOutput);
 
 /**
  * @brief CreateOutputDSfromRef
@@ -262,8 +262,8 @@ extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * p
  * @return
  */
 extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
-                                 const char * psRaster2,
-                                 double dValue);
+                                       const char * psRaster2,
+                                       double dValue);
 
 /**
  * @brief RasterNormalize
@@ -272,7 +272,7 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
  * @return
  */
 extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
-                                 const char * psRaster2);
+                                          const char * psRaster2);
 
 /**
  * @brief RasterFilter
@@ -284,10 +284,10 @@ extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
  * @return
  */
 extern "C" RM_DLL_API int RasterFilter(const char * psOperation,
-        const char * psInputRaster,
-        const char * psOutputRaster,
-        int nWidth,
-        int nHeight );
+                                       const char * psInputRaster,
+                                       const char * psOutputRaster,
+                                       int nWidth,
+                                       int nHeight );
 
 /**
  * @brief ExtractRasterPoints
@@ -375,6 +375,14 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
                                                   const char * sYField,
                                                   const char * sDataField);
 
+/**
+ * @brief RasterEuclideanDistance
+ * @param psRaster1
+ * @param psRaster2
+ * @return
+ */
+extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
+                                                  const char * psRaster2);
 
 /**
  * @brief
@@ -424,7 +432,7 @@ inline RM_DLL_API std::string stringify(double x) {
 
 inline float roundf(float x)
 {
-   return x >= 0.0f ? floorf(x + 0.5f) : ceilf(x - 0.5f);
+    return x >= 0.0f ? floorf(x + 0.5f) : ceilf(x - 0.5f);
 }
 
 

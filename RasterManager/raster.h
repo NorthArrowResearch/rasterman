@@ -320,6 +320,12 @@ public:
       */
      static int RasterMosaic(const char * csRasters, const char * psOutput);
 
+     /**
+      * @brief CSVWriteVectorValues
+      * @param poLayer
+      * @param psFieldName
+      * @param sRasterOutputPath
+      */
      static void CSVWriteVectorValues(OGRLayer *poLayer, const char *psFieldName, const char *sRasterOutputPath);
 
      /**
@@ -332,6 +338,15 @@ public:
      static int InvertRaster(const char * psInputRaster,
                               const char * psOutputRaster,
                               double dValue);
+
+     /**
+      * @brief EuclideanDistance
+      * @param psInputRaster
+      * @param psOutputRaster
+      * @return
+      */
+     static int EuclideanDistance( const char * psInputRaster,
+                                   const char * psOutputRaster );
 
      /**
       * @brief NormalizeRaster

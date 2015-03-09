@@ -204,6 +204,13 @@ private:
      */
     int fill(int argc, char *argv[]);
 
+    /**
+     * @brief dist
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int dist(int argc, char *argv[]);
 };
 
 }
