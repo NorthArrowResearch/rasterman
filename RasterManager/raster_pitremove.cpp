@@ -71,6 +71,7 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
     Checked.resize(nNumCells);
     BlankBool.resize(nNumCells);
     IsPit.resize(nNumCells);
+    Neighbors.resize(8);
 
     TotalCells = Terrain.size();
 
@@ -94,7 +95,7 @@ int RasterPitRemoval::Run(){
     for (int i = 0; i < pRBInput->GetYSize(); i++){
         pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
         for (int j = 0; j < pRBInput->GetXSize(); j++){
-            Terrain.at(i) = pInputLine[i*rInputRaster->GetCols() + j];
+            Terrain.at(i*rInputRaster->GetCols() + j) = pInputLine[j];
         }
     }
 
@@ -106,7 +107,7 @@ int RasterPitRemoval::Run(){
         //Test if cell is on border or if cell has a neighbor with no data
         if(IsBorder(i) || NeighborNoValue(i)){
             AddToMainQueue(i, true); //All outlet cells by definition have a path to the outlet, thus ConfirmDescend = true.
-            Direction.at(i)=0;
+            Direction.at(i)=NONEIGHBOUR;
         }
     }
 
@@ -123,9 +124,10 @@ int RasterPitRemoval::Run(){
     // Write rows and columns
     for (int i = 0; i < rInputRaster->GetRows(); i++)
     {
-        for (int j = 0; j < rInputRaster->GetCols(); j++)
+        for (int j = 0; j < rInputRaster->GetCols(); j++){
+            double val = Terrain.at(i*rInputRaster->GetCols() + j);
             pOutputLine[j] = Terrain.at(i*rInputRaster->GetCols() + j);
-
+        }
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
     }
     return PROCESS_OK;
@@ -171,7 +173,7 @@ void RasterPitRemoval::IterateMainQueue()
         }
         else //Some cells within a depression may still be classified as Flooded=1 after pit has been removed. Need to correct this
         {
-            if(Flooded.at(CurCell.id) == FLOODED)
+            if(Flooded.at(CurCell.id) == FLOODED )
             {
                 GetNeighbors(CurCell.id);
                 int i;
@@ -343,11 +345,13 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
 
     if (Check==true)
     {
-        if (!( (Checked.at(CurNeighborID)==0) && (Terrain.at(CurNeighborID) < CrestElev) && (Terrain.at(CurNeighborID)>=Terrain.at(ID))))
+        if (!( (Checked.at(CurNeighborID)== false)
+               && (Terrain.at(CurNeighborID) < CrestElev)
+               && (Terrain.at(CurNeighborID)>=Terrain.at(ID))))
         {
             Check = false;
         }
-        Checked.at(CurNeighborID) = 1;
+        Checked.at(CurNeighborID) = true;
     }
 
     return Check;
@@ -376,7 +380,7 @@ void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
     else if(ToID == FromID + 1 - numCols)
         Direction.at(FromID) = DIR_NE; //Flow is to Northeast
     else
-        Direction.at(FromID) = 0;
+        Direction.at(FromID) = NONEIGHBOUR;
 }
 
 int RasterPitRemoval::TraceFlow(int FromID, FlowDirection eFlowDir)
@@ -425,15 +429,15 @@ void RasterPitRemoval::FillToElevation(int PitID, double FillElev)
 {
     //Fills all cells within a depression to the specified elevation
     int CurID;
-
-    if ((Terrain.at(PitID) < FillElev) && (Terrain.at(PitID) != dNoDataValue)) Terrain.at(PitID) = FillElev;
-
+    if ((Terrain.at(PitID) < FillElev) && (Terrain.at(PitID) != dNoDataValue)) {
+        Terrain.at(PitID) = FillElev;    // TODO: TERRAIN SET
+    }
     for (size_t i=0; i < Depression.size();i++)
     {
         CurID = Depression.at(i);
         if ((Terrain.at(CurID) < FillElev) && (Terrain.at(CurID) != dNoDataValue))
         {
-            Terrain.at(CurID) = FillElev;
+            Terrain.at(CurID) = FillElev; // TODO: TERRAIN SET
         }
     }
 }
@@ -460,8 +464,9 @@ void RasterPitRemoval::CutToElevation(int PitID)
             ReachedOutlet = 1;
         else
         {
-            if ((Terrain.at(NextID) > PitElev) && (Terrain.at(NextID) != dNoDataValue))
-                Terrain.at(NextID) = PitElev;
+            if ((Terrain.at(NextID) > PitElev) && (Terrain.at(NextID) != dNoDataValue)){
+                Terrain.at(NextID) = PitElev; // TODO: TERRAIN SET
+            }
             Flooded.at(NextID) = FLOODEDDESC; //Confirm that cell has descending path to outlet
         }
         CurID = NextID;
@@ -485,7 +490,7 @@ void RasterPitRemoval::CreateFillFunction(int PitID, double CrestElev)
     while (CurStep < CrestElev)
     {
         FillFunction[CurStep] = 0;
-        CurStep = CurStep + rInputRaster->GetCellHeight();
+        CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
     }
     FillFunction[CrestElev] = 0; //Make sure an entry for the Crest is added
 
@@ -504,7 +509,7 @@ void RasterPitRemoval::CreateFillFunction(int PitID, double CrestElev)
                 FillFunction[CurStep] = OldFill + CurStep - CurGroundElev;
             }
 
-            CurStep = CurStep + rInputRaster->GetCellHeight();
+            CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
 
             //Exit Conditions - make sure the last step gets accounted for
             if (CurStep > CrestElev)
@@ -533,7 +538,7 @@ void RasterPitRemoval::CreateCutFunction(int PitID, double CrestElev)
     while (CurStep < CrestElev)
     {
         CutFunction[CurStep] = 0;
-        CurStep = CurStep + rInputRaster->GetCellHeight();
+        CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
     }
     CutFunction[CrestElev] = 0; //Make sure an entry for the Crest is added, but that cut will always be zero
 
@@ -558,7 +563,7 @@ void RasterPitRemoval::CreateCutFunction(int PitID, double CrestElev)
                 else
                     OldCut = 0;
                 CutFunction[CurStep] = OldCut + CellElev - CurStep;
-                CurStep = CurStep + rInputRaster->GetCellHeight();
+                CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
             }
         }
         CurID = NextID;
@@ -601,7 +606,7 @@ double RasterPitRemoval::GetIdealFillLevel(double CrestElev)
                 MinDifference = CurDifference;
                 FillLevel = CurStep;
             }
-            CurStep = CurStep + rInputRaster->GetCellHeight();
+            CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
         }
     }
         break;
@@ -626,7 +631,7 @@ double RasterPitRemoval::GetIdealFillLevel(double CrestElev)
                     MinCost = CurTotalCost;
                     FillLevel = CurStep;
                 }
-                CurStep = CurStep + rInputRaster->GetCellHeight();
+                CurStep = CurStep + fabs(rInputRaster->GetCellHeight());
             }
         }
     }
@@ -639,10 +644,10 @@ bool RasterPitRemoval::IsBorder(int ID)
 {
     //Tests if cell is on the outer edge of the grid, and thus is an outlet
     int numCols = rInputRaster->GetCols();
-    if (ID < numCols ||                 // In the top row
+    if (ID < numCols ||                       // In the First row
             TotalCells - ID < numCols + 1 ||  // In the Last Row
-            ! (ID % numCols) ||         // In the Right Col
-            ! ((ID+1) % numCols) ){     // In the Left Col
+            ! (ID % numCols) ||               // In the Right Col
+            ! ((ID+1) % numCols) ){           // In the Left Col
         return true;
     }
     else {
@@ -791,6 +796,14 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
 void RasterPitRemoval::GetNeighbors(int ID)
 {
     //Neighbors is a 0-7 vector, defined clockwise from Northwest
+    //    -------
+    //    |0|1|2|
+    //    -------
+    //    |7|X|3|
+    //    -------
+    //    |6|5|4|
+    //    -------
+
     //Returns the ID value for the eight neighbors, with -1 for cells off the grid
     int numCols = rInputRaster->GetCols();
     //Northwest

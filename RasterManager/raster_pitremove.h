@@ -30,7 +30,7 @@ private:
     LoopTimer * QueueItem;
 
     // Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
-    enum FlowDirection { DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
+    enum FlowDirection { NONEIGHBOUR, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
     enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
 
     // Main work function
@@ -78,9 +78,9 @@ private:
     double PitElev;
     int TotalCells;             // Number of elements in the array
 
-    std::vector<double> Terrain;    // This begins as the input DEM and is modified by the algorithm.
-    std::vector<int> Direction;     // 8-direction indicator of which cell caused the current cell to become flooded
-    std::vector<int> Flooded;       // Value of 0=unflooded; Value of 1=flooded; Value of 2=flooded and has confirmed descending path to an outlet
+    std::vector<double> Terrain;            // This begins as the input DEM and is modified by the algorithm.
+    std::vector<FlowDirection> Direction;   // 8-direction indicator of which cell caused the current cell to become flooded
+    std::vector<FloodedState> Flooded;      // Value of 0=unflooded; Value of 1=flooded; Value of 2=flooded and has confirmed descending path to an outlet
     std::vector<bool> Checked;      // Used to determine the extent of a depression. Reset after each depression is identified
     std::vector<bool> BlankBool;    // Used for clearing the contents of a vector-bool of Terrain size
     std::vector<int> Depression;    // Stores the extent of

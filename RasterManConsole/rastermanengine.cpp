@@ -708,7 +708,7 @@ int RasterManEngine::invert(int argc, char * argv[])
 
 int RasterManEngine::fill(int argc, char * argv[])
 {
-    if (argc != 5 && argc != 6)
+    if (argc != 4 && argc != 5)
     {
         std::cout << "\n Fill - Optimized Pit Removal.";
         std::cout << "\n    Usage: rasterman fill <input_raster_path> <output_raster_path> [<method>]";
