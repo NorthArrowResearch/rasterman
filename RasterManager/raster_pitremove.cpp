@@ -99,13 +99,13 @@ int RasterPitRemoval::Run(){
         }
     }
 
-    //The entire DEM is scanned and all outlets are added to the Main Queue
+    //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
     //This allows internal points of no data to be used as outlets
     for (size_t i=0; i < (size_t) TotalCells; i++)
     {
         //Test if cell is on border or if cell has a neighbor with no data
-        if(IsBorder(i) || NeighborNoValue(i)){
+        if(IsBorder(i) || NeighborNoValue(i) ){
             AddToMainQueue(i, true); //All outlet cells by definition have a path to the outlet, thus ConfirmDescend = true.
             Direction.at(i)=NONEIGHBOUR;
         }
@@ -154,6 +154,7 @@ void RasterPitRemoval::IterateMainQueue()
 
     while(!MainQueue.empty())
     {
+
         CurCell = MainQueue.top();
         MainQueue.pop();
 
@@ -218,7 +219,9 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
     {
         CurCell.id = ID;
         CurCell.elev = Terrain.at(ID);
-        MainQueue.push(CurCell);
+
+        if (Terrain.at(ID) != dNoDataValue)
+            MainQueue.push(CurCell);
 
         if(ConfirmDescend)
         {
@@ -430,14 +433,14 @@ void RasterPitRemoval::FillToElevation(int PitID, double FillElev)
     //Fills all cells within a depression to the specified elevation
     int CurID;
     if ((Terrain.at(PitID) < FillElev) && (Terrain.at(PitID) != dNoDataValue)) {
-        Terrain.at(PitID) = FillElev;    // TODO: TERRAIN SET
+        Terrain.at(PitID) = FillElev;
     }
     for (size_t i=0; i < Depression.size();i++)
     {
         CurID = Depression.at(i);
         if ((Terrain.at(CurID) < FillElev) && (Terrain.at(CurID) != dNoDataValue))
         {
-            Terrain.at(CurID) = FillElev; // TODO: TERRAIN SET
+            Terrain.at(CurID) = FillElev;
         }
     }
 }
@@ -465,7 +468,7 @@ void RasterPitRemoval::CutToElevation(int PitID)
         else
         {
             if ((Terrain.at(NextID) > PitElev) && (Terrain.at(NextID) != dNoDataValue)){
-                Terrain.at(NextID) = PitElev; // TODO: TERRAIN SET
+                Terrain.at(NextID) = PitElev;
             }
             Flooded.at(NextID) = FLOODEDDESC; //Confirm that cell has descending path to outlet
         }
@@ -763,8 +766,10 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
 
 bool RasterPitRemoval::IsLocalMinimum(int CurID)
 {
-    //A local Minimum has been found if the cell does not have a confirmed path to an outlet, and all neighbors are either higher or the same elevation but flooded.
-    //This means for a wide pit with a flat bottom, the last flooded cell (roughly farthest from the outlet) is considered the minimum.
+    // A local Minimum has been found if the cell does not have a confirmed path to an outlet, and
+    // all neighbors are either higher or the same elevation but flooded.
+    // This means for a wide pit with a flat bottom, the last flooded cell (roughly farthest
+    // from the outlet) is considered the minimum.
 
     bool IsMinimum = true;
     if (Flooded.at(CurID)==FLOODEDDESC)  //Cell is on confirmed path to outlet
