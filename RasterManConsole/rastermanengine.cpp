@@ -7,9 +7,9 @@
 #include <QDebug>
 #include "raster.h"
 #include "rastermanager.h"
-#include "raster_pitremove.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
+#include "raster_pitremove.h"
 
 namespace RasterManager {
 
@@ -739,9 +739,9 @@ int RasterManEngine::fill(int argc, char * argv[])
         nMethod = (FillMode) GetFillMethodFromString(argv[4]);
     }
 
-    RasterPitRemoval rasterPit( argv[2], argv[3], nMethod );
+    RasterPitRemoval rasterPitRemove( argv[2], argv[3], nMethod );
 
-    eResult = rasterPit.Run();
+    eResult = rasterPitRemove.Run();
 
     return eResult;
 

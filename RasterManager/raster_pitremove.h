@@ -3,9 +3,9 @@
 
 #endif // RASTER_FILL_H
 
-#include <raster.h>
-#include <rastermanager_exception.h>
-#include <rastermanager_global.h>
+#include "raster.h"
+#include "rastermanager_exception.h"
+#include "rastermanager_global.h"
 #include <queue>
 #include "benchmark.h"
 
@@ -13,7 +13,7 @@
 namespace RasterManager {
 
 
-class RasterPitRemoval {
+class RM_DLL_API RasterPitRemoval {
 
 public:
 
