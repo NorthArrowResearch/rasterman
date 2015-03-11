@@ -75,11 +75,13 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
 
     TotalCells = Terrain.size();
 
+    SavePits = false;
 }
 
 RasterPitRemoval::~RasterPitRemoval()
 {
     delete rInputRaster;
+    delete QueueItem;
 }
 
 int RasterPitRemoval::Run(){
@@ -98,6 +100,7 @@ int RasterPitRemoval::Run(){
             Terrain.at(i*rInputRaster->GetCols() + j) = pInputLine[j];
         }
     }
+    CPLFree(pInputLine);
 
     //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
@@ -130,6 +133,8 @@ int RasterPitRemoval::Run(){
         }
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
     }
+    CPLFree(pOutputLine);
+    GDALClose(pDSOutput);
     return PROCESS_OK;
 
 }
