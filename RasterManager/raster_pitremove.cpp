@@ -66,16 +66,17 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
 
     //Resize vectors
     Terrain.resize(nNumCells); //Values input from file, modified throughout program
-    Direction.resize(nNumCells);  //Starts empty
-    Flooded.resize(nNumCells); //Starts empty
+    Direction.resize(nNumCells);
+    Flooded.resize(nNumCells);
     Checked.resize(nNumCells);
     BlankBool.resize(nNumCells);
     IsPit.resize(nNumCells);
     Neighbors.resize(8);
+    debugVector.resize(nNumCells);
 
     TotalCells = Terrain.size();
 
-    SavePits = false;
+    SavePits = true;
 }
 
 RasterPitRemoval::~RasterPitRemoval()
@@ -97,7 +98,11 @@ int RasterPitRemoval::Run(){
     for (int i = 0; i < pRBInput->GetYSize(); i++){
         pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
         for (int j = 0; j < pRBInput->GetXSize(); j++){
-            Terrain.at(i*rInputRaster->GetCols() + j) = pInputLine[j];
+            int nIndex = i*rInputRaster->GetCols() + j; //Convert a 2d index to a 1D one
+            Terrain.at(nIndex) = pInputLine[j];
+            Flooded.at(nIndex) = UNFLOODED;
+            Direction.at(nIndex) = INIT;
+            IsPit.at(nIndex) = 0;
         }
     }
     CPLFree(pInputLine);
@@ -110,7 +115,7 @@ int RasterPitRemoval::Run(){
         //Test if cell is on border or if cell has a neighbor with no data
         if(IsBorder(i) || NeighborNoValue(i) ){
             AddToMainQueue(i, true); //All outlet cells by definition have a path to the outlet, thus ConfirmDescend = true.
-            Direction.at(i)=NONEIGHBOUR;
+            Direction.at(i) = NONEIGHBOUR;
         }
     }
 
@@ -118,9 +123,38 @@ int RasterPitRemoval::Run(){
     // ------------------------------------------------------
     IterateMainQueue();
 
+    WriteArraytoRaster(sOutputPath, &Terrain);
+
+    // DEBUG LOOP
+    for (int i = 0; i < pRBInput->GetYSize(); i++){
+        for (int j = 0; j < pRBInput->GetXSize(); j++){
+            int nIndex = i*rInputRaster->GetCols() + j; //Convert a 2d index to a 1D one
+//            if (){
+                debugVector.at(nIndex)  = (double)(int) Direction.at(nIndex); //DEBUG ONLY
+//            }
+//            else{
+//                debugVector.at(nIndex)  = dNoDataValue; //DEBUG ONLY
+//            }
+
+        }
+    }
+    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-mainqueue"), &debugVector);
+
+    return PROCESS_OK;
+}
+
+
+void RasterPitRemoval::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray){
+    std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
+    WriteArraytoRaster(sOutputPath, &vDouble);
+}
+
+void RasterPitRemoval::WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray ){
+
     // Create the output dataset for writing
     const QByteArray csOutput = sOutputPath.toLocal8Bit();
 
+    // Set the bounds and nodata to be the same as the input
     GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), rInputRaster);
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rInputRaster->GetCols());
 
@@ -128,17 +162,14 @@ int RasterPitRemoval::Run(){
     for (int i = 0; i < rInputRaster->GetRows(); i++)
     {
         for (int j = 0; j < rInputRaster->GetCols(); j++){
-            double val = Terrain.at(i*rInputRaster->GetCols() + j);
-            pOutputLine[j] = Terrain.at(i*rInputRaster->GetCols() + j);
+            pOutputLine[j] = vPointArray->at(i*rInputRaster->GetCols() + j);
         }
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
     }
     CPLFree(pOutputLine);
     GDALClose(pDSOutput);
-    return PROCESS_OK;
 
 }
-
 
 void RasterPitRemoval::IterateMainQueue()
 {
@@ -183,7 +214,7 @@ void RasterPitRemoval::IterateMainQueue()
             {
                 GetNeighbors(CurCell.id);
                 int i;
-                for (i=0;i<8;i++)
+                for (i=DIR_NW;i<DIR_W;i++)
                 {
                     if (Neighbors.at(i)>-1)
                     {
@@ -231,6 +262,7 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
         if(ConfirmDescend)
         {
             Flooded.at(ID)= FLOODEDDESC;
+            debugVector.at(ID) = 3;
         }
         else
         {
@@ -252,8 +284,8 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
 
     while(!ReachedOutlet)
     {
-        NextID = TraceFlow(CurID, (FlowDirection) Direction.at(CurID));
-        if(NextID<0) //CurID is a border cell
+        NextID = TraceFlow(CurID, (eDirection) Direction.at(CurID));
+        if(NextID < 0) //CurID is a border cell
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
             ReachedOutlet = 1;
@@ -276,7 +308,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
     int numCols = rInputRaster->GetCols();
     switch (Direction)
     {
-    case 0: //Northwest
+    case DIR_NW:
     {
         if(!(ID<numCols) && (ID % numCols))
         {
@@ -285,7 +317,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 1: //North
+    case DIR_N:
     {
         if(!(ID<numCols))
         {
@@ -294,7 +326,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 2: //Northeast
+    case DIR_NE:
     {
         if(!(ID<numCols) && ((ID+1) % numCols))
         {
@@ -303,8 +335,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 3: //East
-
+    case DIR_E:
     {
         if (((ID+1) % numCols))
         {
@@ -313,7 +344,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 4: //Southeast
+    case DIR_SE:
     {
         if (!(Size-ID <numCols + 1) && ((ID+1) % numCols))
         {
@@ -322,7 +353,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 5: //South
+    case DIR_S:
     {
         if (!(Size-ID <numCols + 1))
         {
@@ -331,7 +362,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 6: //Southwest
+    case DIR_SW: //Southwest
     {
         if (!(Size-ID <numCols + 1) && (ID % numCols))
         {
@@ -340,7 +371,7 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
         }
     }
         break;
-    case 7: //West
+    case DIR_W: //West
     {
         if ((ID % numCols))
         {
@@ -367,7 +398,6 @@ bool RasterPitRemoval::CheckCell(int ID, int Direction, int& CurNeighborID, doub
 
 void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
 {
-    //Flow direction is FROM current cell TO cell which caused it to flood, clockwise from East (1,2,4,8,16,32,64,128)
     //If two cells are not neighbors or if a neighbor is off the grid/ has no_data, direction set to 0.
     int numCols = rInputRaster->GetCols();
 
@@ -391,24 +421,24 @@ void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
         Direction.at(FromID) = NONEIGHBOUR;
 }
 
-int RasterPitRemoval::TraceFlow(int FromID, FlowDirection eFlowDir)
+int RasterPitRemoval::TraceFlow(int FromID, eDirection eFlowDir)
 {
     //Returns the cell pointed to by the direction grid at the given location.
     //If flow direction equals 0, This is a border cell. Return -1.
     int numCols = rInputRaster->GetCols();
 
     switch (eFlowDir) {
-    case DIR_E:  return FromID + 1; break;  //1
-    case DIR_SE: return FromID + 1 + numCols; break; //2
-    case DIR_S:  return FromID + numCols; break; //4
-    case DIR_SW: return FromID - 1 + numCols; break; //8
-    case DIR_W:  return FromID - 1; break; //16
-    case DIR_NW: return FromID - 1 - numCols; break; //32
-    case DIR_N:  return FromID - numCols; break; //64
-    case DIR_NE: return FromID + 1 - numCols; break; //128
-    default: return -1; break;
+    case DIR_E:  return FromID + 1; break;
+    case DIR_SE: return FromID + 1 + numCols; break;
+    case DIR_S:  return FromID + numCols; break;
+    case DIR_SW: return FromID - 1 + numCols; break;
+    case DIR_W:  return FromID - 1; break;
+    case DIR_NW: return FromID - 1 - numCols; break;
+    case DIR_N:  return FromID - numCols; break;
+    case DIR_NE: return FromID + 1 - numCols; break;
+    default: return NONEIGHBOUR; break;
     }
-    return -1;
+    return NONEIGHBOUR;
 }
 
 void RasterPitRemoval::GetDryNeighbors(int ID)
@@ -419,7 +449,7 @@ void RasterPitRemoval::GetDryNeighbors(int ID)
     GetNeighbors(ID);
 
     int i;
-    for (i=0;i<8;i++)
+    for (i=DIR_NW;i<DIR_W;i++)
     {
         if (Neighbors.at(i)>-1)
         {
@@ -463,7 +493,7 @@ void RasterPitRemoval::CutToElevation(int PitID)
 
     while(!ReachedOutlet)
     {
-        NextID = TraceFlow(CurID, (FlowDirection) Direction.at(CurID));
+        NextID = TraceFlow(CurID, (eDirection) Direction.at(CurID));
         if(NextID<0) //CurID is a border cell
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
@@ -553,7 +583,7 @@ void RasterPitRemoval::CreateCutFunction(int PitID, double CrestElev)
     //Calculate Cost
     while(!ReachedOutlet)
     {
-        NextID = TraceFlow(CurID, (FlowDirection) Direction.at(CurID));
+        NextID = TraceFlow(CurID, (eDirection) Direction.at(CurID));
         if(NextID<0) //CurID is a border cell
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
@@ -670,9 +700,9 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
 
     GetNeighbors(ID);
 
-    for (int i=0;i<8;i++)
+    for (int i=DIR_NW;i<DIR_W;i++)
     {
-        if (Neighbors.at(i)==-1)
+        if (Neighbors.at(i)== NONEIGHBOUR )
         {
             novalue = true;
             break;
@@ -752,7 +782,7 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
 
         //Get each neighbor cell that is lower than the Crest elevation and with elevation greater than or equal to the present cell
         int i;
-        for (i=0;i<8;i++)
+        for (i=DIR_NW;i<DIR_W;i++)
         {
             if (CheckCell(CurID, i, CurNeighborID, CrestElev))
             {
@@ -767,6 +797,13 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
     Checked = BlankBool;
 }
 
+
+int RasterPitRemoval::getCol(int i){
+    return (int) floor(i % rInputRaster->GetCols());
+}
+int RasterPitRemoval::getRow(int i){
+    return (int) floor(i / rInputRaster->GetCols());
+}
 
 
 bool RasterPitRemoval::IsLocalMinimum(int CurID)
@@ -784,93 +821,82 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
     else //Flooded = 1
     {
         GetNeighbors(CurID);
-        int i = 0;
-        while ((i<8)&&(IsMinimum==true))
+        for (int i=DIR_NW;i<DIR_W;i++)
         {
-            if (Neighbors.at(i)>-1)
-            {
-                if( Terrain.at(Neighbors.at(i)) < Terrain.at(CurID))
-                    IsMinimum = false;
-                if((Terrain.at(Neighbors.at(i)) == Terrain.at(CurID)) && (Flooded.at(Neighbors.at(i)) == UNFLOODED))
-                    IsMinimum = false;
-            }
-            i++;
+            if( Terrain.at(Neighbors.at(i)) < Terrain.at(CurID))
+                IsMinimum = false;
+            if((Terrain.at(Neighbors.at(i)) == Terrain.at(CurID)) && (Flooded.at(Neighbors.at(i)) == UNFLOODED))
+                IsMinimum = false;
         }
     }
 
     if (SavePits == true)
-        if (IsMinimum==true) IsPit.at(CurID) = 1;
+        if (IsMinimum==true)
+            IsPit.at(CurID) = 1;
     return IsMinimum;
 }
 
 void RasterPitRemoval::GetNeighbors(int ID)
 {
-    //Neighbors is a 0-7 vector, defined clockwise from Northwest
-    //    -------
-    //    |0|1|2|
-    //    -------
-    //    |7|X|3|
-    //    -------
-    //    |6|5|4|
-    //    -------
 
     //Returns the ID value for the eight neighbors, with -1 for cells off the grid
     int numCols = rInputRaster->GetCols();
     //Northwest
     if(ID<numCols)
-        Neighbors.at(0)=-1;
+        Neighbors.at(DIR_NW)=-1;
     else if (!(ID % numCols))
-        Neighbors.at(0)=-1;
+        Neighbors.at(DIR_NW)=-1;
     else
-        Neighbors.at(0)=ID-1-numCols;
+        Neighbors.at(DIR_NW)=ID-1-numCols;
 
     //North
     if(ID<numCols)
-        Neighbors.at(1)=-1;
+        Neighbors.at(DIR_N)=-1;
     else
-        Neighbors.at(1)=ID-numCols;
+        Neighbors.at(DIR_N)=ID-numCols;
 
     //Northeast
     if(ID<numCols)
-        Neighbors.at(2)=-1;
+        Neighbors.at(DIR_NE)=-1;
     else if (!((ID+1) % numCols))
-        Neighbors.at(2)=-1;
+        Neighbors.at(DIR_NE)=-1;
     else
-        Neighbors.at(2)=ID+1-numCols;
+        Neighbors.at(DIR_NE)=ID+1-numCols;
 
     //East
     if (!((ID+1) % numCols))
-        Neighbors.at(3)=-1;
+        Neighbors.at(DIR_E)=-1;
     else
-        Neighbors.at(3)=ID+1;
+        Neighbors.at(DIR_E)=ID+1;
 
     //Southeast
     if (TotalCells-ID <numCols + 1)
-        Neighbors.at(4)=-1;
+        Neighbors.at(DIR_SE)=-1;
     else if (!((ID+1) % numCols))
-        Neighbors.at(4)=-1;
+        Neighbors.at(DIR_SE)=-1;
     else
-        Neighbors.at(4)=ID+1+numCols;
+        Neighbors.at(DIR_SE)=ID+1+numCols;
 
     //South
     if (TotalCells-ID <numCols + 1)
-        Neighbors.at(5)=-1;
+        Neighbors.at(DIR_S)=-1;
     else
-        Neighbors.at(5)=ID+numCols;
+        Neighbors.at(DIR_S)=ID+numCols;
 
     //Southwest
     if (TotalCells-ID <numCols + 1)
-        Neighbors.at(6)=-1;
+        Neighbors.at(DIR_SW)=-1;
     else if (!(ID % numCols))
-        Neighbors.at(6)=-1;
+        Neighbors.at(DIR_SW)=-1;
     else
-        Neighbors.at(6)=ID-1+numCols;
+        Neighbors.at(DIR_SW)=ID-1+numCols;
 
     //West
     if (!(ID % numCols))
-        Neighbors.at(7)=-1;
+        Neighbors.at(DIR_W)=-1;
     else
-        Neighbors.at(7)=ID-1;
+        Neighbors.at(DIR_W)=ID-1;
+
 }
 
 }

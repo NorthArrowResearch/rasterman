@@ -18,6 +18,19 @@ void RM_DLL_API LibCheck(){
 
 }
 
+/* Some basic file ops we use often. */
+
+QString appendToBaseFileName(QString sFullFilePath, QString sAppendStr){
+
+    QFileInfo sNewFileInfo(sFullFilePath);
+    QString sFilePath = sNewFileInfo.absolutePath();
+    QString sBaseName = sNewFileInfo.baseName();
+    QString sSuffix = sNewFileInfo.completeSuffix();
+
+    QString newPath = QDir(sFilePath).absoluteFilePath( sBaseName + sAppendStr + QString(".") + sSuffix);
+
+    return newPath;
+}
 
 void RM_DLL_API CheckFile(QString sFile, bool bMustExist)
 {

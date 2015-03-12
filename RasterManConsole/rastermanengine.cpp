@@ -733,6 +733,7 @@ int RasterManEngine::fill(int argc, char * argv[])
 
     //    Mincost is the default
     FillMode nMethod = FILL_MINCOST;
+    // FILL_MINCOST, FILL_BAL , FILL_CUT
 
     // The user specifies values for window shape
     if (argc == 6){

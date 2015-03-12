@@ -26,12 +26,43 @@ public:
 
 private:
 
+    // All directions follow the same 0-7 vector,
+    // defined clockwise from Northwest.
+    //    -------
+    //    |0|1|2|
+    //    -------
+    //    |7|X|3|
+    //    -------
+    //    |6|5|4|
+    //    -------
+
     // DEBUG Variables
     LoopTimer * QueueItem;
 
     // Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
-    enum FlowDirection { NONEIGHBOUR, DIR_E, DIR_SE, DIR_S, DIR_SW, DIR_W, DIR_NW, DIR_N, DIR_NE };
+    enum eDirection {
+        DIR_NW = 0,
+        DIR_N = 1,
+        DIR_NE = 2,
+        DIR_E = 3,
+        DIR_SE = 4,
+        DIR_S = 5,
+        DIR_SW = 6,
+        DIR_W = 7,
+
+        INIT = 999,
+        NONEIGHBOUR = -1
+    };
+
     enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
+
+    /**
+     * @brief WriteArraytoRaster
+     * @param sOutputPath
+     * @param vPointArray
+     */
+    void WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray);
 
     // Main work function
     void InitializeMainQueue();
@@ -42,10 +73,10 @@ private:
 
     // Utility Functions
     void SetFlowDirection(int FromID, int ToID);
-    int TraceFlow(int FromID, int FlowDirection);
+    int TraceFlow(int FromID, int Direction);
     void FillToElevation(int PitID, double FillElev);
     void CutToElevation(int PitID);
-    int TraceFlow(int FromID, FlowDirection eFlowDir);
+    int TraceFlow(int FromID, eDirection eFlowDir);
     void CreateFillFunction(int PitID, double CrestElev);
 
     double GetIdealFillLevel(double CrestElev);
@@ -79,7 +110,8 @@ private:
     int TotalCells;             // Number of elements in the array
 
     std::vector<double> Terrain;            // This begins as the input DEM and is modified by the algorithm.
-    std::vector<FlowDirection> Direction;   // 8-direction indicator of which cell caused the current cell to become flooded
+    std::vector<double> debugVector;        // Something to fill up and test the output
+    std::vector<eDirection> Direction;   // 8-direction indicator of which cell caused the current cell to become flooded
     std::vector<FloodedState> Flooded;      // Value of 0=unflooded; Value of 1=flooded; Value of 2=flooded and has confirmed descending path to an outlet
     std::vector<bool> Checked;      // Used to determine the extent of a depression. Reset after each depression is identified
     std::vector<bool> BlankBool;    // Used for clearing the contents of a vector-bool of Terrain size
@@ -112,6 +144,10 @@ private:
     std::priority_queue<point, std::vector<point>, ComparePoint> MainQueue;
     std::priority_queue<point, std::vector<point>, ComparePoint> NeighborQueue;
     std::priority_queue<point, std::vector<point>, ComparePoint> DepressionQueue;
+
+    // Helper functions for debugging what row/col you are on
+    int getRow(int i);
+    int getCol(int i);
 
 };
 

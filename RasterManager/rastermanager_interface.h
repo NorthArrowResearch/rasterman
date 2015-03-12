@@ -417,6 +417,9 @@ public:
     BadConversion(const std::string& s)	: std::runtime_error(s)	{ }
 };
 
+// Helper class we use often
+QString appendToBaseFileName(QString sFilePath, QString sAppendStr);
+
 /**
  * @brief
  *
