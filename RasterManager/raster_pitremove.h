@@ -51,7 +51,8 @@ private:
         DIR_W = 7,
 
         INIT = 999,
-        NONEIGHBOUR = -1
+        ENTRYPOINT = -1 // An entrypoint is a pixel beside a nodata value or at the edge of the raster
+        // Think of an entry point as UP as well
     };
 
     enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
@@ -83,7 +84,7 @@ private:
     double GetCrestElevation(int PitID);
 
     // Testing Functions
-    bool CheckCell(int ID, int Direction, int &CurNeighborID, double CrestElev);
+    bool CheckCell(int ID, eDirection Direction, int &CurNeighborID, double CrestElev);
     bool IsLocalMinimum(int CurID);
     bool IsBorder(int ID);
 
@@ -92,14 +93,18 @@ private:
     void GetDryNeighbors(int ID);
     bool NeighborNoValue(int ID);
 
+    bool HasValidNeighbor(int ID);
     void PitRemoveHybrid(int PitID);
+
+    void GetDepressionExtent(int PitID, double CrestElev);
+
+    void debugFunc();
+    bool IsDirectionValid(int ID, eDirection dir);
 
     bool SavePits; // Input (ignored for now)
 
     FillMode Mode; // Input. See enum in rastermanager_interface.h
 
-    void CreateCutFunction(int PitID, double CrestElev);
-    void GetDepressionExtent(int PitID, double CrestElev);
 
     Raster * rInputRaster;      // The object that contains all our raster properties
     QString sOutputPath;        // Path to output raster
@@ -108,9 +113,9 @@ private:
     double dNoDataValue;        // The nodata value we will use throughout
     double PitElev;
     int TotalCells;             // Number of elements in the array
+    int rasterCols;
 
     std::vector<double> Terrain;            // This begins as the input DEM and is modified by the algorithm.
-    std::vector<double> debugVector;        // Something to fill up and test the output
     std::vector<eDirection> Direction;   // 8-direction indicator of which cell caused the current cell to become flooded
     std::vector<FloodedState> Flooded;      // Value of 0=unflooded; Value of 1=flooded; Value of 2=flooded and has confirmed descending path to an outlet
     std::vector<bool> Checked;      // Used to determine the extent of a depression. Reset after each depression is identified
@@ -148,6 +153,12 @@ private:
     // Helper functions for debugging what row/col you are on
     int getRow(int i);
     int getCol(int i);
+
+    inline bool IsTopEdge(int id){ return id < rasterCols; }
+    inline bool IsBottomEdge(int id){ return  (TotalCells - id) < (rasterCols + 1); }
+    inline bool IsRightEdge(int id){ return  !id % rasterCols; }
+    inline bool IsLeftEdge(int id){ return  !((id+1) % rasterCols); }
+
 
 };
 
