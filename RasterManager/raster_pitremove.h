@@ -57,6 +57,8 @@ private:
 
     enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
 
+    int GetIDFromCoords(int row, int col);
+
     /**
      * @brief WriteArraytoRaster
      * @param sOutputPath
@@ -84,11 +86,12 @@ private:
     double GetCrestElevation(int PitID);
 
     // Testing Functions
-    bool CheckCell(int ID, eDirection Direction, int &CurNeighborID, double CrestElev);
+    bool CheckCell(int ID, int CurNeighborID, double CrestElev);
     bool IsLocalMinimum(int CurID);
     bool IsBorder(int ID);
 
     // Neighbour Functions
+    size_t GetNeighborID(int id, eDirection dir);
     void GetNeighbors(int ID);
     void GetDryNeighbors(int ID);
     bool NeighborNoValue(int ID);
@@ -98,7 +101,10 @@ private:
 
     void GetDepressionExtent(int PitID, double CrestElev);
 
+    // Testing and DEbug Functions
     void debugFunc();
+    void TestDir(size_t id);
+
     bool IsDirectionValid(int ID, eDirection dir);
 
     bool SavePits; // Input (ignored for now)
@@ -154,10 +160,11 @@ private:
     int getRow(int i);
     int getCol(int i);
 
-    inline bool IsTopEdge(int id){ return id < rasterCols; }
-    inline bool IsBottomEdge(int id){ return  (TotalCells - id) < (rasterCols + 1); }
-    inline bool IsRightEdge(int id){ return  !(id % rasterCols); }
-    inline bool IsLeftEdge(int id){ return  !((id+1) % rasterCols); }
+    inline bool IsTopEdge(int id)   { return id < rasterCols; }
+    inline bool IsBottomEdge(int id){ return (TotalCells - id) < (rasterCols + 1); }
+
+    inline bool IsRightEdge(int id) { return ((id+1) % rasterCols) == 0; }
+    inline bool IsLeftEdge(int id)  { return (id % rasterCols) == 0; }
 
 
 };

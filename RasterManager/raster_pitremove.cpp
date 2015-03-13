@@ -98,16 +98,18 @@ int RasterPitRemoval::Run(){
     for (int i = 0; i < pRBInput->GetYSize(); i++){
         pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
         for (int j = 0; j < pRBInput->GetXSize(); j++){
-            int nIndex = i*rInputRaster->GetCols() + j; //Convert a 2d index to a 1D one
+            int nIndex = GetIDFromCoords(i,j); //Convert a 2d index to a 1D one
+//            TestDir(nIndex); // TEST OUR DIRECTION DETECTION
             Terrain.at(nIndex) = pInputLine[j];
             Flooded.at(nIndex) = UNFLOODED;
             Direction.at(nIndex) = INIT;
             IsPit.at(nIndex) = 0;
+
         }
     }
     CPLFree(pInputLine);
 
-     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-1-original"), &Terrain); // DEBUG ONLY
+    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-1-original"), &Terrain); // DEBUG ONLY
 
     //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
@@ -129,11 +131,37 @@ int RasterPitRemoval::Run(){
     WriteArraytoRaster(sOutputPath, &Terrain);
 
     //    DEBUG
-    debugFunc();
+//    debugFunc();
 
     return PROCESS_OK;
 }
 
+int RasterPitRemoval::GetIDFromCoords(int row, int col){
+    return  row*rInputRaster->GetCols() + col;
+}
+
+void RasterPitRemoval::TestDir(size_t id){
+    GetNeighbors(id);
+    //
+    //    |0|1|2|
+    //    -------
+    //    |7|X|3|
+    //    -------
+    //    |6|5|4|
+    //    -------
+
+    qDebug() << QString("Top: %1 Right: %2 Bottom: %3 Left %4").arg(IsTopEdge(id)).arg(IsRightEdge(id)).arg(IsBottomEdge(id)).arg(IsLeftEdge(id));
+
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_NW)).arg(Neighbors.at(DIR_N)).arg(Neighbors.at(DIR_NE));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_W)).arg("X").arg(Neighbors.at(DIR_E));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_SW)).arg(Neighbors.at(DIR_S)).arg(Neighbors.at(DIR_SE));
+    qDebug() << "------------";
+
+
+}
 
 void RasterPitRemoval::debugFunc(){
     // THESE ARE ALL DEBUG .. Test the various functions that make the decisions
@@ -156,10 +184,10 @@ void RasterPitRemoval::debugFunc(){
     }
 
     // DEBUG LOOP
-//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-IsBorder"), &borders);
-//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-NeighborNoValue"), &nnv);
+    //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-IsBorder"), &borders);
+    //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-NeighborNoValue"), &nnv);
     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-2-IsLocalMinimum"), &islocalmin);
-//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-HasValidNeighbor"), &hasvalidneigh);
+    //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-HasValidNeighbor"), &hasvalidneigh);
     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-3-Depressions"), &IsPit);
 }
 
@@ -320,24 +348,25 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
 }
 
 
-bool RasterPitRemoval::CheckCell(int ID, eDirection dir, int& CurNeighborID, double CrestElev)
+bool RasterPitRemoval::CheckCell(int ID, int CurNeighborID, double CrestElev)
 {
-    bool bDirValid = IsDirectionValid(ID, dir);  // If the direction we're asking for isn't off the grid
     bool bCheckCell = true;
 
-    // Here are the cases for which we do not check the neighbor cell:
-    if (!bDirValid                                         // The new direction is outside the raster bound
-            || Checked.at(CurNeighborID)                   // OR neighbor has been checked already
-            || Terrain.at(CurNeighborID) > CrestElev       // OR we're above the fill line
-            || Terrain.at(CurNeighborID) >= Terrain.at(ID) // OR neighbour is above our current cell
-            ){
-                bCheckCell = false;
-            }
-
-    // Mark this neighbor cell as checked (if we're inside the raster limits)
-    if (bDirValid)
+    if (CurNeighborID > -1){
+        // Here are the cases for which we do not check the neighbor cell:
+        if (       Checked.at(CurNeighborID)                   // neighbor has been checked already
+                || Terrain.at(CurNeighborID) > CrestElev       // OR we're above the fill line
+                || Terrain.at(CurNeighborID) < Terrain.at(ID) // OR neighbour is above our current cell
+                ){
+            bCheckCell = false;
+        }
+        // Mark neighbour as checked
         Checked.at(CurNeighborID) = true;
-
+    }
+    else{
+        // We're out of bounds
+        bCheckCell = false;
+    }
     return bCheckCell;
 }
 
@@ -370,18 +399,16 @@ int RasterPitRemoval::TraceFlow(int FromID, eDirection eFlowDir)
 {
     //Returns the cell pointed to by the direction grid at the given location.
     //If flow direction equals 0, This is a border cell. Return -1.
-    int numCols = rInputRaster->GetCols();
-
     switch (eFlowDir) {
-    case DIR_E:  return FromID + 1; break;
-    case DIR_SE: return FromID + 1 + numCols; break;
-    case DIR_S:  return FromID + numCols; break;
-    case DIR_SW: return FromID - 1 + numCols; break;
-    case DIR_W:  return FromID - 1; break;
-    case DIR_NW: return FromID - 1 - numCols; break;
-    case DIR_N:  return FromID - numCols; break;
-    case DIR_NE: return FromID + 1 - numCols; break;
-    default: return ENTRYPOINT; break;
+    case DIR_E:  return FromID + 1;              break;
+    case DIR_SE: return FromID + 1 + rasterCols; break;
+    case DIR_S:  return FromID + rasterCols;     break;
+    case DIR_SW: return FromID - 1 + rasterCols; break;
+    case DIR_W:  return FromID - 1;              break;
+    case DIR_NW: return FromID - 1 - rasterCols; break;
+    case DIR_N:  return FromID - rasterCols;     break;
+    case DIR_NE: return FromID + 1 - rasterCols; break;
+    default: return ENTRYPOINT;                  break;
     }
     return ENTRYPOINT;
 }
@@ -434,28 +461,16 @@ bool RasterPitRemoval::IsBorder(int ID)
 }
 
 bool RasterPitRemoval::IsDirectionValid(int ID, eDirection dir){
-    // We want to make sure the direction we're asking for is not
-    if (IsTopEdge(ID)){
-        if (dir >= DIR_NW && dir <= DIR_NE){
-            return false;
-        }
+    // We want to make sure the direction we're asking for is not out of bounds
+    bool bValid = true;
+    if (       ( IsTopEdge(ID)    && (dir == DIR_NW || dir == DIR_N || dir == DIR_NE) )
+            || ( IsBottomEdge(ID) && (dir == DIR_SE || dir == DIR_S || dir == DIR_SW) )
+            || ( IsRightEdge(ID)  && (dir == DIR_NE || dir == DIR_E || dir == DIR_SE) )
+            || ( IsLeftEdge(ID)   && (dir == DIR_SW || dir == DIR_W || dir == DIR_NW) )
+            ){
+        bValid = false;
     }
-    else if(IsBottomEdge(ID)){
-        if (dir >= DIR_SE && dir <= DIR_SW){
-            return false;
-        }
-    }
-    else if (IsRightEdge(ID)){
-        if (dir >= DIR_NE && dir <= DIR_SE){
-            return false;
-        }
-    }
-    else if (IsLeftEdge(ID)){
-        if (dir >= DIR_SW && dir <= DIR_W  && dir != DIR_NW){
-            return false;
-        }
-    }
-    return true;
+    return bValid;
 }
 
 bool RasterPitRemoval::NeighborNoValue(int ID)
@@ -523,7 +538,6 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
 {
     //Makes an elevation ordered list of every cell in the depression
     //A compound depression (neighboring pit with separating ridge lower than crest elevation) is treated as a separate depression. That pit will be removed later.
-    int CurNeighborID;
     int CurID;
     point CurPoint;
     point NeighborPoint;
@@ -542,7 +556,9 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
         //Get each neighbor cell that is lower than the Crest elevation and with elevation greater than or equal to the present cell
         for (int d = DIR_NW; d <= DIR_W; d++)
         {
-            if ( CheckCell( CurID, (eDirection)d, CurNeighborID, CrestElev ) )
+            int CurNeighborID =  GetNeighborID(CurID, (eDirection)d);
+
+            if ( CurNeighborID > -1 && CheckCell( CurID, CurNeighborID, CrestElev ) )
             {
                 NeighborPoint.id=CurNeighborID;
                 NeighborPoint.elev=Terrain.at(CurNeighborID);
@@ -599,64 +615,34 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
     return IsMinimum;
 }
 
+size_t RasterPitRemoval::GetNeighborID(int id, eDirection dir){
+
+    if (IsDirectionValid(id, dir)){
+        //Returns the ID value for the eight neighbors, with -1 for cells off the grid
+        switch (dir) {
+        case DIR_NW: return id - 1 - rasterCols; break;
+        case DIR_N:  return id - rasterCols; break;
+        case DIR_NE: return id + 1 - rasterCols; break;
+        case DIR_E:  return id + 1; break;
+        case DIR_SE: return id + 1 + rasterCols; break;
+        case DIR_S:  return id + rasterCols; break;
+        case DIR_SW: return id - 1 + rasterCols; break;
+        case DIR_W:  return id - 1; break;
+        default: return -1; break;
+        }
+    }
+    else{
+        // We're out of bounds
+        return -1;
+    }
+}
+
 void RasterPitRemoval::GetNeighbors(int ID)
 {
-    //Returns the ID value for the eight neighbors, with -1 for cells off the grid
-    //Northwest
-    if(ID<rasterCols)
-        Neighbors.at(DIR_NW)=-1;
-    else if (!(ID % rasterCols))
-        Neighbors.at(DIR_NW)=-1;
-    else
-        Neighbors.at(DIR_NW)=ID-1-rasterCols;
-
-    //North
-    if(ID<rasterCols)
-        Neighbors.at(DIR_N)=-1;
-    else
-        Neighbors.at(DIR_N)=ID-rasterCols;
-
-    //Northeast
-    if(ID<rasterCols)
-        Neighbors.at(DIR_NE)=-1;
-    else if (!((ID+1) % rasterCols))
-        Neighbors.at(DIR_NE)=-1;
-    else
-        Neighbors.at(DIR_NE)=ID+1-rasterCols;
-
-    //East
-    if (!((ID+1) % rasterCols))
-        Neighbors.at(DIR_E)=-1;
-    else
-        Neighbors.at(DIR_E)=ID+1;
-
-    //Southeast
-    if (TotalCells-ID <rasterCols + 1)
-        Neighbors.at(DIR_SE)=-1;
-    else if (!((ID+1) % rasterCols))
-        Neighbors.at(DIR_SE)=-1;
-    else
-        Neighbors.at(DIR_SE)=ID+1+rasterCols;
-
-    //South
-    if (TotalCells-ID < rasterCols + 1)
-        Neighbors.at(DIR_S)=-1;
-    else
-        Neighbors.at(DIR_S)= ID + rasterCols;
-
-    //Southwest
-    if (TotalCells-ID <rasterCols + 1)
-        Neighbors.at(DIR_SW)=-1;
-    else if (!(ID % rasterCols))
-        Neighbors.at(DIR_SW)=-1;
-    else
-        Neighbors.at(DIR_SW)=ID - 1 + rasterCols;
-
-    //West
-    if (!(ID % rasterCols))
-        Neighbors.at(DIR_W)=-1;
-    else
-        Neighbors.at(DIR_W)=ID-1;
+    for (int d = DIR_NW; d <= DIR_W; d++)
+    {
+        Neighbors.at(d) = GetNeighborID( ID, (eDirection) d );
+    }
 }
 
 }
