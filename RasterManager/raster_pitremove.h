@@ -156,7 +156,7 @@ private:
 
     inline bool IsTopEdge(int id){ return id < rasterCols; }
     inline bool IsBottomEdge(int id){ return  (TotalCells - id) < (rasterCols + 1); }
-    inline bool IsRightEdge(int id){ return  !id % rasterCols; }
+    inline bool IsRightEdge(int id){ return  !(id % rasterCols); }
     inline bool IsLeftEdge(int id){ return  !((id+1) % rasterCols); }
 
 

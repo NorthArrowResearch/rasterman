@@ -107,9 +107,12 @@ int RasterPitRemoval::Run(){
     }
     CPLFree(pInputLine);
 
+     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-1-original"), &Terrain); // DEBUG ONLY
+
     //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
     //This allows internal points of no data to be used as outlets
+
     for (size_t i=0; i < (size_t) TotalCells; i++)
     {
         //Test if cell is on border or if cell has a neighbor with no data
@@ -120,31 +123,44 @@ int RasterPitRemoval::Run(){
         }
     }
 
-
     // Iterate Main Queue, removing all pits
     // ------------------------------------------------------
     IterateMainQueue();
     WriteArraytoRaster(sOutputPath, &Terrain);
 
     //    DEBUG
-//    debugFunc();
+    debugFunc();
 
     return PROCESS_OK;
 }
 
 
 void RasterPitRemoval::debugFunc(){
-    // THESE ARE ALL DEBUG
-    std::vector<double> debugArr;        // Something to fill up and test the output
-    debugArr.resize(TotalCells);
+    // THESE ARE ALL DEBUG .. Test the various functions that make the decisions
+
+    std::vector<double> borders;        // Something to fill up and test the output
+    std::vector<double> nnv;        // Something to fill up and test the output
+    std::vector<double> islocalmin;        // Something to fill up and test the output
+    std::vector<double> hasvalidneigh;        // Something to fill up and test the output
+
+    borders.resize(TotalCells);
+    nnv.resize(TotalCells);
+    islocalmin.resize(TotalCells);
+    hasvalidneigh.resize(TotalCells);
 
     for (size_t i=0; i < (size_t) TotalCells; i++){
-        debugArr.at(i) = (int) Direction.at(i);
+        borders.at(i) = (double) IsBorder(i);
+        nnv.at(i) = (double) NeighborNoValue(i);
+        islocalmin.at(i) = (double) IsLocalMinimum(i);
+        hasvalidneigh.at(i) = (double) HasValidNeighbor(i);
     }
 
     // DEBUG LOOP
-    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-direction"), &debugArr);
-
+//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-IsBorder"), &borders);
+//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-NeighborNoValue"), &nnv);
+    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-2-IsLocalMinimum"), &islocalmin);
+//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-HasValidNeighbor"), &hasvalidneigh);
+    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-3-Depressions"), &IsPit);
 }
 
 void RasterPitRemoval::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray){
@@ -208,12 +224,11 @@ void RasterPitRemoval::IterateMainQueue()
             if(Flooded.at(CurCell.id) == FLOODED )
             {
                 GetNeighbors(CurCell.id);
-                int i;
-                for (i=DIR_NW;i<DIR_W;i++)
+                for (int d = DIR_NW; d <= DIR_W; d++)
                 {
-                    if (Neighbors.at(i)>-1)
+                    if (Neighbors.at(d)>-1)
                     {
-                        if ((Flooded.at(Neighbors.at(i)) == FLOODEDDESC ) && (Terrain.at(Neighbors.at(i))<=Terrain.at(CurCell.id)))
+                        if ((Flooded.at(Neighbors.at(d)) == FLOODEDDESC ) && (Terrain.at(Neighbors.at(d))<=Terrain.at(CurCell.id)))
                         {
                             Flooded.at(CurCell.id) = FLOODEDDESC;
                             break;
@@ -307,14 +322,23 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
 
 bool RasterPitRemoval::CheckCell(int ID, eDirection dir, int& CurNeighborID, double CrestElev)
 {
-    bool bValid = IsDirectionValid(ID, dir)  // If the direction we're asking for isn't off the grid
-            && !Checked.at(CurNeighborID)    // AND this value hasn't been checked already
-            && Terrain.at(CurNeighborID) < CrestElev // AND we're below the fill line
-            && Terrain.at(CurNeighborID)>=Terrain.at(ID); // AND we're below our source cell
+    bool bDirValid = IsDirectionValid(ID, dir);  // If the direction we're asking for isn't off the grid
+    bool bCheckCell = true;
 
-   Checked.at(CurNeighborID) = true;
+    // Here are the cases for which we do not check the neighbor cell:
+    if (!bDirValid                                         // The new direction is outside the raster bound
+            || Checked.at(CurNeighborID)                   // OR neighbor has been checked already
+            || Terrain.at(CurNeighborID) > CrestElev       // OR we're above the fill line
+            || Terrain.at(CurNeighborID) >= Terrain.at(ID) // OR neighbour is above our current cell
+            ){
+                bCheckCell = false;
+            }
 
-   return bValid;
+    // Mark this neighbor cell as checked (if we're inside the raster limits)
+    if (bDirValid)
+        Checked.at(CurNeighborID) = true;
+
+    return bCheckCell;
 }
 
 void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
@@ -369,7 +393,7 @@ void RasterPitRemoval::GetDryNeighbors(int ID)
     point Neighbor;
     GetNeighbors(ID);
 
-    for (int d=DIR_NW;d<DIR_W;d++)
+    for (int d = DIR_NW; d <= DIR_W; d++)
     {
         if (Neighbors.at(d)>-1)
         {
@@ -441,7 +465,7 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
 
     GetNeighbors(ID);
 
-    for (int d=DIR_NW;d<DIR_W;d++)
+    for (int d = DIR_NW; d <= DIR_W; d++)
     {
         if ( Neighbors.at(d)== ENTRYPOINT )
         {
@@ -461,7 +485,7 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
 bool RasterPitRemoval::HasValidNeighbor(int ID){
     // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.
     GetNeighbors(ID);
-    for (int d=DIR_NW;d<DIR_W;d++)
+    for (int d = DIR_NW; d <= DIR_W; d++)
     {
         if (Neighbors.at(d) != ENTRYPOINT && Terrain.at(Neighbors.at(d)) != dNoDataValue)
             return true;
@@ -472,7 +496,7 @@ bool RasterPitRemoval::HasValidNeighbor(int ID){
 void RasterPitRemoval::PitRemoveHybrid(int PitID)
 {
 
-    double CrestElev, IdealFillLevel;
+    double CrestElev;
     PitElev = Terrain.at(PitID);
 
     //Get Crest Elevation
@@ -516,7 +540,7 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
         CurID = CurPoint.id;
 
         //Get each neighbor cell that is lower than the Crest elevation and with elevation greater than or equal to the present cell
-        for (int d=DIR_NW; d < DIR_W; d++)
+        for (int d = DIR_NW; d <= DIR_W; d++)
         {
             if ( CheckCell( CurID, (eDirection)d, CurNeighborID, CrestElev ) )
             {
@@ -552,21 +576,26 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
     {
         IsMinimum = false;
     }
-    else //Flooded = 1
+    else
     {
         GetNeighbors(CurID);
-        for (int d=DIR_NW;d<DIR_W;d++)
+        for (int d = DIR_NW; d <= DIR_W; d++)
         {
-            if( Terrain.at(Neighbors.at(d)) < Terrain.at(CurID))
-                IsMinimum = false;
-            if((Terrain.at(Neighbors.at(d)) == Terrain.at(CurID)) && (Flooded.at(Neighbors.at(d)) == UNFLOODED))
-                IsMinimum = false;
+            if (Neighbors.at(d) != -1){
+                double currVal = Terrain.at(CurID);
+                double neighborVal = Terrain.at(Neighbors.at(d));
+                double neighborFlood = Flooded.at(Neighbors.at(d));
+
+                if( neighborVal < currVal || ( neighborVal == currVal && ( neighborFlood  == UNFLOODED ) ) )
+                    IsMinimum = false;
+            }
         }
     }
 
-    if (SavePits == true)
-        if (IsMinimum==true)
-            IsPit.at(CurID) = 1;
+    // Save the pits for later if we want to output them
+    if (SavePits && IsMinimum)
+        IsPit.at(CurID) = 1;
+
     return IsMinimum;
 }
 
