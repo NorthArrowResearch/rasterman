@@ -479,22 +479,37 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
 
 int RasterManEngine::Mask(int argc, char * argv[])
 {
-    if (argc != 5)
+    int eResult = PROCESS_OK;
+
+    if (argc != 5 && argc != 6)
     {
         std::cout << "\n Mask one raster using another.";
-        std::cout << "\n    Usage: rasterman mask <raster_file_path> <raster_mask_path> <output_file_path>";
+        std::cout << "\n    Usage: rasterman mask <raster_file_path> <raster_mask_path> <output_file_path> [<mask_Value>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
         std::cout << "\n    raster_mask_path: A raster to be used as a mask. Mask will be created from NoDataValues.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n          mask_Value: (optional) Select mask value. Anything not this value will be masked out.";
+        std::cout << "\n                      If not used, cells with a mask equal to 'Nodataval' will be masked out.";
         std::cout << "\n ";
         return PROCESS_OK;
     }
 
-    int eResult =  RasterManager::Mask(argv[2],
-            argv[3],
-            argv[4]);
+    if (argc == 5){
+        eResult =  RasterManager::Mask(
+                    argv[2],
+                argv[3],
+                argv[4]);
+    }
+    else {
+        double dMaskVal = GetDouble(argc, argv, 5);
+        eResult =  RasterManager::MaskValue(
+                    argv[2],
+                argv[3],
+                argv[4],
+                dMaskVal );
+    }
 
     return eResult;
 

@@ -310,7 +310,17 @@ extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * p
 extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
     try{
-        return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
+        return Raster::RasterMaskValue(psInputRaster, psMaskRaster, psOutput, NULL);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double dMaskValue)
+{
+    try{
+        return Raster::RasterMaskValue(psInputRaster, psMaskRaster, psOutput, &dMaskValue);
     }
     catch (RasterManagerException e){
         return e.GetErrorCode();

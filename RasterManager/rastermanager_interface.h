@@ -238,6 +238,16 @@ extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRa
 extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
 
 /**
+ * @brief
+ *
+ * @param psInputRaster
+ * @param psOutput
+ * @param dMaskValue
+ * @return int
+ */
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double dMaskValue);
+
+/**
  * @brief CreateHillshade
  * @param psInputRaster
  * @param psOutputHillshade

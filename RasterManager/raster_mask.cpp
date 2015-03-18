@@ -13,10 +13,9 @@
 #include "rastermanager.h"
 
 
-
 namespace RasterManager {
 
-int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput){
+int Raster::RasterMaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double *dMaskVal){
 
     // Everything except square root needs at least one other parameter (raster or doube)
     if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
@@ -55,6 +54,7 @@ int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, co
     else {
         fNoDataValue = rmInputMeta.GetNoDataValue();
     }
+
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmInputMeta);
@@ -95,7 +95,9 @@ int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, co
 
         for (j = 0; j < rmOutputMeta.GetCols(); j++)
         {
-            if (pMaskline[j] == rmMaskMeta.GetNoDataValue())
+            // If dMaskVal isn't used then we mask out any nodata values. Otherwise mask out anything not
+            // equal to the dMaskVal
+            if ((dMaskVal == NULL && pMaskline[j] == rmMaskMeta.GetNoDataValue() ) || pMaskline[j] != *dMaskVal)
             {
                 pOutputLine[j] = rmOutputMeta.GetNoDataValue();
             }

@@ -302,15 +302,13 @@ public:
                     const char * psOutput);
 
      /**
-      * @brief RasterMask
+      * @brief RasterMaskValue
       * @param psInputRaster
       * @param psMaskRaster
       * @param psOutput
       * @return
       */
-     static int RasterMask(const char * psInputRaster,
-                           const char * psMaskRaster,
-                           const char * psOutput);
+     static int RasterMaskValue(const char *psInputRaster, const char *psMaskRaster, const char *psOutput, double * dMaskVal);
 
      /**
       * @brief RasterMosaic
