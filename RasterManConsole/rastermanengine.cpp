@@ -117,6 +117,10 @@ int RasterManEngine::Run(int argc, char * argv[])
         //        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
 //            eResult = consetnull(argc, argv);
 
+
+        else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
+            eResult = stats(argc, argv);
+
         else
             bRecognizedCommand = false;
 
@@ -951,6 +955,54 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
 
     return eResult;
 
+}
+
+
+
+int RasterManEngine::stats(int argc, char * argv[])
+{
+    if (argc != 5)
+    {
+        std::cout << "\n Raster Statistics:";
+        std::cout << "\n    Usage: rasterman stats <operation> <raster>";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    operation:";
+        std::cout << "\n              mean: Mean (average) of the inputs";
+        std::cout << "\n          majority: Value that occurs most often";
+        std::cout << "\n           maximum: determines the largest value";
+        std::cout << "\n            median: Median of inputs";
+        std::cout << "\n           minimum: Smallest non-nodata vlaue of hte inputs";
+        std::cout << "\n          minority: Value that occurs the most often";
+        std::cout << "\n             range: distance between max and min";
+        std::cout << "\n               std: Calculates the standard deviation of the inpluts";
+        std::cout << "\n               sum: Total of all values";
+        std::cout << "\n             count: number of cells with values.";
+        std::cout << "\n           variety: Number of unique Values";
+        std::cout << "\n                                                     ";
+        std::cout << "\n    raster: Absolute full path to an existing raster.";
+        std::cout << "\n";
+        return PROCESS_OK;
+    }
+
+    QString sArg2 = argv[3];
+
+    int eResult = PROCESS_OK;
+
+    bool FileisNumeric;
+    double dOperator = sArg2.toDouble(&FileisNumeric);
+
+    if (!FileisNumeric){
+        eResult =  RasterManager::BasicMath(argv[2],
+                argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
+                argv[4]);
+    }
+    else {
+        eResult =  RasterManager::BasicMath(argv[2],
+                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
+                argv[4]);
+    }
+    return eResult;
 }
 
 

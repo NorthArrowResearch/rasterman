@@ -40,7 +40,8 @@ SOURCES += \
     raster_filter.cpp \
     raster_extractvals.cpp \
     raster_pitremove.cpp \
-    raster_eucliddist.cpp
+    raster_eucliddist.cpp \
+    raster_stats.cpp
 
 HEADERS +=\
     rastermanager_global.h \

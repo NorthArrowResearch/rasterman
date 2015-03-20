@@ -46,6 +46,20 @@ enum Raster_SymbologyStyle{
     GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
 };
 
+
+enum Raster_Stats_Operation{
+    STATS_MEAN,
+    STATS_MEDIAN,
+    STATS_MAJORITY,
+    STATS_MINORITY,
+    STATS_MAXIMUM,
+    STATS_MINIMUM,
+    STATS_STD,
+    STATS_SUM,
+    STATS_VARIETY,
+    STATS_RANGE,
+};
+
 extern "C" RM_DLL_API const char * GetLibVersion();
 
 
@@ -341,6 +355,20 @@ extern "C" RM_DLL_API int GetSymbologyStyleFromString(const char * psStyle);
  * @return
  */
 extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod);
+
+/**
+ * @brief RasterStat
+ * @param psOperation
+ * @return
+ */
+extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char *psInputRaster);
+
+/**
+ * @brief GetStatOperationFromString
+ * @param psStyle
+ * @return
+ */
+extern "C" RM_DLL_API int GetStatOperationFromString(const char * psStats);
 
 /**
  * @brief RasterFromCSVandTemplate

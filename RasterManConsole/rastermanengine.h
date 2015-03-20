@@ -211,6 +211,14 @@ private:
      * @return
      */
     int dist(int argc, char *argv[]);
+
+    /**
+     * @brief stats
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int stats(int argc, char *argv[]);
 };
 
 }

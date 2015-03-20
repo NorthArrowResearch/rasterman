@@ -494,6 +494,12 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
     return eResult;
 }
 
+extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char * psInputRaster){
+    RasterManager::Raster rRaster(psInputRaster);
+    int eResult = rRaster.RasterStat(psOperation);
+    return eResult;
+}
+
 /*******************************************************************************************************
  *******************************************************************************************************
  * Raster copy and resample methods
@@ -603,6 +609,34 @@ extern "C" RM_DLL_API int GetSymbologyStyleFromString(const char * psStyle)
         return GSS_SlopeDeg;
     else if (QString::compare(sStyle , "SlopePC", Qt::CaseInsensitive) == 0)
         return GSS_SlopePer;
+    else
+        return -1;
+}
+
+extern "C" RM_DLL_API int GetStatOperationFromString(const char * psStats)
+{
+    QString sStyle(psStats);
+
+    if (QString::compare(sStyle , "mean", Qt::CaseInsensitive) == 0)
+        return STATS_MEAN;
+    else if (QString::compare(sStyle , "majority", Qt::CaseInsensitive) == 0)
+        return STATS_MEDIAN;
+    else if (QString::compare(sStyle , "maximum", Qt::CaseInsensitive) == 0)
+        return STATS_MAJORITY;
+    else if (QString::compare(sStyle , "median", Qt::CaseInsensitive) == 0)
+        return STATS_MINORITY;
+    else if (QString::compare(sStyle , "minimum", Qt::CaseInsensitive) == 0)
+        return STATS_MAXIMUM;
+    else if (QString::compare(sStyle , "minority", Qt::CaseInsensitive) == 0)
+        return STATS_MINIMUM;
+    else if (QString::compare(sStyle , "range", Qt::CaseInsensitive) == 0)
+        return STATS_STD;
+    else if (QString::compare(sStyle , "std", Qt::CaseInsensitive) == 0)
+        return STATS_SUM;
+    else if (QString::compare(sStyle , "sum", Qt::CaseInsensitive) == 0)
+        return STATS_VARIETY;
+    else if (QString::compare(sStyle , "variety", Qt::CaseInsensitive) == 0)
+        return STATS_RANGE;
     else
         return -1;
 }

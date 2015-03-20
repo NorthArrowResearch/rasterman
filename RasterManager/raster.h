@@ -398,6 +398,12 @@ public:
                                  const char * sRasterOutput,
                                  FillMode eMethod);
 
+     /**
+      * @brief RasterStats
+      * @param sOperation
+      * @return
+      */
+     int RasterStats(const char *sOperation);
 
 protected:
 
@@ -432,6 +438,8 @@ private:
 
     double m_dRasterMax;
     double m_dRasterMin;
+    double m_dRasterMean;
+    double m_dRasterStdDev;
 
     /* These are the private implementations of the resample and copy raster routines depending on the data size
      * of the raster data values

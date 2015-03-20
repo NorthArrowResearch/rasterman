@@ -79,9 +79,13 @@ void Raster::Init(bool bFullImage)
 
     double dRMin, dRMax, dRMean, dRStdDev;
 
+    // Get some easy stats that GDAL gives us
     band->GetStatistics( 0 , true, &dRMin, &dRMax, &dRMean, &dRStdDev );
     m_dRasterMax = dRMax;
     m_dRasterMin = dRMin;
+
+    m_dRasterMean = dRMean;
+    m_dRasterStdDev = dRStdDev;
 
     OGRLinearRing ring = OGRLinearRing();
     if (bFullImage)
