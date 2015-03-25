@@ -144,6 +144,9 @@ int RasterManEngine::Run(int argc, char * argv[])
 
         std::cout << "\n Commands (type rasterman followed by the command to retrieve parameter information):\n";
         std::cout << "\n    raster          Display basic properties (rows, cols etc) for a raster.";
+        std::cout << "\n    stats           Display specific statistics (mean, max, min, etc) for a raster.";
+
+        std::cout << "\n";
         std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
         std::cout << "\n    copy            Copy a raster to produce a new raster with the specified extent.";
         std::cout << "\n    mosaic          Stitch two or more overlappint rasters.";
@@ -996,7 +999,7 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
 
 int RasterManEngine::stats(int argc, char * argv[])
 {
-    if (argc != 5)
+    if (argc != 4)
     {
         std::cout << "\n Raster Statistics:";
         std::cout << "\n    Usage: rasterman stats <operation> <raster>";
@@ -1004,40 +1007,30 @@ int RasterManEngine::stats(int argc, char * argv[])
         std::cout << "\n Arguments:";
         std::cout << "\n    operation:";
         std::cout << "\n              mean: Mean (average) of the inputs";
-        std::cout << "\n          majority: Value that occurs most often";
+//        std::cout << "\n          majority: Value that occurs most often";
         std::cout << "\n           maximum: determines the largest value";
-        std::cout << "\n            median: Median of inputs";
+//        std::cout << "\n            median: Median of inputs";
         std::cout << "\n           minimum: Smallest non-nodata vlaue of hte inputs";
-        std::cout << "\n          minority: Value that occurs the most often";
+//        std::cout << "\n          minority: Value that occurs the most often";
         std::cout << "\n             range: distance between max and min";
         std::cout << "\n               std: Calculates the standard deviation of the inpluts";
-        std::cout << "\n               sum: Total of all values";
-        std::cout << "\n             count: number of cells with values.";
-        std::cout << "\n           variety: Number of unique Values";
+//        std::cout << "\n               sum: Total of all values";
+//        std::cout << "\n             count: number of cells with values.";
+//        std::cout << "\n           variety: Number of unique Values";
         std::cout << "\n                                                     ";
         std::cout << "\n    raster: Absolute full path to an existing raster.";
         std::cout << "\n";
         return PROCESS_OK;
     }
 
-    QString sArg2 = argv[3];
+    RasterManager::Raster rRaster(argv[3]);
+    double eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(argv[2]) );
 
-    int eResult = PROCESS_OK;
+    QString msg = QString("Raster Property \"%1\" is: %2").arg(argv[2]).arg(eResult);
 
-    bool FileisNumeric;
-    double dOperator = sArg2.toDouble(&FileisNumeric);
+    std::cout << "\n" << msg.toStdString();
 
-    if (!FileisNumeric){
-        eResult =  RasterManager::BasicMath(argv[2],
-                argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
-                argv[4]);
-    }
-    else {
-        eResult =  RasterManager::BasicMath(argv[2],
-                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                argv[4]);
-    }
-    return eResult;
+    return PROCESS_OK;
 }
 
 

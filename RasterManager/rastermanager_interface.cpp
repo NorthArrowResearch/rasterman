@@ -513,7 +513,7 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
 
 extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char * psInputRaster){
     RasterManager::Raster rRaster(psInputRaster);
-    int eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(psInputRaster) );
+    double eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(psOperation) );
     return eResult;
 }
 

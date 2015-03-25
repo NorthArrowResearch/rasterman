@@ -25,6 +25,9 @@ double Raster::RasterStat(Raster_Stats_Operation eOperation){
     default: break;
     }
 
+    // TODO: Everything below this point is unimplemented
+    throw RasterManagerException(OTHER_ERROR, "Feature not implemented");
+
     // Some of these take a little more math.
     int nNumCells = GetCols() * GetRows();
     std::vector<double> RasterArray;
@@ -55,7 +58,8 @@ double Raster::RasterStat(Raster_Stats_Operation eOperation){
     case STATS_RANGE:    return RasterStatRange(&RasterArray); break;
     default: break;
     }
-    return PROCESS_OK;
+
+
 }
 
 double Raster::RasterStatMedian(std::vector<double> * RasterArray){
