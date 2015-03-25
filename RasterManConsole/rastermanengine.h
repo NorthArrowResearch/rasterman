@@ -12,6 +12,7 @@ public:
 
     int Run(int argc, char *argv[]);
 
+
 private:
 
     /**
@@ -116,6 +117,13 @@ private:
     int Mask(int argc, char *argv[]);
 
     /**
+     * @brief MaskVal
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int MaskVal(int argc, char *argv[]);
+    /**
      * @brief Mask
      * @param argc
      * @param argv
@@ -219,6 +227,15 @@ private:
      * @return
      */
     int stats(int argc, char *argv[]);
+
+    /**
+     * @brief LinThresh
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int LinThresh(int argc, char *argv[]);
+
 };
 
 }

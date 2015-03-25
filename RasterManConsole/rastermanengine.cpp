@@ -99,6 +99,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "Mask", Qt::CaseInsensitive) == 0)
             eResult = Mask(argc, argv);
 
+        else if (QString::compare(sCommand, "MaskVal", Qt::CaseInsensitive) == 0)
+            eResult = MaskVal(argc, argv);
+
         else if (QString::compare(sCommand, "PNG", Qt::CaseInsensitive) == 0)
             eResult = PNG(argc, argv);
 
@@ -114,8 +117,8 @@ int RasterManEngine::Run(int argc, char * argv[])
             eResult = fill(argc, argv);
         else if (QString::compare(sCommand, "dist", Qt::CaseInsensitive) == 0)
             eResult = dist(argc, argv);
-        //        else if (QString::compare(sCommand, "consetnull", Qt::CaseInsensitive) == 0)
-//            eResult = consetnull(argc, argv);
+        else if (QString::compare(sCommand, "linthresh", Qt::CaseInsensitive) == 0)
+            eResult = LinThresh(argc, argv);
 
 
         else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
@@ -147,6 +150,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    mosaic          Stitch two or more overlappint rasters.";
         std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
         std::cout << "\n    mask            Mask one raster using another raster or a vector.";
+        std::cout << "\n    maskval         Mask one raster using one of its values.";
         std::cout << "\n    setnull         Set a NoDataValue in a raster based on thesholding.";
         std::cout << "\n ";
         std::cout << "\n    add          Add two rasters or a raster and a constant.";
@@ -160,6 +164,8 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    normalize    Normalize a raster.";
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
+        std::cout << "\n    linthesh     Linear thresholding of a raster.";
+
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
         std::cout << "\n    slope        Create a slope raster.";
@@ -485,35 +491,52 @@ int RasterManEngine::Mask(int argc, char * argv[])
 {
     int eResult = PROCESS_OK;
 
-    if (argc != 5 && argc != 6)
+    if (argc != 5)
     {
         std::cout << "\n Mask one raster using another.";
-        std::cout << "\n    Usage: rasterman mask <raster_file_path> <raster_mask_path> <output_file_path> [<mask_Value>]";
+        std::cout << "\n    Usage: rasterman mask <raster_file_path> <raster_mask_path> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
         std::cout << "\n    raster_mask_path: A raster to be used as a mask. Mask will be created from NoDataValues.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n          mask_Value: (optional) Select mask value. Anything not this value will be masked out.";
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    eResult =  RasterManager::Mask(
+                argv[2],
+            argv[3],
+            argv[4]);
+
+    return eResult;
+
+}
+
+int RasterManEngine::MaskVal(int argc, char * argv[])
+{
+    int eResult = PROCESS_OK;
+
+    if (argc != 5)
+    {
+        std::cout << "\n Mask a raster by one of its values.";
+        std::cout << "\n    Usage: rasterman maskval <raster_file_path> <output_file_path> <mask_Value>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
+        std::cout << "\n    raster_mask_path: A raster to be used as a mask. Mask will be created from NoDataValues.";
+        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n          mask_Value: (optional) Select mask value. Anything not equal to this value will be set to NoDataVal.";
         std::cout << "\n                      If not used, cells with a mask equal to 'Nodataval' will be masked out.";
         std::cout << "\n ";
         return PROCESS_OK;
     }
 
-    if (argc == 5){
-        eResult =  RasterManager::Mask(
-                    argv[2],
-                argv[3],
-                argv[4]);
-    }
-    else {
-        double dMaskVal = GetDouble(argc, argv, 5);
-        eResult =  RasterManager::MaskValue(
-                    argv[2],
-                argv[3],
-                argv[4],
-                dMaskVal );
-    }
+    double dMaskVal = GetDouble(argc, argv, 5);
+    eResult =  RasterManager::MaskValue(
+                argv[2],
+            argv[3],
+            dMaskVal );
 
     return eResult;
 
@@ -1005,6 +1028,35 @@ int RasterManEngine::stats(int argc, char * argv[])
     return eResult;
 }
 
+
+int RasterManEngine::LinThresh(int argc, char * argv[])
+{
+    if (argc != 8)
+    {
+        std::cout << "\n LinThresh: Threshold the values of a raster using linear interpolation.";
+        std::cout << "\n    Usage: rasterman linthesh <raster_input_path> <raster_output_path> <min_thesh> <min_thesh_val> <max_thresh> <max_thresh_val>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n     raster_input_path: Path to an existing raster file.";
+        std::cout << "\n    raster_output_path: Path to the desired output raster file.";
+        std::cout << "\n             min_thesh: Raster value, below which the min_thresh_val will be used.";
+        std::cout << "\n         min_thesh_val: The value to use for the low threshold point.";
+        std::cout << "\n            max_thresh: Raster value, above which the max_thresh_val will be used.";
+        std::cout << "\n        max_thresh_val: The value to use for the high threshold point.";
+        std::cout << "\n ";
+        std::cout << "\n     Note: Anything between min_thresh and max_thresh will be linearly interpolated";
+        return PROCESS_OK;
+    }
+
+    double dMinThresh = GetDouble(argc, argv, 4);
+    double dMinThreshVal = GetDouble(argc, argv, 5);
+    double dMaxThresh = GetDouble(argc, argv, 6);
+    double dMaxThreshVal = GetDouble(argc, argv, 7);
+
+    int eResult = RasterManager::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal);
+
+    return eResult;
+}
 
 
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)

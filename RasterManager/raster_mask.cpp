@@ -15,7 +15,7 @@
 
 namespace RasterManager {
 
-int Raster::RasterMaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double *dMaskVal){
+int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput){
 
     // Everything except square root needs at least one other parameter (raster or doube)
     if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
@@ -24,6 +24,8 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psMaskRaste
     // Input Validation
     CheckFile(psInputRaster, true);
     CheckFile(psMaskRaster, true);
+    CheckFile(psOutput, false);
+
 
     /*****************************************************************************************
      * Raster 1
@@ -97,7 +99,7 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psMaskRaste
         {
             // If dMaskVal isn't used then we mask out any nodata values. Otherwise mask out anything not
             // equal to the dMaskVal
-            if ((dMaskVal == NULL && pMaskline[j] == rmMaskMeta.GetNoDataValue() ) || pMaskline[j] != *dMaskVal)
+            if (pMaskline[j] == rmMaskMeta.GetNoDataValue())
             {
                 pOutputLine[j] = rmOutputMeta.GetNoDataValue();
             }
@@ -118,6 +120,83 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psMaskRaste
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
     GDALClose(pDSMask);
+
+    return PROCESS_OK;
+
+}
+
+
+int Raster::RasterMaskValue(const char * psInputRaster, const char * psOutput, double dMaskVal){
+
+    // Everything except square root needs at least one other parameter (raster or doube)
+    if ( psInputRaster == NULL || psOutput == NULL)
+        return MISSING_ARGUMENT;
+
+    // Input Validation
+    CheckFile(psInputRaster, true);
+    CheckFile(psOutput, false);
+
+    /*****************************************************************************************
+     * Raster 1
+     */
+    if (psInputRaster == NULL)
+        return INPUT_FILE_ERROR;
+
+    RasterMeta rmInputMeta(psInputRaster);
+
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
+    if (pDSInput == NULL)
+        return INPUT_FILE_ERROR;
+
+    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
+
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rmInputMeta.GetCols());
+
+    /*****************************************************************************************
+     * The default output type is 32 bit floating point.
+     */
+    RasterMeta rmOutputMeta;
+    rmOutputMeta = rmInputMeta;
+
+    double fNoDataValue;
+    if (!rmInputMeta.HasNoDataValue()){
+        fNoDataValue = (double) -std::numeric_limits<float>::max();
+    }
+    else {
+        fNoDataValue = rmInputMeta.GetNoDataValue();
+    }
+
+    // Create the output dataset for writing
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmInputMeta);
+
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
+
+    for (int i = 0; i < rmOutputMeta.GetRows(); i++)
+    {
+        pRBInput->RasterIO(GF_Read, 0,  i, rmInputMeta.GetCols(), 1, pInputLine, rmInputMeta.GetCols(), 1, GDT_Float64, 0, 0);
+
+        for (int j = 0; j < rmOutputMeta.GetCols(); j++)
+        {
+            // Mask out anything not equal to the dMaskVal
+            if ( pInputLine[j] != dMaskVal )
+            {
+                pOutputLine[j] = rmOutputMeta.GetNoDataValue();
+            }
+            else
+            {
+                pOutputLine[j] = pInputLine[j];
+            }
+        }
+
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmOutputMeta.GetCols(), 1, pOutputLine, rmOutputMeta.GetCols(), 1, GDT_Float64, 0, 0);
+    }
+    CPLFree(pInputLine);
+    CPLFree(pOutputLine);
+
+    CalculateStats(pDSOutput->GetRasterBand(1));
+
+    GDALClose(pDSInput);
+    GDALClose(pDSOutput);
 
     return PROCESS_OK;
 

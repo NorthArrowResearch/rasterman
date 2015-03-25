@@ -31,12 +31,17 @@ double Raster::RasterStat(Raster_Stats_Operation eOperation){
     RasterArray.resize(nNumCells);
 
     // Setup our Read buffer and read the entire raster into an array
-    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rInputRaster->GetCols());
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(FilePath(), GA_ReadOnly);
+    if (pDSInput == NULL)
+        throw RasterManagerException(INPUT_FILE_ERROR, "Could not open input Raster");
+
+    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
+
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*GetCols());
     for (int nRow = 0; nRow < pRBInput->GetYSize(); nRow++){
         pRBInput->RasterIO(GF_Read, 0,  nRow, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
         for (int nCol = 0; nCol < pRBInput->GetXSize(); nCol++){
-            RasterArray.
-            RasterArray.at(nIndex) = pInputLine[nCol];
+            RasterArray.at( (nRow * GetCols() ) + nCol) = pInputLine[nCol];
         }
     }
     CPLFree(pInputLine);
@@ -55,43 +60,48 @@ double Raster::RasterStat(Raster_Stats_Operation eOperation){
 
 double Raster::RasterStatMedian(std::vector<double> * RasterArray){
     // Allocate an array of the same size and sort it.
-    for (int i = 0; i < iSize; ++i) {
-        dpSorted[i] = daArray[i];
-    }
-    for (int i = iSize - 1; i > 0; --i) {
-        for (int j = 0; j < i; ++j) {
-            if (dpSorted[j] > dpSorted[j+1]) {
-                double dTemp = dpSorted[j];
-                dpSorted[j] = dpSorted[j+1];
-                dpSorted[j+1] = dTemp;
-            }
-        }
-    }
+//    for (int i = 0; i < iSize; ++i) {
+//        dpSorted[i] = daArray[i];
+//    }
+//    for (int i = iSize - 1; i > 0; --i) {
+//        for (int j = 0; j < i; ++j) {
+//            if (dpSorted[j] > dpSorted[j+1]) {
+//                double dTemp = dpSorted[j];
+//                dpSorted[j] = dpSorted[j+1];
+//                dpSorted[j+1] = dTemp;
+//            }
+//        }
+//    }
 
-    // Middle or average of middle values in the sorted array.
-    double dMedian = 0.0;
-    if ((iSize % 2) == 0) {
-        dMedian = (dpSorted[iSize/2] + dpSorted[(iSize/2) - 1])/2.0;
-    } else {
-        dMedian = dpSorted[iSize/2];
-    }
-    delete [] dpSorted;
-    return dMedian;
+//    // Middle or average of middle values in the sorted array.
+//    double dMedian = 0.0;
+//    if ((iSize % 2) == 0) {
+//        dMedian = (dpSorted[iSize/2] + dpSorted[(iSize/2) - 1])/2.0;
+//    } else {
+//        dMedian = dpSorted[iSize/2];
+//    }
+//    delete [] dpSorted;
+//    return dMedian;
+    return -1;
 }
 double Raster::RasterStatMajority(std::vector<double> * RasterArray){
-
+    return -1;
 }
 double Raster::RasterStatMinority(std::vector<double> * RasterArray){
-
+    return -1;
 }
 double Raster::RasterStatSum(std::vector<double> * RasterArray){
-
+    double total = 0;
+    for (int i = 0; i < RasterArray->size(); i++){
+        total += RasterArray->at(i);
+    }
+    return total;
 }
 double Raster::RasterStatVariety(std::vector<double> * RasterArray){
-
+    return -1;
 }
 double Raster::RasterStatRange(std::vector<double> * RasterArray){
-
+    return -1;
 }
 
 }

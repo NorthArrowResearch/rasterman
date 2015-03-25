@@ -302,13 +302,22 @@ public:
                     const char * psOutput);
 
      /**
-      * @brief RasterMaskValue
+      * @brief RasterMask mask a raster using another
       * @param psInputRaster
       * @param psMaskRaster
       * @param psOutput
       * @return
       */
-     static int RasterMaskValue(const char *psInputRaster, const char *psMaskRaster, const char *psOutput, double * dMaskVal);
+     static int RasterMask(const char *psInputRaster, const char *psMaskRaster, const char *psOutput);
+
+     /**
+      * @brief RasterMaskValue Mask a raster by a value in that raster
+      * @param psInputRaster
+      * @param psMaskRaster
+      * @param psOutput
+      * @return
+      */
+     static int RasterMaskValue(const char *psInputRaster, const char *psOutput, double dMaskVal);
 
      /**
       * @brief RasterMosaic
@@ -403,7 +412,19 @@ public:
       * @param sOperation
       * @return
       */
-     int RasterStats(const char *sOperation);
+     double RasterStat(Raster_Stats_Operation eOperation);
+
+     /**
+      * @brief LinearThreshold
+      * @param psInputRaster
+      * @param psOutputRaster
+      * @param dLowThresh
+      * @param dLowThreshVal
+      * @param dHighThresh
+      * @param dHighThreshVal
+      * @return
+      */
+     static int LinearThreshold(const char *psInputRaster, const char *psOutputRaster, double dLowThresh, double dLowThreshVal, double dHighThresh, double dHighThreshVal);
 
 protected:
 
@@ -478,6 +499,15 @@ private:
      * @return
      */
     static int ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
+
+
+    double RasterStatMedian(std::vector<double> * RasterArray);
+    double RasterStatMajority(std::vector<double> * RasterArray);
+    double RasterStatMinority(std::vector<double> * RasterArray);
+    double RasterStatSum(std::vector<double> * RasterArray);
+    double RasterStatVariety(std::vector<double> * RasterArray);
+    double RasterStatRange(std::vector<double> * RasterArray);
+
 
 };
 

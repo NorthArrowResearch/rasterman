@@ -62,6 +62,9 @@ enum Raster_Stats_Operation{
 
 extern "C" RM_DLL_API const char * GetLibVersion();
 
+extern "C" RM_DLL_API const char * GetMinGDALVersion();
+
+extern "C" RM_DLL_API int CheckVersions();
 
 //!Extract File Extension
 //* Take a full file path and return just the file extension, excluding the period */
@@ -80,6 +83,13 @@ extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName);
  * @return const char
  */
 extern "C" RM_DLL_API const char * GetDriverFromFileName(const char *psFileName);
+
+/**
+ * @brief GetStatFromString
+ * @param psStat
+ * @return
+ */
+extern "C" RM_DLL_API int GetStatFromString(const char * psStat);
 
 /**
  * @brief Retrieves the plain english words for a particular raster manager error code
@@ -236,6 +246,23 @@ extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
 
 /**
+ * @brief LinearThreshold
+ * @param psInputRaster
+ * @param psOutputRaster
+ * @param dLowThresh
+ * @param dLowThreshVal
+ * @param dHighThresh
+ * @param dHighThreshVal
+ * @return
+ */
+extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
+                                          const char * psOutputRaster,
+                                          double dLowThresh,
+                                          double dLowThreshVal,
+                                          double dHighThresh,
+                                          double dHighThreshVal);
+
+/**
  * @brief IsConcurrent
  * @param csRaster
  * @return
@@ -259,7 +286,7 @@ extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRas
  * @param dMaskValue
  * @return int
  */
-extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double dMaskValue);
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue);
 
 /**
  * @brief CreateHillshade

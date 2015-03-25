@@ -41,7 +41,8 @@ SOURCES += \
     raster_extractvals.cpp \
     raster_pitremove.cpp \
     raster_eucliddist.cpp \
-    raster_stats.cpp
+    raster_stats.cpp \
+    raster_linthresh.cpp
 
 HEADERS +=\
     rastermanager_global.h \

@@ -23,6 +23,8 @@ namespace RasterManager {
 
 RM_DLL_API const char * GetLibVersion(){ return LIBVERSION; }
 
+RM_DLL_API const char * GetMinGDALVersion(){ return MINGDAL; }
+
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
@@ -310,21 +312,36 @@ extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * p
 extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
 {
     try{
-        return Raster::RasterMaskValue(psInputRaster, psMaskRaster, psOutput, NULL);
+        return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
     }
     catch (RasterManagerException e){
         return e.GetErrorCode();
     }
 }
 
-extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, double dMaskValue)
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue)
 {
     try{
-        return Raster::RasterMaskValue(psInputRaster, psMaskRaster, psOutput, &dMaskValue);
+        return Raster::RasterMaskValue(psInputRaster, psOutput, dMaskValue);
     }
     catch (RasterManagerException e){
         return e.GetErrorCode();
     }
+}
+
+extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
+                                          const char * psOutputRaster,
+                                          double dLowThresh,
+                                          double dLowThreshVal,
+                                          double dHighThresh,
+                                          double dHighThreshVal){
+    try{
+        return Raster::LinearThreshold(psInputRaster, psOutputRaster, dLowThresh, dLowThreshVal, dHighThresh, dHighThreshVal);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
 }
 
 extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1,
@@ -496,7 +513,7 @@ extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psO
 
 extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char * psInputRaster){
     RasterManager::Raster rRaster(psInputRaster);
-    int eResult = rRaster.RasterStat(psOperation);
+    int eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(psInputRaster) );
     return eResult;
 }
 
@@ -542,6 +559,7 @@ extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName)
     }
     return NULL;
 }
+
 
 extern "C" RM_DLL_API const char * GetDriverFromFilename(const char * FileName)
 {
@@ -654,6 +672,35 @@ extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod)
     else
         return -1;
 }
+
+extern "C" RM_DLL_API int GetStatFromString(const char * psStat)
+{
+    QString sMethod(psStat);
+
+    if (QString::compare(sMethod , "mean", Qt::CaseInsensitive) == 0)
+        return STATS_MEAN;
+    else if (QString::compare(sMethod , "median", Qt::CaseInsensitive) == 0)
+        return STATS_MEDIAN;
+    else if (QString::compare(sMethod , "majority", Qt::CaseInsensitive) == 0)
+        return STATS_MAJORITY;
+    else if (QString::compare(sMethod , "minority", Qt::CaseInsensitive) == 0)
+        return STATS_MINORITY;
+    else if (QString::compare(sMethod , "maximum", Qt::CaseInsensitive) == 0)
+        return STATS_MAXIMUM;
+    else if (QString::compare(sMethod , "minimum", Qt::CaseInsensitive) == 0)
+        return STATS_MINIMUM;
+    else if (QString::compare(sMethod , "std", Qt::CaseInsensitive) == 0)
+        return STATS_STD;
+    else if (QString::compare(sMethod , "sum", Qt::CaseInsensitive) == 0)
+        return STATS_SUM;
+    else if (QString::compare(sMethod , "variety", Qt::CaseInsensitive) == 0)
+        return STATS_VARIETY;
+    else if (QString::compare(sMethod , "range", Qt::CaseInsensitive) == 0)
+        return STATS_RANGE;
+    else
+        return -1;
+}
+
 
 
 extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
