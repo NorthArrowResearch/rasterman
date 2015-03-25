@@ -10,30 +10,6 @@ It does not depend on any of our other git repositories. GDAL 1.10 is required
  Rasterman
  Usage: rasterman <command> [parameters...]
 
- Commands (type rasterman followed by the command to retrieve parameter information):
-
-    raster          Display basic properties (rows, cols etc) for a raster.
-    bilinear        Bilinear resample of a raster to produce a new raster.
-    copy            Copy a raster to produce a new raster with the specified extent.
-    mosaic          Stitch two or more overlappint rasters.
-    makeconcurrent  Make all input rasters concurrent.
-    mask            Mask one raster using another raster or a vector.
-    setnull         Set a NoDataValue in a raster based on thesholding.
-
-    add          Add two rasters or a raster and a constant.
-    subtract     Subtract two rasters or a constant from a raster.
-    divide       Divide a raster by a number or another raster.
-    multiply     Multiply a raster by a number or another raster.
-    power        Raise a raster to a power.
-    sqrt         Get the square root of a raster.
-
-    hillshade       Create a hillshade raster.
-    slope           Create a slope raster.
-    png             Create a PNG image copy of a raster.
-
-    csv2raster      Create a raster from a .csv file
-    vector2raster   Create a raster from a vector file. (BETA)
-
 ```
 
 ## Commands

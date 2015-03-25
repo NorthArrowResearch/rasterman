@@ -15,11 +15,15 @@ This release is in preparation for our GUT tool and contains a lot of new featur
 * **New Operation**: `extractpoints`: get a csv full of values extracted.
 * **New Operation**: `filter`: perform operations like "smooth" over a moving window of arbitrary size (less than 16 cells).
 * Added a C interface for csv2raster and raster2csv
+* **New Operation**: `stats`: Basic stats are now implemented including: Mean, Max, Min, Std Deviation and Range. More are cominng.
+* **New Operation**: `MaskVal`: Mask on a raster's value. Everywhere else is set to Nodata.
+* **New Operation**: `linthresh`: Linear interpolation thresholding. This fills a common need we have to set everything above a certain threshold to one value, everything below to another and everything in between according to a linear interpolation.
 
 ### Fixes
 
 * Fixed a bug to do with whitespace inside CSV cell quotes
 * Completely refactored `csv2raster` to work faster.
+* Fixed some continuity problems with how certain functions handle errors.
 
 --------------------------------
 
