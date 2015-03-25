@@ -188,8 +188,6 @@ int Raster::FilterRaster(
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
 
-    PrintRasterProperties(psOutputRaster);
-
     return PROCESS_OK;
 
 }

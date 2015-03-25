@@ -82,7 +82,6 @@ int Raster::LinearThreshold(const char * psInputRaster,
         pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rmRasterMeta.GetCols(), 1, pOutputLine, rmRasterMeta.GetCols(), 1, GDT_Float64, 0, 0);
     }
 
-
     CPLFree(pInputLine);
     CPLFree(pOutputLine);
 
@@ -90,9 +89,6 @@ int Raster::LinearThreshold(const char * psInputRaster,
 
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
-
-    PrintRasterProperties(psOutputRaster);
-
 
     return PROCESS_OK;
 }

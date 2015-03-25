@@ -157,8 +157,6 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
     CalculateStats(pDSOutput->GetRasterBand(1));
     GDALClose(pDSOutput);
 
-    PrintRasterProperties(psOutput);
-
     return PROCESS_OK;
 
 }

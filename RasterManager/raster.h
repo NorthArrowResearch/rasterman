@@ -13,6 +13,9 @@ class GDALRasterBand;
 
 namespace RasterManager {
 
+// Two doubles off by this much are considered equal in isEqual function
+const double DOUBLECOMPARE = 0.00000001;
+
 /**
  * @brief Represents a [GDAL](http://www.gdal.org/) compatible raster on disk
  *
@@ -413,6 +416,8 @@ public:
       * @return
       */
      double RasterStat(Raster_Stats_Operation eOperation);
+
+     static inline bool isEqual(double x, double y){ return fabs(x-y) > DOUBLECOMPARE; }
 
      /**
       * @brief LinearThreshold

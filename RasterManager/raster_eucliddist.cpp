@@ -49,13 +49,10 @@ int Raster::EuclideanDistance(
     CPLErr err = GDALComputeProximity(pRBInput, pRBOutput, papszOptions, NULL, NULL);
     CSLDestroy( papszOptions );
 
-
     CalculateStats(pDSOutput->GetRasterBand(1));
 
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
-
-    PrintRasterProperties(psOutputRaster);
 
     return PROCESS_OK;
 

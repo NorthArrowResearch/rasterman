@@ -155,10 +155,8 @@ int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOu
         CPLFree(pInputLine);
 
         CalculateStats(pDSOutput->GetRasterBand(1));
-
+        GDALClose(pDS);
         GDALClose(pDSOutput);
-
-        PrintRasterProperties(sOutputFileName.c_str());
     }
     return PROCESS_OK;
 }

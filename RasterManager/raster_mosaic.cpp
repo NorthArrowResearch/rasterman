@@ -122,8 +122,6 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
     CalculateStats(pDSOutput->GetRasterBand(1));
     GDALClose(pDSOutput);
 
-    PrintRasterProperties(psOutput);
-
     return PROCESS_OK;
 }
 

@@ -227,6 +227,12 @@ int RasterManEngine::BiLinearResample(int argc, char * argv[])
 
     RasterManager::Raster rOriginal(argv[2]);
     eResult = rOriginal.ReSample(argv[3], fCellSize, fLeft, fTop, nRows, nCols);
+
+    std::cout << "\n\n Input Raster: --------------------\n";
+    PrintRasterProperties(argv[2]);
+    std::cout << "\n\n Output Raster: --------------------\n";
+    PrintRasterProperties(argv[3]);
+
     return eResult;
 
 
@@ -258,6 +264,9 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
         int eResult = PROCESS_OK;
         RasterManager::Raster rOriginal(argv[2]);
         eResult = rOriginal.Copy(argv[3], &fCellSize, fLeft, fTop, nRows, nCols);
+
+
+        PrintRasterProperties(argv[3]);
         return eResult;
 }
 
@@ -462,6 +471,8 @@ int RasterManEngine::Mosaic(int argc, char * argv[])
     int eResult = PROCESS_OK;
 
     eResult = RasterManager::Mosaic(argv[2], argv[3]);
+
+    PrintRasterProperties(argv[3]);
     return eResult;
 
 }
@@ -483,6 +494,7 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
 
     int eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
 
+    PrintRasterProperties(argv[3]);
     return eResult;
 }
 
@@ -531,11 +543,8 @@ int RasterManEngine::MaskVal(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    double dMaskVal = GetDouble(argc, argv, 5);
-    eResult =  RasterManager::MaskValue(
-                argv[2],
-            argv[3],
-            dMaskVal );
+    double dMaskVal = GetDouble(argc, argv, 4);
+    eResult =  Raster::RasterMaskValue( argv[2], argv[3], dMaskVal );
 
     return eResult;
 
@@ -545,7 +554,7 @@ int RasterManEngine::Slope(int argc, char * argv[])
 {
     if (argc != 5)
     {
-        std::cout << "\n Bilinear Resample Usage:";
+        std::cout << "\n Slope Usage:";
         std::cout << "\n    Usage: rasterman slope <degrees | percent> <dem_file_path> <slope_file_path>";
         std::cout << "\n   Command: slope";
         std::cout << "\n ";
@@ -690,8 +699,9 @@ int RasterManEngine::CSVToRaster(int argc, char * argv[])
                 argv[4],
                 argv[5],
                 argv[6] );
-    }
 
+    }
+    PrintRasterProperties(argv[3]);
     return eResult;
 
 }
@@ -747,6 +757,7 @@ int RasterManEngine::invert(int argc, char * argv[])
             argv[3],
             dValue );
 
+    PrintRasterProperties(argv[3]);
     return eResult;
 
 }
@@ -831,7 +842,7 @@ int RasterManEngine::filter(int argc, char * argv[])
             nWindowWidth,
             nWindowHeight);
 
-
+    PrintRasterProperties(argv[4]);
     return eResult;
 
 }
@@ -905,6 +916,7 @@ int RasterManEngine::normalize(int argc, char * argv[])
             argv[2],
             argv[3] );
 
+    PrintRasterProperties(argv[3]);
     return eResult;
 
 }
@@ -929,6 +941,7 @@ int RasterManEngine::dist(int argc, char * argv[])
             argv[2],
             argv[3] );
 
+    PrintRasterProperties(argv[3]);
     return eResult;
 
 }
@@ -1033,17 +1046,19 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
     if (argc != 8)
     {
         std::cout << "\n LinThresh: Threshold the values of a raster using linear interpolation.";
-        std::cout << "\n    Usage: rasterman linthesh <raster_input_path> <raster_output_path> <min_thesh> <min_thesh_val> <max_thresh> <max_thresh_val>";
+        std::cout << "\n    Usage: rasterman linthesh <raster_input_path> <raster_output_path> <min_thresh> <min_thesh_val> <max_thresh> <max_thresh_val>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n     raster_input_path: Path to an existing raster file.";
         std::cout << "\n    raster_output_path: Path to the desired output raster file.";
-        std::cout << "\n             min_thesh: Raster value, below which the min_thresh_val will be used.";
+        std::cout << "\n            min_thresh: Raster value, below which the min_thresh_val will be used.";
         std::cout << "\n         min_thesh_val: The value to use for the low threshold point.";
         std::cout << "\n            max_thresh: Raster value, above which the max_thresh_val will be used.";
         std::cout << "\n        max_thresh_val: The value to use for the high threshold point.";
         std::cout << "\n ";
-        std::cout << "\n     Note: Anything between min_thresh and max_thresh will be linearly interpolated";
+        std::cout << "\n     Notes: - Anything between min_thresh and max_thresh will be linearly interpolated";
+        std::cout << "\n            - Set min_thresh = max_thresh to get a straight dropoff";
+        std::cout << "\n            - min_thresh must be less than or equal to max_thresh";
         return PROCESS_OK;
     }
 
@@ -1054,6 +1069,7 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
 
     int eResult = Raster::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal);
 
+    PrintRasterProperties(argv[3]);
     return eResult;
 }
 

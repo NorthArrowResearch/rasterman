@@ -135,8 +135,6 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     GDALClose(pDSOutput);
     pDSVectorInput->Release();  // <------- DRMEM!!! UNADDRESSABLE ACCESS beyond heap bounds:
 
-    PrintRasterProperties(sRasterOutputPath);
-
     //This is where the implementation actually goes
     return PROCESS_OK;
 

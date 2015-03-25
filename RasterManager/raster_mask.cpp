@@ -19,7 +19,7 @@ int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, co
 
     // Everything except square root needs at least one other parameter (raster or doube)
     if (psMaskRaster == NULL || psInputRaster == NULL || psOutput == NULL)
-        return MISSING_ARGUMENT;
+        throw RasterManagerException( MISSING_ARGUMENT);
 
     // Input Validation
     CheckFile(psInputRaster, true);
@@ -31,13 +31,13 @@ int Raster::RasterMask(const char * psInputRaster, const char * psMaskRaster, co
      * Raster 1
      */
     if (psInputRaster == NULL)
-        return INPUT_FILE_ERROR;
+        throw RasterManagerException( INPUT_FILE_ERROR, "Input file was not specified");
 
     RasterMeta rmInputMeta(psInputRaster);
 
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
     if (pDSInput == NULL)
-        return INPUT_FILE_ERROR;
+        throw RasterManagerException( INPUT_FILE_ERROR, "Input file could not be opened");
 
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
@@ -130,7 +130,7 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psOutput, d
 
     // Everything except square root needs at least one other parameter (raster or doube)
     if ( psInputRaster == NULL || psOutput == NULL)
-        return MISSING_ARGUMENT;
+        throw RasterManagerException( MISSING_ARGUMENT );
 
     // Input Validation
     CheckFile(psInputRaster, true);
@@ -140,13 +140,13 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psOutput, d
      * Raster 1
      */
     if (psInputRaster == NULL)
-        return INPUT_FILE_ERROR;
+        throw RasterManagerException( INPUT_FILE_ERROR, "Input raster not specified");
 
     RasterMeta rmInputMeta(psInputRaster);
 
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
     if (pDSInput == NULL)
-        return INPUT_FILE_ERROR;
+        throw RasterManagerException( INPUT_FILE_ERROR, "Input file could not be opened");
 
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
@@ -178,9 +178,9 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psOutput, d
         for (int j = 0; j < rmOutputMeta.GetCols(); j++)
         {
             // Mask out anything not equal to the dMaskVal
-            if ( pInputLine[j] != dMaskVal )
+            if ( isEqual(pInputLine[j], dMaskVal) || pInputLine[j] == fNoDataValue )
             {
-                pOutputLine[j] = rmOutputMeta.GetNoDataValue();
+                pOutputLine[j] = fNoDataValue;
             }
             else
             {

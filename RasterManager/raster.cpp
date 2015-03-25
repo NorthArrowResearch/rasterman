@@ -315,7 +315,6 @@ int  Raster::Copy(const char * pOutputRaster,
 
     GDALDumpOpenDatasets(stderr);
 
-    PrintRasterProperties(pOutputRaster);
 
     return PROCESS_OK;
 }
@@ -407,11 +406,6 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     GDALClose(pDSOld);
     GDALClose(pDSOutput);
-
-    std::cout << "\n\n Input Raster: --------------------\n";
-    PrintRasterProperties(m_sFilePath);
-    std::cout << "\n\n Output Raster: --------------------\n";
-    PrintRasterProperties(pOutputRaster);
 
     return PROCESS_OK;
 }
