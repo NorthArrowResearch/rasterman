@@ -23,8 +23,8 @@ int Raster::LinearThreshold(const char * psInputRaster,
     CheckFile(psInputRaster, true);
     CheckFile(psOutputRaster, false);
 
-    if (dLowThresh >= dHighThresh)
-        throw(ARGUMENT_VALIDATION, "Low threshold must be greater than the high threshold");
+    if (dLowThresh > dHighThresh)
+        throw RasterManagerException(ARGUMENT_VALIDATION, "Low threshold must be smaller or equal to the high threshold");
 
     RasterMeta rmRasterMeta(psInputRaster);
 
@@ -53,7 +53,12 @@ int Raster::LinearThreshold(const char * psInputRaster,
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols());
 
     // REcall: y =mx +b  where m=slope
-    double dSlope =  (dHighThreshVal - dLowThreshVal) / (dHighThresh - dLowThresh);
+    double dSlope = 0;
+
+    // Kids, division by zero is a serious offense!
+    if ( dHighThresh != dLowThresh)
+        dSlope =  (dHighThreshVal - dLowThreshVal) / (dHighThresh - dLowThresh);
+
     double dBparam = dHighThreshVal - ( dSlope * dHighThresh );
 
     for (int i = 0; i < rmRasterMeta.GetRows(); i++)

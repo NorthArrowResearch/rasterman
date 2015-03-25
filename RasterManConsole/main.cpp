@@ -16,10 +16,7 @@ int main(int argc, char *argv[])
     {
         RasterManager::RasterManEngine * rm = new RasterManager::RasterManEngine();
         int eResult = rm->Run(argc, argv);
-        if (eResult <= 0) {
-            std::cout << std::endl <<  RasterManager::RasterManagerException::GetReturnCodeOnlyAsString(eResult)<< std::endl;
-        }
-        else {
+        if (eResult != RasterManager::PROCESS_OK) {
             std::cerr << std::endl << "Error: " <<  RasterManager::RasterManagerException::GetReturnCodeOnlyAsString(eResult)<< std::endl;
             exit (EXIT_FAILURE);
         }

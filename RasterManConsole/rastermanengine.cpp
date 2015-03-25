@@ -120,7 +120,6 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "linthresh", Qt::CaseInsensitive) == 0)
             eResult = LinThresh(argc, argv);
 
-
         else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
             eResult = stats(argc, argv);
 
@@ -1053,7 +1052,7 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
     double dMaxThresh = GetDouble(argc, argv, 6);
     double dMaxThreshVal = GetDouble(argc, argv, 7);
 
-    int eResult = RasterManager::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal);
+    int eResult = Raster::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal);
 
     return eResult;
 }
@@ -1091,6 +1090,7 @@ double RasterManEngine::GetDouble(int argc, char * argv[], int nIndex)
         // Enough arguments
         QString sInput = argv[nIndex];
         if (sInput.isNull() || sInput.isEmpty())
+
             throw  RasterManagerException(MISSING_ARGUMENT, "Command line missing integer argument.");
         else
         {
