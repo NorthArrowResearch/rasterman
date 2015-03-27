@@ -36,72 +36,52 @@ double prop( float a, int k);
 int readoutlets(char *outletsfile, int *noutlets, double*& x, double*& y);
 int readoutlets(char *outletsfile, int *noutlets, double*& x, double*& y, int*& id);
 
-RasterPitRemoval::RasterPitRemoval(const char * sRasterInput,
-                                   const char * sRasterOutput,
-                                   FillMode eMethod){
-
-
-    ProcessTimer initTimer("");
-    QueueItem = new LoopTimer("Queue Item");
+RasterPitRemoval::RasterPitRemoval(const char * sRasterInput, const char * sRasterOutput,
+                                   FillMode eMethod) : RasterArray(sRasterInput){
 
     // Basic File existence Checking
-    CheckFile(sRasterInput, true);
     CheckFile(sRasterOutput, false);
 
-    sInputPath = QString(sRasterInput);
     sOutputPath = QString(sRasterOutput);
     Mode = eMethod;
 
-    // Import Raster
-    // ------------------------------------------------------
-    rInputRaster = new Raster(sRasterInput);
-
     // Set up a reasonable nodata value
-    if (rInputRaster->GetNoDataValuePtr() == NULL)
+    if (GetNoDataValuePtr() == NULL)
         dNoDataValue = (double) -std::numeric_limits<float>::max();
     else
-        dNoDataValue = rInputRaster->GetNoDataValue();
-
-    int nNumCells = rInputRaster->GetCols()*rInputRaster->GetRows();
+        dNoDataValue = GetNoDataValue();
 
     //Resize vectors
-    Terrain.resize(nNumCells); //Values input from file, modified throughout program
-    Direction.resize(nNumCells);
-    Flooded.resize(nNumCells);
-    Checked.resize(nNumCells);
-    BlankBool.resize(nNumCells);
-    IsPit.resize(nNumCells);
-    Neighbors.resize(8);
-
-    TotalCells = Terrain.size();
-    rasterCols = rInputRaster->GetCols();
+    FloodDirection.resize(GetTotalCells());
+    Flooded.resize(GetTotalCells());
+    Checked.resize(GetTotalCells());
+    BlankBool.resize(GetTotalCells());
+    IsPit.resize(GetTotalCells());
 
     SavePits = true;
 }
 
 RasterPitRemoval::~RasterPitRemoval()
 {
-    delete rInputRaster;
-    delete QueueItem;
 }
 
 int RasterPitRemoval::Run(){
 
     // Set up the GDal Dataset and rasterband info
-    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(rInputRaster->FilePath(), GA_ReadOnly);
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(FilePath(), GA_ReadOnly);
     if (pDSInput == NULL)
         throw RasterManagerException(INPUT_FILE_ERROR, "Could not open input Raster");
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
     // Setup our Read buffer and read the entire raster into an array
-    double * pInputLine = (double *) CPLMalloc(sizeof(double)*rInputRaster->GetCols());
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*GetCols());
     for (int i = 0; i < pRBInput->GetYSize(); i++){
         pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
         for (int j = 0; j < pRBInput->GetXSize(); j++){
             int nIndex = GetIDFromCoords(i,j); //Convert a 2d index to a 1D one
             Terrain.at(nIndex) = pInputLine[j];
             Flooded.at(nIndex) = UNFLOODED;
-            Direction.at(nIndex) = INIT;
+            FloodDirection.at(nIndex) = INIT;
             IsPit.at(nIndex) = 0;
 
         }
@@ -113,13 +93,13 @@ int RasterPitRemoval::Run(){
     //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
     //This allows internal points of no data to be used as outlets
-    for (size_t i=0; i < (size_t) TotalCells; i++)
+    for (size_t i=0; i < (size_t) GetTotalCells(); i++)
     {
         //Test if cell is on border or if cell has a neighbor with no data
         if(HasValidNeighbor(i) &&
                 (IsBorder(i) || NeighborNoValue(i) ) ){
             AddToMainQueue(i, true); //All outlet cells by definition have a path to the outlet, thus ConfirmDescend = true.
-            Direction.at(i) = ENTRYPOINT;
+            FloodDirection.at(i) = ENTRYPOINT;
         }
     }
 
@@ -134,33 +114,6 @@ int RasterPitRemoval::Run(){
     return PROCESS_OK;
 }
 
-int RasterPitRemoval::GetIDFromCoords(int row, int col){
-    return  row*rInputRaster->GetCols() + col;
-}
-
-void RasterPitRemoval::TestDir(size_t id){
-    GetNeighbors(id);
-    //
-    //    |0|1|2|
-    //    -------
-    //    |7|X|3|
-    //    -------
-    //    |6|5|4|
-    //    -------
-
-    qDebug() << QString("Top: %1 Right: %2 Bottom: %3 Left %4").arg(IsTopEdge(id)).arg(IsRightEdge(id)).arg(IsBottomEdge(id)).arg(IsLeftEdge(id));
-
-    qDebug() << "------------";
-    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_NW)).arg(Neighbors.at(DIR_N)).arg(Neighbors.at(DIR_NE));
-    qDebug() << "------------";
-    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_W)).arg("X").arg(Neighbors.at(DIR_E));
-    qDebug() << "------------";
-    qDebug() << QString("|%1|%2|%3|").arg(Neighbors.at(DIR_SW)).arg(Neighbors.at(DIR_S)).arg(Neighbors.at(DIR_SE));
-    qDebug() << "------------";
-
-
-}
-
 void RasterPitRemoval::debugFunc(){
     // THESE ARE ALL DEBUG .. Test the various functions that make the decisions
 
@@ -169,12 +122,12 @@ void RasterPitRemoval::debugFunc(){
     std::vector<double> islocalmin;        // Something to fill up and test the output
     std::vector<double> hasvalidneigh;        // Something to fill up and test the output
 
-    borders.resize(TotalCells);
-    nnv.resize(TotalCells);
-    islocalmin.resize(TotalCells);
-    hasvalidneigh.resize(TotalCells);
+    borders.resize(GetTotalCells());
+    nnv.resize(GetTotalCells());
+    islocalmin.resize(GetTotalCells());
+    hasvalidneigh.resize(GetTotalCells());
 
-    for (size_t i=0; i < (size_t) TotalCells; i++){
+    for (size_t i=0; i < (size_t) GetTotalCells(); i++){
         borders.at(i) = (double) IsBorder(i);
         nnv.at(i) = (double) NeighborNoValue(i);
         islocalmin.at(i) = (double) IsLocalMinimum(i);
@@ -187,33 +140,6 @@ void RasterPitRemoval::debugFunc(){
     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-2-IsLocalMinimum"), &islocalmin);
     //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-HasValidNeighbor"), &hasvalidneigh);
     WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-3-Depressions"), &IsPit);
-}
-
-void RasterPitRemoval::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray){
-    std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
-    WriteArraytoRaster(sOutputPath, &vDouble);
-}
-
-void RasterPitRemoval::WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray ){
-
-    // Create the output dataset for writing
-    const QByteArray csOutput = sOutputPath.toLocal8Bit();
-
-    // Set the bounds and nodata to be the same as the input
-    GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), rInputRaster);
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rInputRaster->GetCols());
-
-    // Write rows and columns
-    for (int i = 0; i < rInputRaster->GetRows(); i++)
-    {
-        for (int j = 0; j < rInputRaster->GetCols(); j++){
-            pOutputLine[j] = vPointArray->at(i*rInputRaster->GetCols() + j);
-        }
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, rInputRaster->GetCols(), 1, pOutputLine, rInputRaster->GetCols(), 1, GDT_Float64, 0, 0);
-    }
-    CPLFree(pOutputLine);
-    GDALClose(pDSOutput);
-
 }
 
 void RasterPitRemoval::IterateMainQueue()
@@ -329,7 +255,7 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
 
     while(!ReachedOutlet)
     {
-        NextID = TraceFlow(CurID, (eDirection) Direction.at(CurID));
+        NextID = TraceFlow(CurID, (eDirection) FloodDirection.at(CurID));
         if(NextID < 0) //CurID is a border cell
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
@@ -371,26 +297,26 @@ bool RasterPitRemoval::CheckCell(int ID, int CurNeighborID, double CrestElev)
 void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
 {
     //If two cells are not neighbors or if a neighbor is off the grid/ has no_data, direction set to 0.
-    int numCols = rInputRaster->GetCols();
+    int numCols = GetCols();
 
     if(ToID == FromID + 1)
-        Direction.at(FromID) = DIR_E;   //Flow is to East
+        FloodDirection.at(FromID) = DIR_E;   //Flow is to East
     else if(ToID == FromID + 1 + numCols)
-        Direction.at(FromID) = DIR_SE;   //Flow is to Southeast
+        FloodDirection.at(FromID) = DIR_SE;   //Flow is to Southeast
     else if(ToID == FromID + numCols)
-        Direction.at(FromID) = DIR_S;   //Flow is to South
+        FloodDirection.at(FromID) = DIR_S;   //Flow is to South
     else if(ToID == FromID - 1 + numCols)
-        Direction.at(FromID) = DIR_SW;   //Flow is to Southwest
+        FloodDirection.at(FromID) = DIR_SW;   //Flow is to Southwest
     else if(ToID == FromID - 1)
-        Direction.at(FromID) = DIR_W;  //Flow is to West
+        FloodDirection.at(FromID) = DIR_W;  //Flow is to West
     else if(ToID == FromID - 1 - numCols)
-        Direction.at(FromID) = DIR_NW;  //Flow is to Northwest
+        FloodDirection.at(FromID) = DIR_NW;  //Flow is to Northwest
     else if(ToID == FromID - numCols)
-        Direction.at(FromID) = DIR_N;  //Flow is to North
+        FloodDirection.at(FromID) = DIR_N;  //Flow is to North
     else if(ToID == FromID + 1 - numCols)
-        Direction.at(FromID) = DIR_NE; //Flow is to Northeast
+        FloodDirection.at(FromID) = DIR_NE; //Flow is to Northeast
     else
-        Direction.at(FromID) = ENTRYPOINT;
+        FloodDirection.at(FromID) = ENTRYPOINT;
 }
 
 int RasterPitRemoval::TraceFlow(int FromID, eDirection eFlowDir)
@@ -399,17 +325,42 @@ int RasterPitRemoval::TraceFlow(int FromID, eDirection eFlowDir)
     //If flow direction equals 0, This is a border cell. Return -1.
     switch (eFlowDir) {
     case DIR_E:  return FromID + 1;              break;
-    case DIR_SE: return FromID + 1 + rasterCols; break;
-    case DIR_S:  return FromID + rasterCols;     break;
-    case DIR_SW: return FromID - 1 + rasterCols; break;
+    case DIR_SE: return FromID + 1 + GetCols(); break;
+    case DIR_S:  return FromID + GetCols();     break;
+    case DIR_SW: return FromID - 1 + GetCols(); break;
     case DIR_W:  return FromID - 1;              break;
-    case DIR_NW: return FromID - 1 - rasterCols; break;
-    case DIR_N:  return FromID - rasterCols;     break;
-    case DIR_NE: return FromID + 1 - rasterCols; break;
+    case DIR_NW: return FromID - 1 - GetCols(); break;
+    case DIR_N:  return FromID - GetCols();     break;
+    case DIR_NE: return FromID + 1 - GetCols(); break;
     default: return ENTRYPOINT;                  break;
     }
     return ENTRYPOINT;
 }
+
+bool RasterPitRemoval::NeighborNoValue(int ID)
+{
+    //Tests if cell is next to a cell with no_data, and thus is an outlet
+    bool novalue = false;
+
+    GetNeighbors(ID);
+
+    for (int d = DIR_NW; d <= DIR_W; d++)
+    {
+        if ( Neighbors.at(d)== ENTRYPOINT )
+        {
+            novalue = true;
+            break;
+        }
+        else if (Terrain.at(Neighbors.at(d)) == dNoDataValue )
+        {
+            novalue = true;
+            SetFlowDirection(ID, Neighbors.at(d));
+            break;
+        }
+    }
+    return novalue;
+}
+
 
 void RasterPitRemoval::GetDryNeighbors(int ID)
 {
@@ -447,63 +398,6 @@ void RasterPitRemoval::FillToElevation(int PitID, double FillElev)
             Terrain.at(CurID) = FillElev;
         }
     }
-}
-
-bool RasterPitRemoval::IsBorder(int ID)
-{
-    //Tests if cell is on the outer edge of the grid, and thus is an outlet
-    if ( IsTopEdge(ID) || IsBottomEdge(ID) || IsLeftEdge(ID) || IsRightEdge(ID) ){               // In the Left Col
-        return true;
-    }
-    return false;
-}
-
-bool RasterPitRemoval::IsDirectionValid(int ID, eDirection dir){
-    // We want to make sure the direction we're asking for is not out of bounds
-    bool bValid = true;
-    if (       ( IsTopEdge(ID)    && (dir == DIR_NW || dir == DIR_N || dir == DIR_NE) )
-            || ( IsBottomEdge(ID) && (dir == DIR_SE || dir == DIR_S || dir == DIR_SW) )
-            || ( IsRightEdge(ID)  && (dir == DIR_NE || dir == DIR_E || dir == DIR_SE) )
-            || ( IsLeftEdge(ID)   && (dir == DIR_SW || dir == DIR_W || dir == DIR_NW) )
-            ){
-        bValid = false;
-    }
-    return bValid;
-}
-
-bool RasterPitRemoval::NeighborNoValue(int ID)
-{
-    //Tests if cell is next to a cell with no_data, and thus is an outlet
-    bool novalue = false;
-
-    GetNeighbors(ID);
-
-    for (int d = DIR_NW; d <= DIR_W; d++)
-    {
-        if ( Neighbors.at(d)== ENTRYPOINT )
-        {
-            novalue = true;
-            break;
-        }
-        else if (Terrain.at(Neighbors.at(d)) == dNoDataValue )
-        {
-            novalue = true;
-            SetFlowDirection(ID, Neighbors.at(d));
-            break;
-        }
-    }
-    return novalue;
-}
-
-bool RasterPitRemoval::HasValidNeighbor(int ID){
-    // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.
-    GetNeighbors(ID);
-    for (int d = DIR_NW; d <= DIR_W; d++)
-    {
-        if (Neighbors.at(d) != ENTRYPOINT && Terrain.at(Neighbors.at(d)) != dNoDataValue)
-            return true;
-    }
-    return false;
 }
 
 void RasterPitRemoval::PitRemoveHybrid(int PitID)
@@ -570,14 +464,6 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
 }
 
 
-int RasterPitRemoval::getCol(int i){
-    return (int) floor(i % rInputRaster->GetCols());
-}
-int RasterPitRemoval::getRow(int i){
-    return (int) floor(i / rInputRaster->GetCols());
-}
-
-
 bool RasterPitRemoval::IsLocalMinimum(int CurID)
 {
     // A local Minimum has been found if the cell does not have a confirmed path to an outlet, and
@@ -611,36 +497,6 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
         IsPit.at(CurID) = 1;
 
     return IsMinimum;
-}
-
-size_t RasterPitRemoval::GetNeighborID(int id, eDirection dir){
-
-    if (IsDirectionValid(id, dir)){
-        //Returns the ID value for the eight neighbors, with -1 for cells off the grid
-        switch (dir) {
-        case DIR_NW: return id - 1 - rasterCols; break;
-        case DIR_N:  return id - rasterCols; break;
-        case DIR_NE: return id + 1 - rasterCols; break;
-        case DIR_E:  return id + 1; break;
-        case DIR_SE: return id + 1 + rasterCols; break;
-        case DIR_S:  return id + rasterCols; break;
-        case DIR_SW: return id - 1 + rasterCols; break;
-        case DIR_W:  return id - 1; break;
-        default: return -1; break;
-        }
-    }
-    else{
-        // We're out of bounds
-        return -1;
-    }
-}
-
-void RasterPitRemoval::GetNeighbors(int ID)
-{
-    for (int d = DIR_NW; d <= DIR_W; d++)
-    {
-        Neighbors.at(d) = GetNeighborID( ID, (eDirection) d );
-    }
 }
 
 }

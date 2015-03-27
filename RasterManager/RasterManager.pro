@@ -42,7 +42,9 @@ SOURCES += \
     raster_pitremove.cpp \
     raster_eucliddist.cpp \
     raster_stats.cpp \
-    raster_linthresh.cpp
+    raster_linthresh.cpp \
+    raster_areathresh.cpp \
+    rasterarray.cpp
 
 HEADERS +=\
     rastermanager_global.h \
@@ -54,7 +56,8 @@ HEADERS +=\
     rastermanager_exception.h \
     rastermanager.h \
     raster_pitremove.h \
-    benchmark.h
+    benchmark.h \
+    rasterarray.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
