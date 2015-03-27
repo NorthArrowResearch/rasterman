@@ -21,7 +21,7 @@
 
 namespace RasterManager {
 
-RM_DLL_API const char * GetLibVersion(){ return LIBVERSION; }
+RM_DLL_API const char * GetLibVersion(){ return RMLIBVERSION; }
 
 RM_DLL_API const char * GetMinGDALVersion(){ return MINGDAL; }
 
