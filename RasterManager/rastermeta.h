@@ -49,6 +49,8 @@ public:
      */
     inline double * GetNoDataValuePtr() { return &m_fNoDataValue; }
 
+    inline double GetCellArea(){ return fabs(GetCellHeight()) * fabs(GetCellWidth()); }
+
     /**
      * @brief GetGDALDataType
      * @return

@@ -4,7 +4,7 @@
 #include <gdal_alg.h>
 #include <QDebug>
 
-#include "raster.h"
+#include "rasterarray.h"
 #include "rastermeta.h"
 #include "rastermanager.h"
 #include "rastermanager_interface.h"
@@ -13,25 +13,80 @@
 namespace RasterManager {
 
 
-int Raster::AreaThreshold(const char * psInputRaster,
-                                 const char * psOutputRaster,
-                                 double area){
+int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
-    // Import Raster
-    // ------------------------------------------------------
-    RasterMeta rmInputRaster(psInputRaster);
-    int nNumCells = rmInputRaster.GetCols()*rmInputRaster.GetRows();
-
+    // Checked is an array to see if we've already visited a cell.
     std::vector<bool> Checked;
-    std::vector<int> Areas;
-    std::vector<double> Terrain;
 
-    Checked.resize(nNumCells);
-    Areas.resize(nNumCells);
-    Terrain.resize(nNumCells);
+    // Is map of Areas. The value is an index to a feature.
+    std::vector<int> AreaMap;
+    QHash<int, double> AreaFeatures;
 
+    Checked.resize(GetTotalCells());
+    AreaMap.resize(GetTotalCells());
+
+    // This for loop makes sure we touch every cell.
+    int CurrentArea = 1;
+    for (size_t i = 0; i < GetTotalCells(); i++){
+        if ( AreaThresholdWalker(i, CurrentArea, &Checked, &AreaFeatures, &AreaMap) ){
+            CurrentArea++;
+            AreaFeatures.insert(CurrentArea,0);
+        }
+    }
+
+    // Decide which features to keep because they're big enough
+    QHashIterator<int, double> qhiAreaFeatures(AreaFeatures);
+    while (qhiAreaFeatures.hasNext()) {
+        qhiAreaFeatures.next();
+        if (qhiAreaFeatures.value() * GetCellArea() >= dArea){
+            AreaFeatures.remove(qhiAreaFeatures.key());
+        }
+    }
+
+    // Now we loop through again and nullify all the features that are too small
+    for (size_t i = 0; i < GetTotalCells(); i++){
+        if (!AreaFeatures.contains(AreaMap.at(i))){
+            Terrain.at(i) = GetNoDataValue();
+        }
+    }
+
+    WriteArraytoRaster(psOutputRaster, &Terrain);
+    return PROCESS_OK;
 
 }
 
+bool RasterArray::AreaThresholdWalker(size_t ID,
+                                     int CurrentFeature,
+                                     std::vector<bool> * pChecked,
+                                     QHash<int, double> * pAreaFeatures,
+                                     std::vector<int> * pAreaMap){
+
+    // Return if we've been here already
+    if (pChecked->at(ID))
+        return false;
+
+    pChecked->at(ID) = true;
+
+    // This is a dead end if it's Nodata. Check it off an return
+    if (Terrain.at(ID) == GetNoDataValue())
+        return false;
+
+    // Mark this feature on the map
+    pAreaMap->at(ID) = CurrentFeature;
+    // Count this as part of the feature's total area
+    pAreaFeatures->find(CurrentFeature).value()++;
+
+    // Now see if we have neighbours
+    GetNeighbors(ID);
+    for (int d = DIR_NW; d <= DIR_W; d++)
+    {
+        if ( Neighbors.at(d) != ENTRYPOINT) {
+             AreaThresholdWalker(Neighbors.at(d), CurrentFeature, pChecked, pAreaFeatures, pAreaMap);
+            break;
+        }
+    }
+    return true;
+
+}
 
 }

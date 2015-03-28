@@ -44,6 +44,7 @@ public:
 
     // Neighbour Functions
     size_t GetNeighborID(int id, eDirection dir);
+
     void GetNeighbors(int ID);
 
     bool HasValidNeighbor(int ID);
@@ -91,10 +92,20 @@ public:
         }
     };
 
+    /**
+     * @brief AreaThreshold
+     * @param psOutputRaster
+     * @param dArea
+     */
+    int AreaThreshold(const char * psOutputRaster, double dArea);
+
 private:
 
-    double dNoDataValue;
-
+    bool AreaThresholdWalker(size_t ID,
+                             int CurrentFeature,
+                             std::vector<bool> * pChecked,
+                             QHash<int, double> * pAreaFeatures,
+                             std::vector<int> * pAreaMap);
 };
 
 }

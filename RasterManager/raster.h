@@ -431,17 +431,6 @@ public:
       */
      static int LinearThreshold(const char *psInputRaster, const char *psOutputRaster, double dLowThresh, double dLowThreshVal, double dHighThresh, double dHighThreshVal);
 
-     /**
-      * @brief AreaThreshold
-      * @param psInputRaster
-      * @param psOutputRaster
-      * @param area
-      * @return
-      */
-     static int AreaThreshold(const char * psInputRaster,
-                              const char * psOutputRaster,
-                              double area);
-
 protected:
 
     /**

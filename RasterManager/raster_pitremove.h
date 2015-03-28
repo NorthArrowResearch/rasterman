@@ -8,7 +8,6 @@
 #include <queue>
 #include "benchmark.h"
 
-
 namespace RasterManager {
 
 class RM_DLL_API RasterPitRemoval : public RasterArray {

@@ -45,12 +45,6 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput, const char * sRast
     sOutputPath = QString(sRasterOutput);
     Mode = eMethod;
 
-    // Set up a reasonable nodata value
-    if (GetNoDataValuePtr() == NULL)
-        dNoDataValue = (double) -std::numeric_limits<float>::max();
-    else
-        dNoDataValue = GetNoDataValue();
-
     //Resize vectors
     FloodDirection.resize(GetTotalCells());
     Flooded.resize(GetTotalCells());
@@ -225,7 +219,8 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
         CurCell.id = ID;
         CurCell.elev = Terrain.at(ID);
 
-        if (Terrain.at(ID) != dNoDataValue && HasValidNeighbor(ID) ){
+        if (Terrain.at(ID) != GetNoDataValue()
+ && HasValidNeighbor(ID) ){
             MainQueue.push(CurCell);
         }
 
@@ -258,13 +253,15 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
         NextID = TraceFlow(CurID, (eDirection) FloodDirection.at(CurID));
         if(NextID < 0) //CurID is a border cell
             ReachedOutlet = 1;
-        else if (Terrain.at(NextID) == dNoDataValue) //CurID is next to an internal outlet
+        else if (Terrain.at(NextID) == GetNoDataValue()
+) //CurID is next to an internal outlet
             ReachedOutlet = 1;
         else if((Terrain.at(NextID) < Terrain.at(PitID))&&(Flooded.at(NextID)==FLOODEDDESC)) //NextID is lower than Pit and NextID on confirmed descending path to outlet
             ReachedOutlet = 1;
         else
         {
-            if((Terrain.at(NextID) > Crest) && (Terrain.at(NextID) != dNoDataValue)) Crest = Terrain.at(NextID);
+            if((Terrain.at(NextID) > Crest) && (Terrain.at(NextID) != GetNoDataValue()
+)) Crest = Terrain.at(NextID);
         }
         CurID = NextID;
     }
@@ -351,7 +348,8 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
             novalue = true;
             break;
         }
-        else if (Terrain.at(Neighbors.at(d)) == dNoDataValue )
+        else if (Terrain.at(Neighbors.at(d)) == GetNoDataValue()
+ )
         {
             novalue = true;
             SetFlowDirection(ID, Neighbors.at(d));
@@ -387,13 +385,15 @@ void RasterPitRemoval::FillToElevation(int PitID, double FillElev)
 {
     //Fills all cells within a depression to the specified elevation
     int CurID;
-    if ((Terrain.at(PitID) < FillElev) && (Terrain.at(PitID) != dNoDataValue)) {
+    if ((Terrain.at(PitID) < FillElev) && (Terrain.at(PitID) != GetNoDataValue()
+)) {
         Terrain.at(PitID) = FillElev;
     }
     for (size_t i=0; i < Depression.size(); i++)
     {
         CurID = Depression.at(i);
-        if ((Terrain.at(CurID) < FillElev) && (Terrain.at(CurID) != dNoDataValue))
+        if ((Terrain.at(CurID) < FillElev) && (Terrain.at(CurID) != GetNoDataValue()
+))
         {
             Terrain.at(CurID) = FillElev;
         }

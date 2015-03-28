@@ -9,7 +9,6 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
     Terrain.resize(GetTotalCells()); //Values input from file, modified throughout program
     Neighbors.resize(8);
 
-
 }
 
 void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray ){
@@ -80,7 +79,8 @@ bool RasterArray::HasValidNeighbor(int ID){
     GetNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if (Neighbors.at(d) != ENTRYPOINT && Terrain.at(Neighbors.at(d)) != dNoDataValue)
+        if (Neighbors.at(d) != ENTRYPOINT && Terrain.at(Neighbors.at(d)) != GetNoDataValue()
+)
             return true;
     }
     return false;
