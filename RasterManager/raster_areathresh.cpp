@@ -15,20 +15,19 @@ namespace RasterManager {
 
 int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
-    // Checked is an array to see if we've already visited a cell.
-    std::vector<bool> Checked;
+    // TODO: NEED Console application
+    //       NEED C# interface
 
     // Is map of Areas. The value is an index to a feature.
     std::vector<int> AreaMap;
     QHash<int, double> AreaFeatures;
 
-    Checked.resize(GetTotalCells());
     AreaMap.resize(GetTotalCells());
 
     // This for loop makes sure we touch every cell.
     int CurrentArea = 1;
     for (size_t i = 0; i < GetTotalCells(); i++){
-        if ( AreaThresholdWalker(i, CurrentArea, &Checked, &AreaFeatures, &AreaMap) ){
+        if ( AreaThresholdWalker(i, CurrentArea, &AreaFeatures, &AreaMap) ){
             CurrentArea++;
             AreaFeatures.insert(CurrentArea,0);
         }
@@ -57,15 +56,14 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
 bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int CurrentFeature,
-                                     std::vector<bool> * pChecked,
                                      QHash<int, double> * pAreaFeatures,
                                      std::vector<int> * pAreaMap){
 
     // Return if we've been here already
-    if (pChecked->at(ID))
+    if (Checked.at(ID))
         return false;
 
-    pChecked->at(ID) = true;
+    Checked.at(ID) = true;
 
     // This is a dead end if it's Nodata. Check it off an return
     if (Terrain.at(ID) == GetNoDataValue())
@@ -81,7 +79,7 @@ bool RasterArray::AreaThresholdWalker(size_t ID,
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
         if ( Neighbors.at(d) != ENTRYPOINT) {
-             AreaThresholdWalker(Neighbors.at(d), CurrentFeature, pChecked, pAreaFeatures, pAreaMap);
+             AreaThresholdWalker(Neighbors.at(d), CurrentFeature, pAreaFeatures, pAreaMap);
             break;
         }
     }

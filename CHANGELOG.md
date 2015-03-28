@@ -18,6 +18,9 @@ This release is in preparation for our GUT tool and contains a lot of new featur
 * **New Operation**: `stats`: Basic stats are now implemented including: Mean, Max, Min, Std Deviation and Range. More are cominng.
 * **New Operation**: `MaskVal`: Mask on a raster's value. Everywhere else is set to Nodata.
 * **New Operation**: `linthresh`: Linear interpolation thresholding. This fills a common need we have to set everything above a certain threshold to one value, everything below to another and everything in between according to a linear interpolation.
+* **New Operation**: `areathresh`: Remove features smaller than a threshold area
+* **New Operation**: `combine`: Combines multiple rasters using an operation of your choosing.
+* Enhanced the object model to include RasterArray functions. Should be much easier to write operations like `fill` and `areathresh` which "walk" through the cells of a raster in an undetermined order.
 
 ### Fixes
 

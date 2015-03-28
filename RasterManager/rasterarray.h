@@ -39,8 +39,9 @@ public:
 
     // Normally we wouldn't put member variables here but
     // It's kind of the only point of this class.
-    std::vector<double> Terrain;            // This begins as the input DEM and is modified by the algorithm.
+    std::vector<double> Terrain;    // This begins as the input DEM and is modified by the algorithm.
     std::vector<int> Neighbors;     // Stores the ID of the current cell's eight neighbors
+    std::vector<bool> Checked;      // Convenience Array used to decide if a cell has been visited.
 
     // Neighbour Functions
     size_t GetNeighborID(int id, eDirection dir);
@@ -103,7 +104,6 @@ private:
 
     bool AreaThresholdWalker(size_t ID,
                              int CurrentFeature,
-                             std::vector<bool> * pChecked,
                              QHash<int, double> * pAreaFeatures,
                              std::vector<int> * pAreaMap);
 };

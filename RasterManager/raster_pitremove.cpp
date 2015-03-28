@@ -48,7 +48,6 @@ RasterPitRemoval::RasterPitRemoval(const char * sRasterInput, const char * sRast
     //Resize vectors
     FloodDirection.resize(GetTotalCells());
     Flooded.resize(GetTotalCells());
-    Checked.resize(GetTotalCells());
     BlankBool.resize(GetTotalCells());
     IsPit.resize(GetTotalCells());
 

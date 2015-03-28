@@ -7,6 +7,7 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
 {
     //Resize vectors
     Terrain.resize(GetTotalCells()); //Values input from file, modified throughout program
+    Checked.resize(GetTotalCells());
     Neighbors.resize(8);
 
 }

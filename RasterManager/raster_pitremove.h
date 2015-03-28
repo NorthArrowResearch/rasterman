@@ -71,7 +71,6 @@ private:
     double PitElev;
 
     std::vector<FloodedState> Flooded;      // Value of 0=unflooded; Value of 1=flooded; Value of 2=flooded and has confirmed descending path to an outlet
-    std::vector<bool> Checked;      // Used to determine the extent of a depression. Reset after each depression is identified
     std::vector<bool> BlankBool;    // Used for clearing the contents of a vector-bool of Terrain size
     std::vector<int> Depression;    // Stores the extent of
     std::vector<int> BlankInt;      // Used for clearing the contents of a vector-int  of Zero size
