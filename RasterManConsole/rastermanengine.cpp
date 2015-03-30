@@ -120,6 +120,12 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "linthresh", Qt::CaseInsensitive) == 0)
             eResult = LinThresh(argc, argv);
 
+        else if (QString::compare(sCommand, "areathresh", Qt::CaseInsensitive) == 0)
+            eResult = AreaThresh(argc, argv);
+
+        else if (QString::compare(sCommand, "combine", Qt::CaseInsensitive) == 0)
+            eResult = Combine(argc, argv);
+
         else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
             eResult = stats(argc, argv);
 
@@ -150,6 +156,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
         std::cout << "\n    copy            Copy a raster to produce a new raster with the specified extent.";
         std::cout << "\n    mosaic          Stitch two or more overlappint rasters.";
+        std::cout << "\n    combine         Combine multiple rasters using one or more methods.";
         std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
         std::cout << "\n    mask            Mask one raster using another raster or a vector.";
         std::cout << "\n    maskval         Mask one raster using one of its values.";
@@ -167,6 +174,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n    linthesh     Linear thresholding of a raster.";
+        std::cout << "\n    areathresh   Thresholding of features below a certain area.";
 
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
@@ -462,23 +470,49 @@ int RasterManEngine::Mosaic(int argc, char * argv[])
     if (argc != 4)
     {
         std::cout << "\n Stitch together two or more overlapping rasters.";
-        std::cout << "\n    Usage: rasterman mosaic <raster_file_paths> ... <output_file_path>";
+        std::cout << "\n    Usage: rasterman mosaic <raster_file_paths> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
-        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n ";
         return PROCESS_OK;
     }
 
     int eResult = PROCESS_OK;
 
-    eResult = RasterManager::Mosaic(argv[2], argv[3]);
+    eResult = Raster::RasterMosaic(argv[2], argv[3]);
 
     PrintRasterProperties(argv[3]);
     return eResult;
 
 }
+
+int RasterManEngine::Combine(int argc, char * argv[])
+{
+    if (argc != 5)
+    {
+        std::cout << "\n Combine multiple rasters using one or more methods.";
+        std::cout << "\n    Usage: rasterman combine <raster_file_paths> <output_file_path> <method>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
+        std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n               method: Method to use for combining rasters.";
+        std::cout << "\n                       Valid Methods: multiply (more coming as needed)";
+
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    int eResult = PROCESS_OK;
+
+    eResult = Raster::CombineRaster(argv[2], argv[3], argv[4]);
+
+    PrintRasterProperties(argv[3]);
+    return eResult;
+}
+
 
 int RasterManEngine::MakeConcurrent(int argc, char * argv[])
 {
@@ -1066,6 +1100,31 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
     return eResult;
 }
 
+
+int RasterManEngine::AreaThresh(int argc, char * argv[])
+{
+    if (argc != 8)
+    {
+        std::cout << "\n Area Threshold: Threshold features separated by NoData value below a certain area.";
+        std::cout << "\n    Usage: rasterman areathresh <raster_input_path> <raster_output_path> <area_thresh>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n     raster_input_path: Path to an existing raster file.";
+        std::cout << "\n    raster_output_path: Path to the desired output raster file.";
+        std::cout << "\n           area_thresh: Area below which a feature will be excluded.";
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    double dAreaThresh = GetDouble(argc, argv, 4);
+
+    RasterArray raRaster(argv[2]);
+    int eResult = raRaster.AreaThreshold(argv[3], dAreaThresh);
+
+    PrintRasterProperties(argv[3]);
+    return eResult;
+
+}
 
 int RasterManEngine::GetInteger(int argc, char * argv[], int nIndex)
 {

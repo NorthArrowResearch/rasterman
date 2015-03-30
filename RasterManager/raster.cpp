@@ -23,6 +23,13 @@ Raster::Raster(const char * psFilePath) :
     Init(true);
 }
 
+Raster::Raster(QString sFilePath) :
+    RasterMeta(sFilePath)
+{
+    const QByteArray qbFilePath = sFilePath.toLocal8Bit();
+    Raster(qbFilePath.data());
+}
+
 /**
 * Copy constructor.
 */
@@ -409,6 +416,7 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
 
     return PROCESS_OK;
 }
+
 
 
 

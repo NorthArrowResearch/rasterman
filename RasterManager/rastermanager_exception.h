@@ -36,6 +36,9 @@ enum RasterManagerOutputCodes {
     , VECTOR_LAYER_NOT_POLYGON
     , VECTOR_FIELD_NOT_VALID
 
+    , RASTER_CONCURRENCY
+    , RASTER_ORTHOGONAL
+
     , DIVISION_BY_ZERO
 
     , RM_PNG_QUALITY
@@ -165,6 +168,13 @@ public:
         case PATH_ERROR:
             return "File Path Error";
             break;
+
+        case RASTER_CONCURRENCY:
+            return "Rasters are not concurrent";
+            break;
+
+        case RASTER_ORTHOGONAL:
+            return "Rasters are not Orthogonal";
 
         case GDALVERSION:
             return "Insufficient GDAL version detected.";

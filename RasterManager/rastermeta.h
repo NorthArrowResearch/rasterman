@@ -4,6 +4,8 @@
 #include "rastermanager_global.h"
 #include "extentrectangle.h"
 #include "gdal_priv.h"
+#include <QString>
+#include <QList>
 
 namespace RasterManager {
 
@@ -25,6 +27,9 @@ public:
 
     // Build a RasterMeta from an existing raster file path
     RasterMeta(const char * psFilePath);
+    // SAme as above with QString
+    RasterMeta(QString psFilePath);
+
 
     // Copy constructor for creating a RasterMeta from an existing RasterMeta
     RasterMeta(RasterMeta &source);
@@ -109,6 +114,21 @@ public:
      * @param fProjectionRef
      */
     void SetProjectionRef(const char * fProjectionRef);
+
+    /**
+     * @brief RasterMetaExpand
+     * @param Rasters
+     * @param pOutputRaster
+     */
+    static RasterMeta *RasterMetaExpand(QList<QString> pRasters);
+
+    /**
+     * @brief RasterUnDelimit
+     * @param sRasters
+     * @param slRasters
+     * @param bCheckExist
+     */
+    static QList<QString> RasterUnDelimit(QString sRasters, bool bCheckExist, bool bCheckOthogonal, bool bCheckConcurrent);
 
 protected:
 

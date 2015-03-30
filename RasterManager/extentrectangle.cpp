@@ -42,6 +42,12 @@ void ExtentRectangle::operator=(ExtentRectangle &source)
          source.GetCellHeight(), source.GetCellWidth());
 }
 
+ExtentRectangle::ExtentRectangle(QString psFilePath)
+{
+    const QByteArray qbFilePath = psFilePath.toLocal8Bit();
+    ExtentRectangle(qbFilePath.data());
+}
+
 ExtentRectangle::ExtentRectangle(const char * psFilePath)
 {
     // Basic file existence Check.

@@ -2,6 +2,7 @@
 #define EXTENTRECTANGLE_H
 
 #include "rastermanager_global.h"
+#include <QString>
 
 class Raster;
 class RasterMeta;
@@ -46,7 +47,8 @@ public:
        * @brief Create an ExtentRectangle from an existing raster file path
        * @param psFilePath full absolute file path to an existing raster
        */
-    ExtentRectangle(const char * psFilePath);
+    ExtentRectangle(const char *psFilePath);
+    ExtentRectangle(QString psFilePath);
 
     /**
      * @brief Copy constructor for creating an extent rectangle from another extent rectangle object
@@ -168,6 +170,7 @@ public:
      * @param aRectangle
      */
     void Intersect(ExtentRectangle *aRectangle);
+
 protected:
     inline void SetRows(int nRows) { rows = nRows; }
     inline void SetCols(int nCols) { cols = nCols; }

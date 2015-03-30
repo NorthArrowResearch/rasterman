@@ -207,6 +207,8 @@ RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALD
  */
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
+GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta);
+
 /**
  * @brief CreateOutputDSfromRef
  * @param pOutputRaster
@@ -237,6 +239,16 @@ extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1, const char * ps
 extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput);
 
 /**
+ * @brief Combine
+ * @param csRasters
+ * @param psOutput
+ * @param psMethod
+ * @return
+ */
+extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod);
+
+
+/**
  * @brief
  *
  * @param csRasters
@@ -261,6 +273,16 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
                                           double dLowThreshVal,
                                           double dHighThresh,
                                           double dHighThreshVal);
+/**
+ * @brief AreaThreshold
+ * @param psInputRaster
+ * @param psOutputRaster
+ * @param dAreaThresh
+ * @return
+ */
+extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
+                                          const char * psOutputRaster,
+                                          double dAreaThresh);
 
 /**
  * @brief IsConcurrent

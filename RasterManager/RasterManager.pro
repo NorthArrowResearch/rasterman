@@ -44,7 +44,8 @@ SOURCES += \
     raster_stats.cpp \
     raster_linthresh.cpp \
     raster_areathresh.cpp \
-    rasterarray.cpp
+    rasterarray.cpp \
+    raster_combine.cpp
 
 HEADERS +=\
     rastermanager_global.h \

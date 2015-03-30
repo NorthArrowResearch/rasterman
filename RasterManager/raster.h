@@ -13,6 +13,10 @@ class GDALRasterBand;
 
 namespace RasterManager {
 
+enum RasterManagerCombineOperations {
+    COMBINE_MULTIPLY,
+};
+
 // Two doubles off by this much are considered equal in isEqual function
 const double DOUBLECOMPARE = 0.00000001;
 
@@ -37,6 +41,7 @@ public:
      * external C method.
      */
     Raster(const char * psFilePath);
+    Raster(QString sFilePath);
 
     /**
      * @brief Construct a raster from a folder path and a file name.
@@ -431,6 +436,18 @@ public:
       */
      static int LinearThreshold(const char *psInputRaster, const char *psOutputRaster, double dLowThresh, double dLowThreshVal, double dHighThresh, double dHighThreshVal);
 
+     /**
+      * @brief Raster::CombineRaster
+      * @param psInputRasters
+      * @param psOutputRaster
+      * @param psOperation
+      * @return
+      */
+     static int CombineRaster(
+             const char * psInputRasters,
+             const char * psOutputRaster,
+             const char * psOperation );
+
 protected:
 
     /**
@@ -505,7 +522,6 @@ private:
      */
     static int ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
 
-
     double RasterStatMedian(std::vector<double> * RasterArray);
     double RasterStatMajority(std::vector<double> * RasterArray);
     double RasterStatMinority(std::vector<double> * RasterArray);
@@ -513,6 +529,16 @@ private:
     double RasterStatVariety(std::vector<double> * RasterArray);
     double RasterStatRange(std::vector<double> * RasterArray);
 
+    /**
+     * @brief CombineRasterValues helper function for the combine RM operation
+     * @param eOp
+     * @param dCellContents
+     * @param dNoDataVal
+     * @return
+     */
+    static double CombineRasterValues(RasterManagerCombineOperations eOp,
+                               QHash<int, double> dCellContents,
+                               double dNoDataVal);
 
 };
 

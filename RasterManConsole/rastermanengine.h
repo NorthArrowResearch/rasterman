@@ -236,6 +236,21 @@ private:
      */
     int LinThresh(int argc, char *argv[]);
 
+    /**
+     * @brief Combine
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int Combine(int argc, char *argv[]);
+
+    /**
+     * @brief AreaThresh
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int AreaThresh(int argc, char *argv[]);
 };
 
 }

@@ -1,6 +1,7 @@
 #define MY_DLL_EXPORT
 
 #include "rastermeta.h"
+#include "rastermanager.h"
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 
@@ -36,6 +37,11 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
     GetPropertiesFromExistingRaster(psFilePath);
+}
+RasterMeta::RasterMeta(QString psFilePath) : ExtentRectangle(psFilePath)
+{
+    const QByteArray qbFilePath = psFilePath.toLocal8Bit();
+    RasterMeta::RasterMeta(qbFilePath.data());
 }
 
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
@@ -185,6 +191,65 @@ void RasterMeta::SetProjectionRef(const char * fProjectionRef)
     // Now set it if necessary
     if (fProjectionRef)
         m_psProjection = strdup(fProjectionRef);
+}
+
+RasterMeta * RasterMeta::RasterMetaExpand(QList<QString> pRasters){
+    /*****************************************************************************************
+     * Expand a Raster's output meta to include all the inputs
+     */
+    RasterMeta * pOutputMeta;
+    int counter = 0;
+    foreach (QString raster, pRasters) {
+        CheckFile(raster, true);
+        counter++;
+        RasterMeta erRasterInput (raster);
+
+        // First time round set the bounds to the first raster we give it.
+        if (counter==1){
+            pOutputMeta = new RasterMeta(erRasterInput);
+            GDALDataType nDType = GDT_Float32;
+            pOutputMeta->SetGDALDataType(&nDType);
+        }
+        else{
+            pOutputMeta->Union(&erRasterInput);
+        }
+    }
+    return pOutputMeta;
+}
+
+QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, bool bCheckOthogonal, bool bCheckConcurrent){
+    /*****************************************************************************************
+     * Split a delimited File list into individual raster paths, optionally checking for file existence.
+     */
+    QList<QString> sRasterSplit = sRasters.split(";");
+    QList<QString> slRasters;
+    RasterMeta * pFirstRaster;
+    QString sFirstRaster;
+    RasterMeta * pOtherRaster;
+    int counter = 0;
+
+    foreach (QString raster, sRasterSplit) {
+        if (raster.length() > 8){
+            if (bCheckExist)
+                CheckFile(raster, true);
+            counter++;
+            if (counter == 1 ){
+                sFirstRaster = raster;
+                if (bCheckOthogonal || bCheckConcurrent){
+                    pFirstRaster = new RasterMeta(raster);
+                }
+            }
+            else if (bCheckOthogonal || bCheckConcurrent){
+                pOtherRaster = new RasterMeta(raster);
+                if (pOtherRaster->IsConcurrent(pFirstRaster))
+                    throw RasterManagerException(RASTER_CONCURRENCY, QString("%1 vs. %2").arg(sFirstRaster).arg(raster) );
+            }
+
+
+            slRasters.append(raster);
+        }
+    }
+    return slRasters;
 }
 
 } // RasterManager

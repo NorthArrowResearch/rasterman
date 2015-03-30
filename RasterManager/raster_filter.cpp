@@ -36,7 +36,6 @@ int Raster::FilterRaster(
 
     RasterManagerFilterOperations nFilterOp;
 
-
     /*****************************************************************************************
      * Basic validation on files and parameters passed in
      */

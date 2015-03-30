@@ -3,6 +3,7 @@
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "extentrectangle.h"
+#include "rasterarray.h"
 
 #include <stdio.h>
 #include "extentrectangle.h"
@@ -36,6 +37,11 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
 
     }
    return CreateOutputDS(pOutputRaster, &pInputMeta);
+}
+
+RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta){
+    const QByteArray qbFileName = sOutputRaster.toLocal8Bit();
+    CreateOutputDS(qbFileName.data(), pTemplateRasterMeta);
 }
 
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
@@ -344,6 +350,18 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
 
 }
 
+extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
+                                          const char * psOutputRaster,
+                                          double dAreaThresh){
+    try{
+        RasterArray raRaster(psInputRaster);
+        return raRaster.AreaThreshold(psOutputRaster, dAreaThresh);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+}
+
 extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1,
                                       const char * psRaster2,
                                       const char * psOutput)
@@ -362,6 +380,17 @@ extern "C" RM_DLL_API int Mosaic(const char * csRasters, const char * psOutput)
 {
     try{
         return Raster::RasterMosaic(csRasters, psOutput);
+    }
+    catch (RasterManagerException e){
+        return e.GetErrorCode();
+    }
+
+}
+
+extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod)
+{
+    try{
+        return Raster::CombineRaster(csRasters, psOutput, psMethod);
     }
     catch (RasterManagerException e){
         return e.GetErrorCode();
