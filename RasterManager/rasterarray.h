@@ -57,13 +57,13 @@ public:
     int getRow(int i);
     int getCol(int i);
 
-    inline bool IsTopEdge(int id)   { return id < GetCols(); }
-    inline bool IsBottomEdge(int id){ return (GetTotalCells() - id) < (GetCols() + 1); }
+    inline bool IsTopEdge(size_t id)   { return id < (size_t)GetCols(); }
+    inline bool IsBottomEdge(size_t id){ return (GetTotalCells() - id) < ((size_t)GetCols() + 1); }
 
-    inline bool IsRightEdge(int id) { return ((id+1) % GetCols()) == 0; }
-    inline bool IsLeftEdge(int id)  { return (id % GetCols()) == 0; }
+    inline bool IsRightEdge(size_t id) { return ((id+1) % (size_t)GetCols()) == 0; }
+    inline bool IsLeftEdge(size_t id)  { return (id % (size_t)GetCols()) == 0; }
 
-    inline size_t GetTotalCells(){ return GetCols() * GetRows(); }
+    inline size_t GetTotalCells(){ return (size_t)(GetCols() * GetRows()); }
 
     /**
      * @brief WriteArraytoRaster
@@ -105,7 +105,7 @@ public:
 
 private:
 
-    bool AreaThresholdWalker(size_t ID,
+    bool AreaThresholdWalker(int ID,
                              int *CurrentFeatureID,
                              size_t *pdCellsInArea,
                              std::vector<size_t> *pAreaMap);

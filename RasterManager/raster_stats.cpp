@@ -96,7 +96,7 @@ double Raster::RasterStatMinority(std::vector<double> * RasterArray){
 }
 double Raster::RasterStatSum(std::vector<double> * RasterArray){
     double total = 0;
-    for (int i = 0; i < RasterArray->size(); i++){
+    for (int i = 0; i < (int)RasterArray->size(); i++){
         total += RasterArray->at(i);
     }
     return total;

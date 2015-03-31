@@ -23,8 +23,6 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
     AreaMap.resize(GetTotalCells());
 
-    double debugCounter = 0;
-
     // This for loop makes sure we touch every cell.
     int CurrentFeatureID = 1;
     size_t TotalCellsInArea;
@@ -40,20 +38,20 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
     }
 
     // Decide which features to keep because they're big enough
-//    QHashIterator<int, double> qhiAreaFeatures(AreaFeatures);
-//    while (qhiAreaFeatures.hasNext()) {
-//        qhiAreaFeatures.next();
-//        if (qhiAreaFeatures.value() * GetCellArea() >= dArea){
-//            AreaFeatures.remove(qhiAreaFeatures.key());
-//        }
-//    }
+    QHashIterator<int, double> qhiAreaFeatures(AreaFeatures);
+    while (qhiAreaFeatures.hasNext()) {
+        qhiAreaFeatures.next();
+        if (qhiAreaFeatures.value() * GetCellArea() >= dArea){
+            AreaFeatures.remove(qhiAreaFeatures.key());
+        }
+    }
 
     // Now we loop through again and nullify all the features that are too small
-//    for (size_t i = 0; i < GetTotalCells(); i++){
-//        if (AreaFeatures.contains(AreaMap.at(i))){
-//            Terrain.at(i) = GetNoDataValue();
-//        }
-//    }
+    for (size_t i = 0; i < GetTotalCells(); i++){
+        if (AreaFeatures.contains(AreaMap.at(i))){
+            Terrain.at(i) = GetNoDataValue();
+        }
+    }
 //    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-Checked"), &Checked); // DEBUG ONLY
 
     WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-AreaMap"), &AreaMap); // DEBUG ONLY
@@ -62,12 +60,10 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
 }
 
-bool RasterArray::AreaThresholdWalker(size_t ID,
+bool RasterArray::AreaThresholdWalker(int ID,
                                      int * CurrentFeatureID,
                                      size_t * pdCellsInArea,
                                      std::vector<size_t> * pAreaMap){
-    if (ID == OUTOFBOUNDS)
-        return false;
 
     // Return if we've been here already
     if (Checked.at(ID))
@@ -88,7 +84,7 @@ bool RasterArray::AreaThresholdWalker(size_t ID,
 
     // Now see if we have neighbours
     GetNeighbors(ID);
-    foreach (size_t neighbourID, Neighbors) {
+    foreach (int neighbourID, Neighbors) {
         AreaThresholdWalker(neighbourID, CurrentFeatureID, pdCellsInArea, pAreaMap);
     }
 

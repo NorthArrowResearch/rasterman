@@ -41,7 +41,7 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
 
 RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta){
     const QByteArray qbFileName = sOutputRaster.toLocal8Bit();
-    CreateOutputDS(qbFileName.data(), pTemplateRasterMeta);
+    return CreateOutputDS(qbFileName.data(), pTemplateRasterMeta);
 }
 
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta){
