@@ -108,7 +108,7 @@ private:
     bool AreaThresholdWalker(int ID,
                              int *CurrentFeatureID,
                              size_t *pdCellsInArea,
-                             std::vector<size_t> *pAreaMap);
+                             std::vector<int> *pAreaMap);
 };
 
 }

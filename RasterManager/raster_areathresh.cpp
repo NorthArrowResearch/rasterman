@@ -14,11 +14,8 @@ namespace RasterManager {
 
 int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
-    // TODO: NEED Console application
-    //       NEED C# interface
-
     // Is map of Areas. The value is an index to a feature.
-    std::vector<size_t> AreaMap;
+    std::vector<int> AreaMap;
     QHash<int, double> AreaFeatures;
 
     AreaMap.resize(GetTotalCells());
@@ -63,7 +60,7 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 bool RasterArray::AreaThresholdWalker(int ID,
                                      int * CurrentFeatureID,
                                      size_t * pdCellsInArea,
-                                     std::vector<size_t> * pAreaMap){
+                                     std::vector<int> * pAreaMap){
 
     // Return if we've been here already
     if (Checked.at(ID))
@@ -73,7 +70,7 @@ bool RasterArray::AreaThresholdWalker(int ID,
 
     // This is a dead end if it's Nodata. Check it off and return
     if (Terrain.at(ID) == GetNoDataValue()){
-        pAreaMap->at(ID) = GetNoDataValue();
+        pAreaMap->at(ID) = -1;
         return false;
     }
 
@@ -84,8 +81,9 @@ bool RasterArray::AreaThresholdWalker(int ID,
 
     // Now see if we have neighbours
     GetNeighbors(ID);
-    foreach (int neighbourID, Neighbors) {
-        AreaThresholdWalker(neighbourID, CurrentFeatureID, pdCellsInArea, pAreaMap);
+    for (int d = DIR_NW; d <= DIR_W; d++)
+    {
+        AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
     }
 
     return true;
