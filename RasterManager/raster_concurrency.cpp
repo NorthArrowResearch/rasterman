@@ -9,6 +9,19 @@
 namespace RasterManager {
 
 int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
+
+    double Top1 = GetTop();
+    double Top2 = pCompareMeta->GetTop();
+
+    double Left1 = GetLeft();
+    double Left2 = pCompareMeta->GetLeft();
+
+    double Rows1 = GetRows();
+    double Rows2 = pCompareMeta->GetRows();
+
+    double Cols1 = GetCols();
+    double Cols2 = pCompareMeta->GetCols();
+
     if (pCompareMeta->GetTop() == GetTop()
             && pCompareMeta->GetLeft() == GetLeft()
             && pCompareMeta->GetRows() == GetRows()

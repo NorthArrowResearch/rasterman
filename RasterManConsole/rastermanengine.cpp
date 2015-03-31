@@ -1103,7 +1103,7 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
 
 int RasterManEngine::AreaThresh(int argc, char * argv[])
 {
-    if (argc != 8)
+    if (argc != 5)
     {
         std::cout << "\n Area Threshold: Threshold features separated by NoData value below a certain area.";
         std::cout << "\n    Usage: rasterman areathresh <raster_input_path> <raster_output_path> <area_thresh>";

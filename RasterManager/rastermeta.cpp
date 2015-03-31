@@ -40,8 +40,10 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 }
 RasterMeta::RasterMeta(QString psFilePath) : ExtentRectangle(psFilePath)
 {
+    m_psGDALDriver = NULL;
+    m_psProjection = NULL;
     const QByteArray qbFilePath = psFilePath.toLocal8Bit();
-    RasterMeta::RasterMeta(qbFilePath.data());
+    GetPropertiesFromExistingRaster(qbFilePath.data());
 }
 
 RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
@@ -241,8 +243,11 @@ QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, b
             }
             else if (bCheckOthogonal || bCheckConcurrent){
                 pOtherRaster = new RasterMeta(raster);
-                if (pOtherRaster->IsConcurrent(pFirstRaster))
+                if (bCheckOthogonal && !pOtherRaster->IsOthogonal())
+                    throw RasterManagerException(RASTER_ORTHOGONAL, QString("%1").arg(raster) );
+                if (bCheckConcurrent && !pOtherRaster->IsConcurrent(pFirstRaster))
                     throw RasterManagerException(RASTER_CONCURRENCY, QString("%1 vs. %2").arg(sFirstRaster).arg(raster) );
+
             }
 
 

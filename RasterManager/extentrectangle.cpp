@@ -45,11 +45,29 @@ void ExtentRectangle::operator=(ExtentRectangle &source)
 ExtentRectangle::ExtentRectangle(QString psFilePath)
 {
     const QByteArray qbFilePath = psFilePath.toLocal8Bit();
-    ExtentRectangle(qbFilePath.data());
+    Load(qbFilePath.data());
 }
 
 ExtentRectangle::ExtentRectangle(const char * psFilePath)
 {
+    Load(psFilePath);
+}
+
+void ExtentRectangle::Init(double fTop,
+                           double fLeft,
+                           int nRows,
+                           int nCols,
+                           double dCellHeight,
+                           double dCellWidth){
+
+    cols = nCols;
+    rows = nRows;
+
+    // Cell height is usually negative but we need it to be positive
+    SetTransform(fTop, fLeft, dCellWidth, dCellHeight);
+}
+
+void ExtentRectangle::Load(const char * psFilePath){
     // Basic file existence Check.
     CheckFile(psFilePath, true);
 
@@ -67,20 +85,6 @@ ExtentRectangle::ExtentRectangle(const char * psFilePath)
 
     GDALClose(pDS);
 
-}
-
-void ExtentRectangle::Init(double fTop,
-                           double fLeft,
-                           int nRows,
-                           int nCols,
-                           double dCellHeight,
-                           double dCellWidth){
-
-    cols = nCols;
-    rows = nRows;
-
-    // Cell height is usually negative but we need it to be positive
-    SetTransform(fTop, fLeft, dCellWidth, dCellHeight);
 }
 
 void ExtentRectangle::Union(ExtentRectangle * aRectangle){

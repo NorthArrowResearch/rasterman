@@ -27,7 +27,7 @@ int Raster::CombineRaster(
 
     RasterManagerCombineOperations eOp;
 
-    if (QString(psOperation).compare("mean", Qt::CaseInsensitive) == 0){
+    if (QString(psOperation).compare("multiply", Qt::CaseInsensitive) == 0){
         //Mean is the only operation we currently supportl
         eOp = COMBINE_MULTIPLY;
     }
@@ -129,7 +129,34 @@ double Raster::CombineRasterValues(RasterManagerCombineOperations eOp,
                                    QHash<int, double> dCellContents,
                                    double dNoDataVal){
 
+    if (dCellContents.size() == 0)
+        return dNoDataVal;
 
+    switch (eOp) {
+    case COMBINE_MULTIPLY:
+        return CombineRasterValuesMultiply(dCellContents, dNoDataVal);
+        break;
+    default:
+        return dNoDataVal;
+        break;
+    }
+
+}
+
+double Raster::CombineRasterValuesMultiply(QHash<int, double> dCellContents,
+                                           double dNoDataVal){
+    double dProd = 1;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        dProd *= x.value();
+    }
+    return dProd;
 }
 
 };

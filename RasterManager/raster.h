@@ -539,7 +539,13 @@ private:
     static double CombineRasterValues(RasterManagerCombineOperations eOp,
                                QHash<int, double> dCellContents,
                                double dNoDataVal);
-
+    /**
+     * @brief CombineRasterValuesMultiply actually implement the 'multiply' method
+     * @param dCellContents
+     * @param dNoDataVal
+     * @return
+     */
+    static double CombineRasterValuesMultiply(QHash<int, double> dCellContents, double dNoDataVal);
 };
 
 

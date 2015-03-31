@@ -63,25 +63,6 @@ public:
     void operator=(ExtentRectangle &source);
 
     /**
-     * @brief Init
-     * @param fTop
-     * @param fLeft
-     * @param nRows
-     * @param nCols
-     * @param dCellHeight
-     * @param dCellWidth
-     */
-    void Init(double fTop,
-              double fLeft,
-              int nRows,
-              int nCols,
-              double dCellHeight,
-              double dCellWidth);
-
-
-
-
-    /**
      * @brief Union a rectangle with this one
      *
      * @param ExtentRectangle a rectangle to add to this one
@@ -171,6 +152,7 @@ public:
      */
     void Intersect(ExtentRectangle *aRectangle);
 
+
 protected:
     inline void SetRows(int nRows) { rows = nRows; }
     inline void SetCols(int nCols) { cols = nCols; }
@@ -184,6 +166,27 @@ protected:
 
 
 private:
+    /**
+     * @brief Init
+     * @param fTop
+     * @param fLeft
+     * @param nRows
+     * @param nCols
+     * @param dCellHeight
+     * @param dCellWidth
+     */
+    void Init(double fTop,
+              double fLeft,
+              int nRows,
+              int nCols,
+              double dCellHeight,
+              double dCellWidth);
+
+    /**
+     * @brief Load
+     * @param psFilePath
+     */
+    void Load(const char *psFilePath);
 
     double m_GeoTransform[6];
     // FOR REFERENCE:

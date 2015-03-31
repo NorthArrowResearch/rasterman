@@ -23,7 +23,7 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
 
     // Split the string with delimiters into individual paths
     // Also check that those files exist
-    QList<QString> slRasters = RasterUnDelimit(csRasters, true, true, false);
+    QList<QString> slRasters = RasterUnDelimit(csRasters, true, false, false);
     RasterMeta * OutputMeta = RasterMetaExpand(slRasters);
 
     /*****************************************************************************************

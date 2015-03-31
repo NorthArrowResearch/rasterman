@@ -72,6 +72,8 @@ public:
      */
     void WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray);
     void WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPointArray);
 
     // Testing and DEbug Functions
     void TestDir(size_t id);
@@ -103,9 +105,9 @@ public:
 private:
 
     bool AreaThresholdWalker(size_t ID,
-                             int CurrentFeature,
-                             QHash<int, double> * pAreaFeatures,
-                             std::vector<int> * pAreaMap);
+                             int *CurrentFeatureID,
+                             size_t *pdCellsInArea,
+                             std::vector<size_t> *pAreaMap);
 };
 
 }

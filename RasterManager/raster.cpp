@@ -27,7 +27,9 @@ Raster::Raster(QString sFilePath) :
     RasterMeta(sFilePath)
 {
     const QByteArray qbFilePath = sFilePath.toLocal8Bit();
-    Raster(qbFilePath.data());
+    m_sFilePath = (char *) malloc(sFilePath.length() * sizeof(char)+1);
+    std::strcpy(m_sFilePath, qbFilePath.data());
+    Init(true);
 }
 
 /**

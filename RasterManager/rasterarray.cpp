@@ -1,4 +1,5 @@
 #include "rasterarray.h"
+#include "rastermanager_exception.h"
 #include <QDebug>
 
 namespace RasterManager {
@@ -9,6 +10,24 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
     Terrain.resize(GetTotalCells()); //Values input from file, modified throughout program
     Checked.resize(GetTotalCells());
     Neighbors.resize(8);
+
+    // Set up the GDal Dataset and rasterband info
+    GDALDataset * pDSInput = (GDALDataset*) GDALOpen(FilePath(), GA_ReadOnly);
+    if (pDSInput == NULL)
+        throw RasterManagerException(INPUT_FILE_ERROR, "Could not open input Raster");
+    GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
+
+    // Setup our Read buffer and read the entire raster into an array
+    double * pInputLine = (double *) CPLMalloc(sizeof(double)*GetCols());
+    for (int i = 0; i < pRBInput->GetYSize(); i++){
+        pRBInput->RasterIO(GF_Read, 0,  i, pRBInput->GetXSize(), 1, pInputLine, pRBInput->GetXSize(), 1, GDT_Float64, 0, 0);
+        for (int j = 0; j < pRBInput->GetXSize(); j++){
+            int nIndex = GetIDFromCoords(i,j); //Convert a 2d index to a 1D one
+            Terrain.at(nIndex) = pInputLine[j];
+        }
+    }
+    CPLFree(pInputLine);
+
 
 }
 
@@ -34,6 +53,14 @@ void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *v
 
 }
 void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray){
+    std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
+    WriteArraytoRaster(sOutputPath, &vDouble);
+}
+void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray){
+    std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
+    WriteArraytoRaster(sOutputPath, &vDouble);
+}
+void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPointArray){
     std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
     WriteArraytoRaster(sOutputPath, &vDouble);
 }
