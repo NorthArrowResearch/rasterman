@@ -27,7 +27,14 @@ private:
     LoopTimer * QueueItem;
 
     // Value of UNFLOODED; Value of FLOODED; Value of FLOODEDDESC and has confirmed descending path to an outlet
-    enum FloodedState { UNFLOODED, FLOODED, FLOODEDDESC };
+    // A Flood Source is a pixel beside a nodata value or at the edge of the raster
+    enum FloodedState {
+        INIT = -999,
+        FLOODSOURCE = -10,
+        UNFLOODED,
+        FLOODED,
+        FLOODEDDESC
+    };
 
     void debugFunc();
 
@@ -40,10 +47,9 @@ private:
 
     // Utility Functions
     void SetFlowDirection(int FromID, int ToID);
-    int TraceFlow(int FromID, int FloodDirection);
     void FillToElevation(int PitID, double FillElev);
     void CutToElevation(int PitID);
-    int TraceFlow(int FromID, eDirection eFlowDir);
+    int TraceFlow(int FromID, int eFlowDir);
     void CreateFillFunction(int PitID, double CrestElev);
 
     bool CheckCell(int ID, int CurNeighborID, double CrestElev);
@@ -75,7 +81,7 @@ private:
     std::vector<int> Depression;    // Stores the extent of
     std::vector<int> BlankInt;      // Used for clearing the contents of a vector-int  of Zero size
     std::vector<double> IsPit;      // Optional binary record of which cells were identified as local minima.
-    std::vector<eDirection> FloodDirection;   // 8-direction indicator of which cell caused the current cell to become flooded
+    std::vector<int> FloodDirection;   // 8-direction indicator of which cell caused the current cell to become flooded
 
     std::map<double, double> CutFunction;   // Stores paired elevation/cost data
     std::map<double, double> FillFunction;  // Stores paired elevation/cost data

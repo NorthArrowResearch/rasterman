@@ -78,7 +78,7 @@ int RasterPitRemoval::Run(){
         if(HasValidNeighbor(i) &&
                 (IsBorder(i) || NeighborNoValue(i) ) ){
             AddToMainQueue(i, true); //All outlet cells by definition have a path to the outlet, thus ConfirmDescend = true.
-            FloodDirection.at(i) = ENTRYPOINT;
+            FloodDirection.at(i) = FLOODSOURCE;
         }
     }
 
@@ -159,7 +159,8 @@ void RasterPitRemoval::IterateMainQueue()
                 {
                     if (Neighbors.at(d)>-1)
                     {
-                        if ((Flooded.at(Neighbors.at(d)) == FLOODEDDESC ) && (Terrain.at(Neighbors.at(d))<=Terrain.at(CurCell.id)))
+                        if ((Flooded.at(Neighbors.at(d)) == FLOODEDDESC )
+                                && (Terrain.at(Neighbors.at(d))<=Terrain.at(CurCell.id)))
                         {
                             Flooded.at(CurCell.id) = FLOODEDDESC;
                             break;
@@ -235,7 +236,7 @@ double RasterPitRemoval::GetCrestElevation(int PitID)
 
     while(!ReachedOutlet)
     {
-        NextID = TraceFlow(CurID, (eDirection) FloodDirection.at(CurID));
+        NextID = TraceFlow(CurID, FloodDirection.at(CurID));
         if(NextID < 0) //CurID is a border cell
             ReachedOutlet = 1;
         else if (Terrain.at(NextID) == GetNoDataValue()
@@ -282,41 +283,41 @@ void RasterPitRemoval::SetFlowDirection(int FromID, int ToID)
     int numCols = GetCols();
 
     if(ToID == FromID + 1)
-        FloodDirection.at(FromID) = DIR_E;   //Flow is to East
+        FloodDirection.at(FromID) = DIR_E;   //Flow is from East
     else if(ToID == FromID + 1 + numCols)
-        FloodDirection.at(FromID) = DIR_SE;   //Flow is to Southeast
+        FloodDirection.at(FromID) = DIR_SE;   //Flow is from Southeast
     else if(ToID == FromID + numCols)
-        FloodDirection.at(FromID) = DIR_S;   //Flow is to South
+        FloodDirection.at(FromID) = DIR_S;   //Flow is from South
     else if(ToID == FromID - 1 + numCols)
-        FloodDirection.at(FromID) = DIR_SW;   //Flow is to Southwest
+        FloodDirection.at(FromID) = DIR_SW;   //Flow is from Southwest
     else if(ToID == FromID - 1)
-        FloodDirection.at(FromID) = DIR_W;  //Flow is to West
+        FloodDirection.at(FromID) = DIR_W;  //Flow is from West
     else if(ToID == FromID - 1 - numCols)
-        FloodDirection.at(FromID) = DIR_NW;  //Flow is to Northwest
+        FloodDirection.at(FromID) = DIR_NW;  //Flow is from Northwest
     else if(ToID == FromID - numCols)
-        FloodDirection.at(FromID) = DIR_N;  //Flow is to North
+        FloodDirection.at(FromID) = DIR_N;  //Flow is from North
     else if(ToID == FromID + 1 - numCols)
-        FloodDirection.at(FromID) = DIR_NE; //Flow is to Northeast
+        FloodDirection.at(FromID) = DIR_NE; //Flow is from Northeast
     else
-        FloodDirection.at(FromID) = ENTRYPOINT;
+        FloodDirection.at(FromID) = FLOODSOURCE;
 }
 
-int RasterPitRemoval::TraceFlow(int FromID, eDirection eFlowDir)
+int RasterPitRemoval::TraceFlow(int FromID, int eFlowDir)
 {
     //Returns the cell pointed to by the direction grid at the given location.
     //If flow direction equals 0, This is a border cell. Return -1.
     switch (eFlowDir) {
     case DIR_E:  return FromID + 1;              break;
-    case DIR_SE: return FromID + 1 + GetCols(); break;
-    case DIR_S:  return FromID + GetCols();     break;
-    case DIR_SW: return FromID - 1 + GetCols(); break;
+    case DIR_SE: return FromID + 1 + GetCols();  break;
+    case DIR_S:  return FromID + GetCols();      break;
+    case DIR_SW: return FromID - 1 + GetCols();  break;
     case DIR_W:  return FromID - 1;              break;
-    case DIR_NW: return FromID - 1 - GetCols(); break;
-    case DIR_N:  return FromID - GetCols();     break;
-    case DIR_NE: return FromID + 1 - GetCols(); break;
-    default: return ENTRYPOINT;                  break;
+    case DIR_NW: return FromID - 1 - GetCols();  break;
+    case DIR_N:  return FromID - GetCols();      break;
+    case DIR_NE: return FromID + 1 - GetCols();  break;
+    default: return FLOODSOURCE;                 break;
     }
-    return ENTRYPOINT;
+    return FLOODSOURCE;
 }
 
 bool RasterPitRemoval::NeighborNoValue(int ID)
@@ -328,7 +329,7 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
 
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if ( Neighbors.at(d)== ENTRYPOINT )
+        if ( Neighbors.at(d)== OUTOFBOUNDS )
         {
             novalue = true;
             break;

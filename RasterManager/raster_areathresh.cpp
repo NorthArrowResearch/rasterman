@@ -40,20 +40,20 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
     }
 
     // Decide which features to keep because they're big enough
-    QHashIterator<int, double> qhiAreaFeatures(AreaFeatures);
-    while (qhiAreaFeatures.hasNext()) {
-        qhiAreaFeatures.next();
-        if (qhiAreaFeatures.value() * GetCellArea() >= dArea){
-            AreaFeatures.remove(qhiAreaFeatures.key());
-        }
-    }
+//    QHashIterator<int, double> qhiAreaFeatures(AreaFeatures);
+//    while (qhiAreaFeatures.hasNext()) {
+//        qhiAreaFeatures.next();
+//        if (qhiAreaFeatures.value() * GetCellArea() >= dArea){
+//            AreaFeatures.remove(qhiAreaFeatures.key());
+//        }
+//    }
 
     // Now we loop through again and nullify all the features that are too small
-    for (size_t i = 0; i < GetTotalCells(); i++){
-        if (AreaFeatures.contains(AreaMap.at(i))){
-            Terrain.at(i) = GetNoDataValue();
-        }
-    }
+//    for (size_t i = 0; i < GetTotalCells(); i++){
+//        if (AreaFeatures.contains(AreaMap.at(i))){
+//            Terrain.at(i) = GetNoDataValue();
+//        }
+//    }
 //    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-Checked"), &Checked); // DEBUG ONLY
 
     WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-AreaMap"), &AreaMap); // DEBUG ONLY
@@ -66,10 +66,12 @@ bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int * CurrentFeatureID,
                                      size_t * pdCellsInArea,
                                      std::vector<size_t> * pAreaMap){
+    if (ID == OUTOFBOUNDS)
+        return false;
 
     // Return if we've been here already
     if (Checked.at(ID))
-        return true;
+        return false;
 
     Checked.at(ID) = true;
 
@@ -86,12 +88,10 @@ bool RasterArray::AreaThresholdWalker(size_t ID,
 
     // Now see if we have neighbours
     GetNeighbors(ID);
-    for (int d = DIR_NW; d <= DIR_W; d++)
-    {
-        if ( Neighbors.at(d) != ENTRYPOINT) {
-             AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
-        }
+    foreach (size_t neighbourID, Neighbors) {
+        AreaThresholdWalker(neighbourID, CurrentFeatureID, pdCellsInArea, pAreaMap);
     }
+
     return true;
 
 }

@@ -78,13 +78,17 @@ size_t RasterArray::GetNeighborID(int id, eDirection dir){
         case DIR_S:  return id + GetCols(); break;
         case DIR_SW: return id - 1 + GetCols(); break;
         case DIR_W:  return id - 1; break;
-        default: return -1; break;
+        default: return OUTOFBOUNDS; break;
         }
     }
     else{
         // We're out of bounds
-        return -1;
+        return OUTOFBOUNDS;
     }
+}
+
+double RasterArray::GetNeighborVal(int id, eDirection dir){
+    return Terrain.at(GetNeighborID(id, dir));
 }
 
 void RasterArray::GetNeighbors(int ID)
@@ -104,11 +108,11 @@ int RasterArray::getRow(int i){
 
 bool RasterArray::HasValidNeighbor(int ID){
     // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.
+    // In this case valid means not out of bounds and not NoData
     GetNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if (Neighbors.at(d) != ENTRYPOINT && Terrain.at(Neighbors.at(d)) != GetNoDataValue()
-)
+        if (Neighbors.at(d) != OUTOFBOUNDS && Terrain.at(Neighbors.at(d)) != GetNoDataValue() )
             return true;
     }
     return false;
@@ -140,7 +144,31 @@ int RasterArray::GetIDFromCoords(int row, int col){
     return  row*( GetCols() )+ col;
 }
 
-void RasterArray::TestDir(size_t id){
+void RasterArray::TestNeighbourVal(size_t id){
+    GetNeighbors(id);
+    //
+    //    |0|1|2|
+    //    -------
+    //    |7|X|3|
+    //    -------
+    //    |6|5|4|
+    //    -------
+
+    qDebug() << QString("Top: %1 Right: %2 Bottom: %3 Left %4").arg(IsTopEdge(id)).arg(IsRightEdge(id)).arg(IsBottomEdge(id)).arg(IsLeftEdge(id));
+
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(GetNeighborVal(id, DIR_NW)).arg(GetNeighborVal(id, DIR_N)).arg(GetNeighborVal(id, DIR_NE));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(GetNeighborVal(id, DIR_W)).arg("X").arg(GetNeighborVal(id, DIR_E));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(GetNeighborVal(id, DIR_SW)).arg(GetNeighborVal(id, DIR_S)).arg(GetNeighborVal(id, DIR_SE));
+    qDebug() << "------------";
+
+
+}
+
+
+void RasterArray::TestNeighbourID(size_t id){
     GetNeighbors(id);
     //
     //    |0|1|2|

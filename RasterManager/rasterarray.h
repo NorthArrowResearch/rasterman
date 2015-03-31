@@ -23,9 +23,8 @@ enum eDirection {
     DIR_SW = 6,
     DIR_W = 7,
 
-    INIT = 999,
-    ENTRYPOINT = -1 // An entrypoint is a pixel beside a nodata value or at the edge of the raster
-    // Think of an entry point as UP as well
+    OUTOFBOUNDS = -1,
+    INVALID = -2
 };
 
 class RasterArray : public Raster
@@ -45,6 +44,7 @@ public:
 
     // Neighbour Functions
     size_t GetNeighborID(int id, eDirection dir);
+    double GetNeighborVal(int id, eDirection dir);
 
     void GetNeighbors(int ID);
 
@@ -76,7 +76,8 @@ public:
     void WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPointArray);
 
     // Testing and DEbug Functions
-    void TestDir(size_t id);
+    void TestNeighbourID(size_t id);
+    void TestNeighbourVal(size_t id);
 
     // ====== CLASSES AND STRUCTURES ================================
     struct point
