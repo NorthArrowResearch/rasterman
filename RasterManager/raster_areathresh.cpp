@@ -22,7 +22,7 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
     // This for loop makes sure we touch every cell.
     int CurrentFeatureID = 1;
-    size_t TotalCellsInArea;
+    int TotalCellsInArea;
     for (size_t i = 0; i < GetTotalCells(); i++){
         if (!Checked.at(i)){
             TotalCellsInArea = 0;
@@ -59,7 +59,7 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
 bool RasterArray::AreaThresholdWalker(int ID,
                                      int * CurrentFeatureID,
-                                     size_t * pdCellsInArea,
+                                     int * pdCellsInArea,
                                      std::vector<int> * pAreaMap){
 
     // Return if we've been here already
@@ -80,10 +80,11 @@ bool RasterArray::AreaThresholdWalker(int ID,
     (*pdCellsInArea)++;
 
     // Now see if we have neighbours
-    GetNeighbors(ID);
+    PopulateNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
+        if (IsDirectionValid(ID,(eDirection)d))
+            AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
     }
 
     return true;

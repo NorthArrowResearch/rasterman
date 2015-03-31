@@ -154,10 +154,10 @@ void RasterPitRemoval::IterateMainQueue()
         {
             if(Flooded.at(CurCell.id) == FLOODED )
             {
-                GetNeighbors(CurCell.id);
+                PopulateNeighbors(CurCell.id);
                 for (int d = DIR_NW; d <= DIR_W; d++)
                 {
-                    if (Neighbors.at(d)>-1)
+                    if (IsDirectionValid(CurCell.id, (eDirection) d))
                     {
                         if ((Flooded.at(Neighbors.at(d)) == FLOODEDDESC )
                                 && (Terrain.at(Neighbors.at(d))<=Terrain.at(CurCell.id)))
@@ -325,17 +325,16 @@ bool RasterPitRemoval::NeighborNoValue(int ID)
     //Tests if cell is next to a cell with no_data, and thus is an outlet
     bool novalue = false;
 
-    GetNeighbors(ID);
+    PopulateNeighbors(ID);
 
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if ( Neighbors.at(d)== OUTOFBOUNDS )
+        if ( !IsDirectionValid(ID, (eDirection)d) )
         {
             novalue = true;
             break;
         }
-        else if (Terrain.at(Neighbors.at(d)) == GetNoDataValue()
- )
+        else if (Terrain.at(Neighbors.at(d)) == GetNoDataValue() )
         {
             novalue = true;
             SetFlowDirection(ID, Neighbors.at(d));
@@ -351,11 +350,11 @@ void RasterPitRemoval::GetDryNeighbors(int ID)
     //Adds all neighbors which have not yet been flooded to NeighborQueue.
 
     point Neighbor;
-    GetNeighbors(ID);
+    PopulateNeighbors(ID);
 
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if (Neighbors.at(d)>-1)
+        if (IsDirectionValid(ID, (eDirection)d))
         {
             // If it's dry then push it onto the dry queue
             if (Flooded.at(Neighbors.at(d)) == UNFLOODED) {
@@ -464,10 +463,10 @@ bool RasterPitRemoval::IsLocalMinimum(int CurID)
     }
     else
     {
-        GetNeighbors(CurID);
+        PopulateNeighbors(CurID);
         for (int d = DIR_NW; d <= DIR_W; d++)
         {
-            if (Neighbors.at(d) != -1){
+            if (IsDirectionValid(CurID, (eDirection) d)){
                 double currVal = Terrain.at(CurID);
                 double neighborVal = Terrain.at(Neighbors.at(d));
                 double neighborFlood = Flooded.at(Neighbors.at(d));

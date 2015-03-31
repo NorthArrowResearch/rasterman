@@ -23,8 +23,8 @@ enum eDirection {
     DIR_SW = 6,
     DIR_W = 7,
 
-    OUTOFBOUNDS = -1,
-    INVALID = -2
+    DIR_X = 999, // DIR_X is the center point
+    INVALID = -1
 };
 
 class RasterArray : public Raster
@@ -39,14 +39,14 @@ public:
     // Normally we wouldn't put member variables here but
     // It's kind of the only point of this class.
     std::vector<double> Terrain;    // This begins as the input DEM and is modified by the algorithm.
-    std::vector<int> Neighbors;     // Stores the ID of the current cell's eight neighbors
+    std::vector<size_t> Neighbors;     // Stores the status of the curent Cell's eight neighbors
     std::vector<bool> Checked;      // Convenience Array used to decide if a cell has been visited.
 
     // Neighbour Functions
-    size_t GetNeighborID(int id, eDirection dir);
-    double GetNeighborVal(int id, eDirection dir);
+    size_t GetNeighborID(size_t id, eDirection dir);
+    double GetNeighborVal(size_t id, eDirection dir);
 
-    void GetNeighbors(int ID);
+    void PopulateNeighbors(int ID);
 
     bool HasValidNeighbor(int ID);
     bool IsDirectionValid(int ID, eDirection dir);
@@ -83,7 +83,7 @@ public:
     struct point
     {
       //A point contains a raster cell location in 1-D array format (0-based, starting from upper left corner) and the associated elevation
-      int id; //0-based grid cell number in a 1-D array
+      size_t id; //0-based grid cell number in a 1-D array
       double elev; //Elevation associated with the point
     };
     class ComparePoint
@@ -105,9 +105,11 @@ public:
 
 private:
 
+    size_t invalidID;
+
     bool AreaThresholdWalker(int ID,
                              int *CurrentFeatureID,
-                             size_t *pdCellsInArea,
+                             int *pdCellsInArea,
                              std::vector<int> *pAreaMap);
 };
 

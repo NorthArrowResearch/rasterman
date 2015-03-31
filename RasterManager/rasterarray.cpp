@@ -11,6 +11,8 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
     Checked.resize(GetTotalCells());
     Neighbors.resize(8);
 
+    invalidID = std::numeric_limits<size_t>::max();
+
     // Set up the GDal Dataset and rasterband info
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(FilePath(), GA_ReadOnly);
     if (pDSInput == NULL)
@@ -65,8 +67,7 @@ void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPo
     WriteArraytoRaster(sOutputPath, &vDouble);
 }
 
-size_t RasterArray::GetNeighborID(int id, eDirection dir){
-
+size_t RasterArray::GetNeighborID(size_t id, eDirection dir){
     if (IsDirectionValid(id, dir)){
         //Returns the ID value for the eight neighbors, with -1 for cells off the grid
         switch (dir) {
@@ -78,24 +79,24 @@ size_t RasterArray::GetNeighborID(int id, eDirection dir){
         case DIR_S:  return id + GetCols(); break;
         case DIR_SW: return id - 1 + GetCols(); break;
         case DIR_W:  return id - 1; break;
-        default: return OUTOFBOUNDS; break;
+        default: return invalidID; break;
         }
     }
     else{
         // We're out of bounds
-        return OUTOFBOUNDS;
+        return invalidID;
     }
 }
 
-double RasterArray::GetNeighborVal(int id, eDirection dir){
+double RasterArray::GetNeighborVal(size_t id, eDirection dir){
     return Terrain.at(GetNeighborID(id, dir));
 }
 
-void RasterArray::GetNeighbors(int ID)
+void RasterArray::PopulateNeighbors(int ID)
 {
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        Neighbors.at(d) = GetNeighborID( ID, (eDirection) d );
+        Neighbors.at(d) = GetNeighborID(ID, (eDirection) d);
     }
 }
 
@@ -109,10 +110,10 @@ int RasterArray::getRow(int i){
 bool RasterArray::HasValidNeighbor(int ID){
     // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.
     // In this case valid means not out of bounds and not NoData
-    GetNeighbors(ID);
+    PopulateNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if (Neighbors.at(d) != OUTOFBOUNDS && Terrain.at(Neighbors.at(d)) != GetNoDataValue() )
+        if (IsDirectionValid(ID, (eDirection)d ) && Terrain.at(Neighbors.at(d)) != GetNoDataValue() )
             return true;
     }
     return false;
@@ -145,7 +146,7 @@ int RasterArray::GetIDFromCoords(int row, int col){
 }
 
 void RasterArray::TestNeighbourVal(size_t id){
-    GetNeighbors(id);
+    PopulateNeighbors(id);
     //
     //    |0|1|2|
     //    -------
@@ -169,7 +170,7 @@ void RasterArray::TestNeighbourVal(size_t id){
 
 
 void RasterArray::TestNeighbourID(size_t id){
-    GetNeighbors(id);
+    PopulateNeighbors(id);
     //
     //    |0|1|2|
     //    -------
