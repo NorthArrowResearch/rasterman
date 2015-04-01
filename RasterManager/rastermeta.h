@@ -120,7 +120,7 @@ public:
      * @param Rasters
      * @param pOutputRaster
      */
-    static RasterMeta *RasterMetaExpand(QList<QString> pRasters);
+    static void RasterMetaExpand(QList<QString> pRasters, RasterMeta *pOutputMeta);
 
     /**
      * @brief RasterUnDelimit

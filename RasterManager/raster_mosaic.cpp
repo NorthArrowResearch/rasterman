@@ -24,7 +24,8 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
     // Split the string with delimiters into individual paths
     // Also check that those files exist
     QList<QString> slRasters = RasterUnDelimit(csRasters, true, false, false);
-    RasterMeta * OutputMeta = RasterMetaExpand(slRasters);
+    RasterMeta * OutputMeta = new RasterMeta(slRasters.at(0));
+    RasterMetaExpand(slRasters, OutputMeta);
 
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
@@ -81,6 +82,8 @@ int Raster::RasterMosaic(const char * csRasters, const char * psOutput)
     CPLFree(pOutputLine);
     CalculateStats(pDSOutput->GetRasterBand(1));
     GDALClose(pDSOutput);
+
+    delete OutputMeta;
 
     return PROCESS_OK;
 }

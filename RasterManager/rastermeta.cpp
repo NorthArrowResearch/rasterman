@@ -195,11 +195,10 @@ void RasterMeta::SetProjectionRef(const char * fProjectionRef)
         m_psProjection = strdup(fProjectionRef);
 }
 
-RasterMeta * RasterMeta::RasterMetaExpand(QList<QString> pRasters){
+void RasterMeta::RasterMetaExpand(QList<QString> pRasters, RasterMeta * pOutputMeta){
     /*****************************************************************************************
      * Expand a Raster's output meta to include all the inputs
      */
-    RasterMeta * pOutputMeta;
     int counter = 0;
     foreach (QString raster, pRasters) {
         CheckFile(raster, true);
@@ -207,16 +206,8 @@ RasterMeta * RasterMeta::RasterMetaExpand(QList<QString> pRasters){
         RasterMeta erRasterInput (raster);
 
         // First time round set the bounds to the first raster we give it.
-        if (counter==1){
-            pOutputMeta = new RasterMeta(erRasterInput);
-            GDALDataType nDType = GDT_Float32;
-            pOutputMeta->SetGDALDataType(&nDType);
-        }
-        else{
-            pOutputMeta->Union(&erRasterInput);
-        }
+        pOutputMeta->Union(&erRasterInput);
     }
-    return pOutputMeta;
 }
 
 QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, bool bCheckOthogonal, bool bCheckConcurrent){
