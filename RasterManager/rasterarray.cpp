@@ -132,11 +132,12 @@ void RasterArray::PopulateNeighbors(int ID)
 }
 
 size_t RasterArray::getCol(size_t i){
-    return (int) floor(i % GetCols());
+    return (int) floor((double)(i % GetCols()));
 }
 size_t RasterArray::getRow(size_t i){
-    return (int) floor(i / GetCols());
+    return (int) floor((double)((i / GetCols())));
 }
+
 
 bool RasterArray::HasValidNeighbor(size_t ID){
     // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.

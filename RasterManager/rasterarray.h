@@ -27,7 +27,7 @@ enum eDirection {
     INVALID = -1
 };
 
-class RasterArray : public Raster
+class RM_DLL_API RasterArray : public Raster
 {
 
 public:

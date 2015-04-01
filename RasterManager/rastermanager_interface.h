@@ -207,7 +207,7 @@ RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALD
  */
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
-GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta);
+RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta);
 
 /**
  * @brief CreateOutputDSfromRef

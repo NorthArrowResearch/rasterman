@@ -67,7 +67,6 @@ int RasterPitRemoval::Run(){
         FloodDirection.at(nIndex) = INIT;
         IsPit.at(nIndex) = 0;
     }
-    //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-1-original"), &Terrain); // DEBUG ONLY
 
     //The entire DEM is scanne3d and all outlets are added to the Main Queue
     //An outlet is defined as a cell that is either on the border of the grid or has a neighbor with no_data
