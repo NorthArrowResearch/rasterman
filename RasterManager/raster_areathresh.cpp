@@ -15,7 +15,7 @@ namespace RasterManager {
 int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
     // Is map of Areas. The value is an index to a feature.
-    std::vector<int> AreaMap;
+    std::vector<double> AreaMap;
     QHash<int, double> AreaFeatures;
 
     AreaMap.resize(GetTotalCells());
@@ -23,10 +23,10 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
     // This for loop makes sure we touch every cell.
     int CurrentFeatureID = 1;
     int TotalCellsInArea;
-    for (size_t i = 0; i < GetTotalCells(); i++){
-        if (!Checked.at(i)){
+    for (size_t ID = 0; ID < GetTotalCells(); ID++){
+        if (!IsChecked(ID)){
             TotalCellsInArea = 0;
-            if (AreaThresholdWalker(i, &CurrentFeatureID, &TotalCellsInArea, &AreaMap)){
+            if ( AreaThresholdWalker(ID, &CurrentFeatureID, &TotalCellsInArea, &AreaMap) ){
                 // Write the accumulation of area cells to the feature hash
                 AreaFeatures.insert(CurrentFeatureID, TotalCellsInArea);
                 CurrentFeatureID++;
@@ -49,46 +49,58 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
             Terrain.at(i) = GetNoDataValue();
         }
     }
-//    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-Checked"), &Checked); // DEBUG ONLY
 
-    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-AreaMap"), &AreaMap); // DEBUG ONLY
-    WriteArraytoRaster(psOutputRaster, &Terrain);
+    GDALDataType debugdt = GDT_Float64;
+    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-AreaMap"), &AreaMap, &debugdt); // DEBUG ONLY
+    WriteArraytoRaster(psOutputRaster, &Terrain, NULL);
     return PROCESS_OK;
 
 }
 
-bool RasterArray::AreaThresholdWalker(int ID,
+bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int * CurrentFeatureID,
                                      int * pdCellsInArea,
-                                     std::vector<int> * pAreaMap){
+                                     std::vector<double> * pAreaMap){
 
     // Return if we've been here already
-    if (Checked.at(ID))
+    if (IsChecked(ID))
         return false;
 
-    Checked.at(ID) = true;
+    SetChecked(ID);
 
-    // This is a dead end if it's Nodata. Check it off and return
+    // This is a dead end if it's Nodata. Check it off the list and return
     if (Terrain.at(ID) == GetNoDataValue()){
         pAreaMap->at(ID) = -1;
         return false;
     }
 
     // Mark this feature on the map
-    pAreaMap->at(ID) = *CurrentFeatureID;
+    pAreaMap->at(ID) = * CurrentFeatureID;
     // Count this as part of the feature's total area
     (*pdCellsInArea)++;
+
+//    qDebug() << QString("------------------------------- CELL: %1").arg(ID);
+//    TestChecked(ID);
+//    TestNeighbourID(ID);
+//    TestNeighbourVal(ID);
 
     // Now see if we have neighbours
     PopulateNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
-        if (IsDirectionValid(ID,(eDirection)d))
-            AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
+        eDirection dir = (eDirection)d;
+//        if (ID == 40616){
+//            TestChecked(ID);
+//            bool dirval = IsDirectionValid(ID, dir);
+//            qDebug()<< "hello";
+//        }
+        // As long as we're inside the bounds, recurse
+        if ( IsDirectionValid(ID,dir) ){
+            bool validneighbour = AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
+        }
     }
-
     return true;
-
 }
+
 
 }

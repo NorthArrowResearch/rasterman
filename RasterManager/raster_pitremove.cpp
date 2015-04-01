@@ -85,7 +85,7 @@ int RasterPitRemoval::Run(){
     // Iterate Main Queue, removing all pits
     // ------------------------------------------------------
     IterateMainQueue();
-    WriteArraytoRaster(sOutputPath, &Terrain);
+    WriteArraytoRaster(sOutputPath, &Terrain, NULL);
 
     //    DEBUG
     //    debugFunc();
@@ -116,9 +116,9 @@ void RasterPitRemoval::debugFunc(){
     // DEBUG LOOP
     //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-IsBorder"), &borders);
     //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-NeighborNoValue"), &nnv);
-    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-2-IsLocalMinimum"), &islocalmin);
+//    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-2-IsLocalMinimum"), &islocalmin, GDT_Float64);
     //    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-HasValidNeighbor"), &hasvalidneigh);
-    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-3-Depressions"), &IsPit);
+    WriteArraytoRaster(appendToBaseFileName(sOutputPath, "_DEBUG-3-Depressions"), &IsPit, NULL);
 }
 
 void RasterPitRemoval::IterateMainQueue()
@@ -261,14 +261,14 @@ bool RasterPitRemoval::CheckCell(int ID, int CurNeighborID, double CrestElev)
 
     if (CurNeighborID > -1){
         // Here are the cases for which we do not check the neighbor cell:
-        if (       Checked.at(CurNeighborID)                   // neighbor has been checked already
+        if (       IsChecked(CurNeighborID)                    // neighbor has been checked already
                 || Terrain.at(CurNeighborID) > CrestElev       // OR we're above the fill line
-                || Terrain.at(CurNeighborID) < Terrain.at(ID) // OR neighbour is above our current cell
+                || Terrain.at(CurNeighborID) < Terrain.at(ID)  // OR neighbour is above our current cell
                 ){
             bCheckCell = false;
         }
         // Mark neighbour as checked
-        Checked.at(CurNeighborID) = true;
+        SetChecked(CurNeighborID);
     }
     else{
         // We're out of bounds
@@ -445,7 +445,8 @@ void RasterPitRemoval::GetDepressionExtent(int PitID, double CrestElev)
             }
         }
     }
-    Checked = BlankBool;
+    ResetChecked();
+
 }
 
 

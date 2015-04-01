@@ -34,28 +34,33 @@ public:
     RasterArray(const char * raster);
 
     // Testing Functions
-    bool IsBorder(int ID);
+    bool IsBorder(size_t ID);
 
     // Normally we wouldn't put member variables here but
     // It's kind of the only point of this class.
     std::vector<double> Terrain;    // This begins as the input DEM and is modified by the algorithm.
-    std::vector<size_t> Neighbors;     // Stores the status of the curent Cell's eight neighbors
-    std::vector<bool> Checked;      // Convenience Array used to decide if a cell has been visited.
+    std::vector<size_t> Neighbors;     // Stores the ID of the curent Cell's eight neighbors
 
     // Neighbour Functions
     size_t GetNeighborID(size_t id, eDirection dir);
-    double GetNeighborVal(size_t id, eDirection dir);
+    double GetNeighborVal(size_t ID, eDirection dir);
 
     void PopulateNeighbors(int ID);
 
-    bool HasValidNeighbor(int ID);
-    bool IsDirectionValid(int ID, eDirection dir);
+    bool HasValidNeighbor(size_t ID);
+    bool IsDirectionValid(size_t ID, eDirection dir);
 
     int GetIDFromCoords(int row, int col);
 
+    // We don't allow access to the checked array directly
+    inline void SetChecked(size_t ID){ if (ID < Checked.size()) Checked.at(ID) = 1; }
+    inline void UnSetChecked(size_t ID){ if (ID < Checked.size()) Checked.at(ID) = 0; }
+    inline bool IsChecked(size_t ID){ return (ID < Checked.size() && Checked.at(ID) == 1); }
+    inline void ResetChecked(){ std::fill(Checked.begin(), Checked.end(), 0); }
+
     // Helper functions for debugging what row/col you are on
-    int getRow(int i);
-    int getCol(int i);
+    size_t getRow(size_t i);
+    size_t getCol(size_t i);
 
     inline bool IsTopEdge(size_t id)   { return id < (size_t)GetCols(); }
     inline bool IsBottomEdge(size_t id){ return (GetTotalCells() - id) < ((size_t)GetCols() + 1); }
@@ -70,10 +75,9 @@ public:
      * @param sOutputPath
      * @param vPointArray
      */
-    void WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray);
-    void WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray);
-    void WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray);
-    void WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPointArray);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray, GDALDataType * dataType);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray, GDALDataType * dataType);
+    void WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray, GDALDataType * dataType);
 
     // Testing and DEbug Functions
     void TestNeighbourID(size_t id);
@@ -103,14 +107,17 @@ public:
      */
     int AreaThreshold(const char * psOutputRaster, double dArea);
 
+    void reCurseDebug(size_t ID, size_t row, size_t col);
+    void TestChecked(size_t id);
 private:
 
     size_t invalidID;
+    std::vector<int> Checked;      // Convenience Array used to decide if a cell has been visited.
 
-    bool AreaThresholdWalker(int ID,
+    bool AreaThresholdWalker(size_t ID,
                              int *CurrentFeatureID,
                              int *pdCellsInArea,
-                             std::vector<int> *pAreaMap);
+                             std::vector<double> *pAreaMap);
 };
 
 }

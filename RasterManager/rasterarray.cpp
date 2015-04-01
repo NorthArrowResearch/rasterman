@@ -33,13 +33,23 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
 
 }
 
-void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray ){
+
+void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *vPointArray, GDALDataType * dataType){
 
     // Create the output dataset for writing
     const QByteArray csOutput = sOutputPath.toLocal8Bit();
 
+    RasterMeta * Output = this;
+
+    if (dataType == NULL){
+        dataType = this->GetGDALDataType();
+    }
+
+    Output->SetGDALDataType(dataType);
+
     // Set the bounds and nodata to be the same as the input
-    GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), this);
+    GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), Output);
+
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*GetCols());
 
     // Write rows and columns
@@ -54,17 +64,35 @@ void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *v
     GDALClose(pDSOutput);
 
 }
-void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray){
+void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<int> *vPointArray, GDALDataType * dataType){
     std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
-    WriteArraytoRaster(sOutputPath, &vDouble);
+    WriteArraytoRaster(sOutputPath, &vDouble, dataType);
 }
-void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray){
+void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<size_t> *vPointArray, GDALDataType * dataType){
     std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
-    WriteArraytoRaster(sOutputPath, &vDouble);
+    WriteArraytoRaster(sOutputPath, &vDouble, dataType);
 }
-void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<bool> *vPointArray){
-    std::vector<double> vDouble(vPointArray->begin(), vPointArray->end());
-    WriteArraytoRaster(sOutputPath, &vDouble);
+
+bool RasterArray::IsBorder(size_t ID)
+{
+    //Tests if cell is on the outer edge of the grid, and thus is an outlet
+    if ( IsTopEdge(ID) || IsBottomEdge(ID) || IsLeftEdge(ID) || IsRightEdge(ID) ){               // In the Left Col
+        return true;
+    }
+    return false;
+}
+
+bool RasterArray::IsDirectionValid(size_t ID, eDirection dir){
+    // We want to make sure the direction we're asking for is not out of bounds
+    bool bValid = true;
+    if (       ( IsTopEdge(ID)    && (dir == DIR_NW || dir == DIR_N || dir == DIR_NE) )
+            || ( IsBottomEdge(ID) && (dir == DIR_SE || dir == DIR_S || dir == DIR_SW) )
+            || ( IsRightEdge(ID)  && (dir == DIR_NE || dir == DIR_E || dir == DIR_SE) )
+            || ( IsLeftEdge(ID)   && (dir == DIR_SW || dir == DIR_W || dir == DIR_NW) )
+            ){
+        bValid = false;
+    }
+    return bValid;
 }
 
 size_t RasterArray::GetNeighborID(size_t id, eDirection dir){
@@ -88,8 +116,11 @@ size_t RasterArray::GetNeighborID(size_t id, eDirection dir){
     }
 }
 
-double RasterArray::GetNeighborVal(size_t id, eDirection dir){
-    return Terrain.at(GetNeighborID(id, dir));
+double RasterArray::GetNeighborVal(size_t ID, eDirection dir){
+    if (IsDirectionValid(ID, dir))
+        return Terrain.at(GetNeighborID(ID, dir));
+    else
+        return invalidID;
 }
 
 void RasterArray::PopulateNeighbors(int ID)
@@ -100,14 +131,14 @@ void RasterArray::PopulateNeighbors(int ID)
     }
 }
 
-int RasterArray::getCol(int i){
+size_t RasterArray::getCol(size_t i){
     return (int) floor(i % GetCols());
 }
-int RasterArray::getRow(int i){
+size_t RasterArray::getRow(size_t i){
     return (int) floor(i / GetCols());
 }
 
-bool RasterArray::HasValidNeighbor(int ID){
+bool RasterArray::HasValidNeighbor(size_t ID){
     // Opposite of Neighbournovalue. Returns true if there are any valid neighbors.
     // In this case valid means not out of bounds and not NoData
     PopulateNeighbors(ID);
@@ -119,27 +150,7 @@ bool RasterArray::HasValidNeighbor(int ID){
     return false;
 }
 
-bool RasterArray::IsBorder(int ID)
-{
-    //Tests if cell is on the outer edge of the grid, and thus is an outlet
-    if ( IsTopEdge(ID) || IsBottomEdge(ID) || IsLeftEdge(ID) || IsRightEdge(ID) ){               // In the Left Col
-        return true;
-    }
-    return false;
-}
 
-bool RasterArray::IsDirectionValid(int ID, eDirection dir){
-    // We want to make sure the direction we're asking for is not out of bounds
-    bool bValid = true;
-    if (       ( IsTopEdge(ID)    && (dir == DIR_NW || dir == DIR_N || dir == DIR_NE) )
-            || ( IsBottomEdge(ID) && (dir == DIR_SE || dir == DIR_S || dir == DIR_SW) )
-            || ( IsRightEdge(ID)  && (dir == DIR_NE || dir == DIR_E || dir == DIR_SE) )
-            || ( IsLeftEdge(ID)   && (dir == DIR_SW || dir == DIR_W || dir == DIR_NW) )
-            ){
-        bValid = false;
-    }
-    return bValid;
-}
 
 int RasterArray::GetIDFromCoords(int row, int col){
     return  row*( GetCols() )+ col;
@@ -156,7 +167,6 @@ void RasterArray::TestNeighbourVal(size_t id){
     //    -------
 
     qDebug() << QString("Top: %1 Right: %2 Bottom: %3 Left %4").arg(IsTopEdge(id)).arg(IsRightEdge(id)).arg(IsBottomEdge(id)).arg(IsLeftEdge(id));
-
     qDebug() << "------------";
     qDebug() << QString("|%1|%2|%3|").arg(GetNeighborVal(id, DIR_NW)).arg(GetNeighborVal(id, DIR_N)).arg(GetNeighborVal(id, DIR_NE));
     qDebug() << "------------";
@@ -165,6 +175,19 @@ void RasterArray::TestNeighbourVal(size_t id){
     qDebug() << QString("|%1|%2|%3|").arg(GetNeighborVal(id, DIR_SW)).arg(GetNeighborVal(id, DIR_S)).arg(GetNeighborVal(id, DIR_SE));
     qDebug() << "------------";
 
+
+}
+
+
+void RasterArray::TestChecked(size_t id){
+    PopulateNeighbors(id);
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(IsChecked(Neighbors.at(DIR_NW))).arg(IsChecked(Neighbors.at(DIR_N))).arg(IsChecked(Neighbors.at(DIR_NE)));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(IsChecked(Neighbors.at(DIR_W))).arg("X").arg(IsChecked(Neighbors.at(DIR_E)));
+    qDebug() << "------------";
+    qDebug() << QString("|%1|%2|%3|").arg(IsChecked(Neighbors.at(DIR_SW))).arg(IsChecked(Neighbors.at(DIR_S))).arg(IsChecked(Neighbors.at(DIR_SE)));
+    qDebug() << "------------";
 
 }
 
