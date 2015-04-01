@@ -39,16 +39,16 @@ void RasterArray::WriteArraytoRaster(QString sOutputPath, std::vector<double> *v
     // Create the output dataset for writing
     const QByteArray csOutput = sOutputPath.toLocal8Bit();
 
-    RasterMeta * Output = this;
+    RasterMeta Output = *this;
 
     if (dataType == NULL){
         dataType = this->GetGDALDataType();
     }
 
-    Output->SetGDALDataType(dataType);
+    Output.SetGDALDataType(dataType);
 
     // Set the bounds and nodata to be the same as the input
-    GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), Output);
+    GDALDataset * pDSOutput = CreateOutputDS(csOutput.data(), &Output);
 
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*GetCols());
 

@@ -15,7 +15,7 @@ namespace RasterManager {
 int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 
     // Is map of Areas. The value is an index to a feature.
-    std::vector<double> AreaMap;
+    std::vector<int> AreaMap;
     QHash<int, double> AreaFeatures;
 
     AreaMap.resize(GetTotalCells());
@@ -60,7 +60,7 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int * CurrentFeatureID,
                                      int * pdCellsInArea,
-                                     std::vector<double> * pAreaMap){
+                                     std::vector<int> * pAreaMap){
 
     // Return if we've been here already
     if (IsChecked(ID))
@@ -79,26 +79,18 @@ bool RasterArray::AreaThresholdWalker(size_t ID,
     // Count this as part of the feature's total area
     (*pdCellsInArea)++;
 
-//    qDebug() << QString("------------------------------- CELL: %1").arg(ID);
-//    TestChecked(ID);
-//    TestNeighbourID(ID);
-//    TestNeighbourVal(ID);
-
     // Now see if we have neighbours
-    PopulateNeighbors(ID);
     for (int d = DIR_NW; d <= DIR_W; d++)
     {
         eDirection dir = (eDirection)d;
-//        if (ID == 40616){
-//            TestChecked(ID);
-//            bool dirval = IsDirectionValid(ID, dir);
-//            qDebug()<< "hello";
-//        }
         // As long as we're inside the bounds, recurse
+        PopulateNeighbors(ID); // We do this every time because the recursion disturbs it.
         if ( IsDirectionValid(ID,dir) ){
+
             bool validneighbour = AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
         }
     }
+
     return true;
 }
 
