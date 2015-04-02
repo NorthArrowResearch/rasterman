@@ -214,11 +214,15 @@ QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, b
     /*****************************************************************************************
      * Split a delimited File list into individual raster paths, optionally checking for file existence.
      */
+
     QList<QString> sRasterSplit = sRasters.split(";");
     QList<QString> slRasters;
-    RasterMeta * pFirstRaster;
-    QString sFirstRaster;
-    RasterMeta * pOtherRaster;
+
+    if (sRasterSplit.size() == 0 || sRasterSplit.at(0).length() == 0)
+        throw RasterManagerException(INPUT_FILE_NOT_VALID);
+    QString sFirstRaster = sRasterSplit.at(0);
+    RasterMeta pFirstRaster(sFirstRaster);
+
     int counter = 0;
 
     foreach (QString raster, sRasterSplit) {
@@ -226,22 +230,14 @@ QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, b
             if (bCheckExist)
                 CheckFile(raster, true);
             counter++;
-            if (counter == 1 ){
-                sFirstRaster = raster;
-                if (bCheckOthogonal || bCheckConcurrent){
-                    pFirstRaster = new RasterMeta(raster);
-                }
-            }
-            else if (bCheckOthogonal || bCheckConcurrent){
-                pOtherRaster = new RasterMeta(raster);
-                if (bCheckOthogonal && !pOtherRaster->IsOthogonal())
+            if (bCheckOthogonal || bCheckConcurrent){
+                RasterMeta pOtherRaster(raster);
+                if (bCheckOthogonal && !pOtherRaster.IsOthogonal())
                     throw RasterManagerException(RASTER_ORTHOGONAL, QString("%1").arg(raster) );
-                if (bCheckConcurrent && !pOtherRaster->IsConcurrent(pFirstRaster))
+                if (bCheckConcurrent && !pOtherRaster.IsConcurrent(&pFirstRaster))
                     throw RasterManagerException(RASTER_CONCURRENCY, QString("%1 vs. %2").arg(sFirstRaster).arg(raster) );
 
             }
-
-
             slRasters.append(raster);
         }
     }
