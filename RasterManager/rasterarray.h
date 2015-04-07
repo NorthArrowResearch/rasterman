@@ -136,6 +136,9 @@ public:
      */
     bool CellCompare(RasterArray *raArray2);
 
+    void TestChecked(size_t id);
+    void GetFeatures();
+
 private:
 
     size_t invalidID;

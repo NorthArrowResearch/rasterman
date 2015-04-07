@@ -168,7 +168,6 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
         std::cout << "\n    mask            Mask one raster using another raster or a vector.";
         std::cout << "\n    maskval         Mask one raster using one of its values.";
-        std::cout << "\n    setnull         Set a NoDataValue in a raster based on thesholding.";
         std::cout << "\n ";
         std::cout << "\n    add          Add two rasters or a raster and a constant.";
         std::cout << "\n    subtract     Subtract two rasters or a constant from a raster.";
