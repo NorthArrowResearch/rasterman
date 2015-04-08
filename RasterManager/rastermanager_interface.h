@@ -488,14 +488,14 @@ extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
  * @brief InitCInterfaceError
  * @param sErr
  */
-void InitCInterfaceError(char * sErr);
+RM_DLL_API void InitCInterfaceError(char * sErr);
 
 /**
  * @brief SetCInterfaceError
  * @param e
  * @param sErr
  */
-void SetCInterfaceError(RasterManagerException e, char * sErr);
+RM_DLL_API void SetCInterfaceError(RasterManagerException e, char * sErr);
 
 /**
  * @brief

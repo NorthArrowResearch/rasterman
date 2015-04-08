@@ -810,11 +810,11 @@ void printLine(QString theString)
     std::cout << "\n" << sString;
 }
 
-void InitCInterfaceError(char * sErr){
+RM_DLL_API void InitCInterfaceError(char * sErr){
     strncpy(sErr, "\0", ERRBUFFERSIZE);; // Set the string to NULL.
 }
 
-void SetCInterfaceError(RasterManagerException e, char * sErr){
+RM_DLL_API void SetCInterfaceError(RasterManagerException e, char * sErr){
     QString qsErr = e.GetReturnMsgAsString();
     const QByteArray qbErr = qsErr.toLocal8Bit();
     strncpy(sErr, qbErr.data(), ERRBUFFERSIZE);
