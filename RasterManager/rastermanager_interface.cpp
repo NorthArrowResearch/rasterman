@@ -57,16 +57,14 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta *
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
 
-
-    if ( pTemplateRastermeta->GetGDALDriver() ){
-        pDR = GetGDALDriverManager()->GetDriverByName(pTemplateRastermeta->GetGDALDriver());
-    }
-    else {
-        pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
-    }
+    // Always set the driver to the output Raster name (tiff, tif, img)
+    pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
 
     if (strcmp( pDR->GetDescription() , "GTiff") == 0){
         papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
+    }
+    else {
+        papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "PACKBITS");
     }
 
     GDALDataset * pDSOutput =  pDR->Create(pOutputRaster,
