@@ -1,13 +1,11 @@
 #define MY_DLL_EXPORT
 
 #include "rastermanager_interface.h"
-#include "rastermanager_exception.h"
 #include "extentrectangle.h"
 #include "rasterarray.h"
 
 #include <stdio.h>
 #include "extentrectangle.h"
-#include "rastermeta.h"
 #include "rastermanager.h"
 
 #include "raster.h"
@@ -21,6 +19,8 @@
 #include <iostream>
 
 namespace RasterManager {
+
+const int ERRBUFFERSIZE = 1024;
 
 RM_DLL_API const char * GetLibVersion(){ return RMLIBVERSION; }
 
@@ -138,11 +138,13 @@ extern "C" RM_DLL_API void RegisterGDAL() { GDALAllRegister();}
 extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
 
 extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
-                                 const char * psRaster2,
-                                 const double * dOperator,
-                                 const int iOperation,
-                                 const char * psOutput)
+                                    const char * psRaster2,
+                                    const double * dOperator,
+                                    const int iOperation,
+                                    const char * psOutput,
+                                    char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::RasterMath(psRaster1,
                    psRaster2,
@@ -151,14 +153,16 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
                    psOutput);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
 extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
                                  const char * psRaster2,
-                                 double dValue)
+                                 double dValue, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::InvertRaster(
                     psRaster1,
@@ -166,6 +170,7 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
                     dValue);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -176,8 +181,10 @@ extern "C" RM_DLL_API int RasterFilter(
         const char * psInputRaster,
         const char * psOutputRaster,
         int nWidth,
-        int nHeight )
+        int nHeight,
+        char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::FilterRaster(
                     psOperation,
@@ -187,6 +194,7 @@ extern "C" RM_DLL_API int RasterFilter(
                     nHeight);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -196,8 +204,10 @@ extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
                                                    const char * sRasterTemplate,
                                                    const char * sXField,
                                                    const char * sYField,
-                                                   const char * sDataField ){
+                                                   const char * sDataField,
+                                                   char * sErr){
 
+    InitCInterfaceError(sErr);
     try {
         return  RasterManager::Raster::CSVtoRaster(sCSVSourcePath,
                                                    psOutput,
@@ -207,6 +217,7 @@ extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
                                                    sDataField );
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
@@ -222,8 +233,10 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
                                                   double dNoDataVal,
                                                   const char * sXField,
                                                   const char * sYField,
-                                                  const char * sDataField){
+                                                  const char * sDataField,
+                                                  char * sErr){
 
+    InitCInterfaceError(sErr);
     try {
         return  RasterManager::Raster::CSVtoRaster(sCSVSourcePath,
                                                    sOutput,
@@ -238,6 +251,7 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
                                                    sDataField);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -247,8 +261,10 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
                                               const char * sCSVOutputPath,
                                               const char * sXField,
                                               const char * sYField,
-                                              const char * sNodata)
+                                              const char * sNodata,
+                                              char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::ExtractPoints(
                     sCSVInputSourcePath,
@@ -259,6 +275,7 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
                     QString(sNodata) );
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -266,71 +283,84 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
 
 
 extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
-                                 const char * psRaster2)
+                                          const char * psRaster2,
+                                          char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::NormalizeRaster(
                     psRaster1,
                     psRaster2);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
 extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
-                                 const char * psRaster2)
+                                 const char * psRaster2, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try {
         return Raster::EuclideanDistance(
                     psRaster1,
                     psRaster2);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
-extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade){
-
+extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade, char * sErr)
+{
+    InitCInterfaceError(sErr);
     try {
         Raster pDemRaster (psInputRaster);
         return pDemRaster.Hillshade(psOutputHillshade);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
-extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType){
-
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType, char * sErr)
+{
+    InitCInterfaceError(sErr);
     try{
         Raster pDemRaster (psInputRaster);
         return pDemRaster.Slope(psOutputSlope, nSlopeType);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
-extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput)
+extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char * psMaskRaster, const char * psOutput, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::RasterMask(psInputRaster, psMaskRaster, psOutput);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
-extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue)
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::RasterMaskValue(psInputRaster, psOutput, dMaskValue);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -340,66 +370,80 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
                                           double dLowThresh,
                                           double dLowThreshVal,
                                           double dHighThresh,
-                                          double dHighThreshVal){
+                                          double dHighThreshVal,
+                                          char * sErr){
+    InitCInterfaceError(sErr);
     try{
         return Raster::LinearThreshold(psInputRaster, psOutputRaster, dLowThresh, dLowThreshVal, dHighThresh, dHighThreshVal);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
 extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
-                                          const char * psOutputRaster,
-                                          double dAreaThresh){
+                                        const char * psOutputRaster,
+                                        double dAreaThresh,
+                                        char * sErr){
+    InitCInterfaceError(sErr);
     try{
         RasterArray raRaster(psInputRaster);
         return raRaster.AreaThreshold(psOutputRaster, dAreaThresh);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
 extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1,
-                                      const char * psRaster2,
-                                      const char * psOutput)
+                                         const char * psRaster2,
+                                         const char * psOutput,
+                                         char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::RasterRootSumSquares(psRaster1, psRaster2, psOutput);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
 
-extern "C" RM_DLL_API int Mosaic(const char * csRasters, const char * psOutput)
+extern "C" RM_DLL_API int Mosaic(const char * csRasters, const char * psOutput, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::RasterMosaic(csRasters, psOutput);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
-extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod)
+extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::CombineRaster(csRasters, psOutput, psMethod);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
-extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2)
+extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         RasterManager::RasterMeta rmRaster1(csRaster1);
         RasterManager::RasterMeta rmRaster2(csRaster2);
@@ -407,17 +451,20 @@ extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRa
         return rmRaster1.IsConcurrent(&rmRaster2);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 
 }
 
-extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs)
+extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         return Raster::MakeRasterConcurrent(csRasters, csRasterOutputs);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -430,8 +477,9 @@ extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * cs
 extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
-                                                          double & fNoData, int & bHasNoData, int & nDataType)
+                                                          double & fNoData, int & bHasNoData, int & nDataType, char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         RasterManager::Raster r(ppszRaster);
         fCellHeight = r.GetCellHeight();
@@ -445,13 +493,13 @@ extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
         nDataType = (int) *r.GetGDALDataType();
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         // e.GetErrorCode();
     }
 }
 
 extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
 {
-
     try{
         double fCellWidth = 0;
         double fCellHeight = 0;
@@ -533,17 +581,32 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
     }
 }
 
-extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType)
+extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG,
+                                    int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType, char * sErr)
 {
-    RasterManager::Raster rOriginal(psInputRaster);
-    int eResult = rOriginal.RastertoPng(psOutputPNG, nImageQuality, nLongAxisPixels, nOpacity, (Raster_SymbologyStyle) eRasterType);
-    return eResult;
+    InitCInterfaceError(sErr);
+    try {
+        RasterManager::Raster rOriginal(psInputRaster);
+        int eResult = rOriginal.RastertoPng(psOutputPNG, nImageQuality, nLongAxisPixels, nOpacity, (Raster_SymbologyStyle) eRasterType);
+        return eResult;
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
 }
 
-extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char * psInputRaster){
-    RasterManager::Raster rRaster(psInputRaster);
-    double eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(psOperation) );
-    return eResult;
+extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char * psInputRaster, char * sErr){
+    InitCInterfaceError(sErr);
+    try {
+        RasterManager::Raster rRaster(psInputRaster);
+        double eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(psOperation) );
+        return eResult;
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return (double) e.GetErrorCode();
+    }
 }
 
 /*******************************************************************************************************
@@ -552,29 +615,35 @@ extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char 
  */
 
 extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
-                                          const char *ppszOutputRaster,
-                                          double fNewCellSize,
-                                          double fLeft, double fTop, int nRows, int nCols)
+                               const char *ppszOutputRaster,
+                               double fNewCellSize,
+                               double fLeft, double fTop, int nRows, int nCols,
+                               char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         RasterManager::Raster ra(ppszOriginalRaster);
         return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
 
 extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
-                                                      const char *ppszOutputRaster,
-                                                      double fNewCellSize,
-                                                      double fLeft, double fTop, int nRows, int nCols)
+                                           const char *ppszOutputRaster,
+                                           double fNewCellSize,
+                                           double fLeft, double fTop, int nRows, int nCols,
+                                           char * sErr)
 {
+    InitCInterfaceError(sErr);
     try{
         RasterManager::Raster ra(ppszOriginalRaster);
         return ra.ReSample(ppszOutputRaster, fNewCellSize, fLeft, fTop, nRows, nCols);
     }
     catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
 }
@@ -730,13 +799,11 @@ extern "C" RM_DLL_API int GetStatFromString(const char * psStat)
         return -1;
 }
 
-
-
-extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
+extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr)
 {
-    const char * pHabErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
-    strncpy(sErr, pHabErr, iBufferSize);
-    sErr[ iBufferSize - 1 ] = 0;
+    const char * pRMErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
+    strncpy(sErr, pRMErr, ERRBUFFERSIZE);
+    sErr[ ERRBUFFERSIZE - 1 ] = 0;
 }
 
 void printLine(QString theString)
@@ -745,7 +812,15 @@ void printLine(QString theString)
     std::cout << "\n" << sString;
 }
 
+void InitCInterfaceError(char * sErr){
+    strncpy(sErr, "\0", ERRBUFFERSIZE);; // Set the string to NULL.
+}
 
-
+void SetCInterfaceError(RasterManagerException e, char * sErr){
+    QString qsErr = e.GetReturnMsgAsString();
+    const QByteArray qbErr = qsErr.toLocal8Bit();
+    strncpy(sErr, qbErr.data(), ERRBUFFERSIZE);
+    sErr[ ERRBUFFERSIZE - 1 ] = 0;
+}
 
 } // namespace

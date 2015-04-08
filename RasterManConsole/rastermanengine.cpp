@@ -174,7 +174,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n    linthesh     Linear thresholding of a raster.";
-        std::cout << "\n    areathresh   Thresholding of features below a certain area.";
+//        std::cout << "\n    areathresh   Thresholding of features below a certain area.";
 
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
@@ -183,7 +183,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n    raster2csv      Create a raster from a .csv file";
-        std::cout << "\n    vector2raster   Create a raster from a vector file.";
+//        std::cout << "\n    vector2raster   Create a raster from a vector file.";
         std::cout << "\n ";
         std::cout << "\n    extractpoints   Extract point values from a raster using a csv.";
         std::cout << "\n ";
@@ -304,12 +304,12 @@ int RasterManEngine::RasterAdd(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
     }
     else {
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
     }
@@ -339,12 +339,12 @@ int RasterManEngine::RasterSubtract(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
                 argv[4]);
     }
     else {
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
                 argv[4]);
     }
@@ -374,12 +374,12 @@ int RasterManEngine::RasterDivide(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
                 argv[4]);
     }
     else {
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 NULL, &dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
                 argv[4]);
     }
@@ -410,12 +410,12 @@ int RasterManEngine::RasterMultiply(int argc, char * argv[])
     double dOperator = sArg2.toDouble(&FileisNumeric);
 
     if (!FileisNumeric){
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
                 argv[4]);
     }
     else {
-        eResult =  RasterManager::BasicMath(argv[2],
+        eResult =  Raster::RasterMath(argv[2],
                 NULL, &dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
                 argv[4]);
     }
@@ -440,7 +440,7 @@ int RasterManEngine::RasterPower(int argc, char * argv[])
     double dPower = GetDouble(argc, argv, 3);
     int eResult = PROCESS_OK;
 
-    eResult = RasterManager::BasicMath(argv[2], NULL, &dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
+    eResult = Raster::RasterMath(argv[2], NULL, &dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
     return eResult;
 }
 int RasterManEngine::RasterSqrt(int argc, char * argv[])
@@ -459,7 +459,7 @@ int RasterManEngine::RasterSqrt(int argc, char * argv[])
 
     int eResult = PROCESS_OK;
 
-    eResult = RasterManager::BasicMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
+    eResult = Raster::RasterMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
             argv[3]);
     return eResult;
 
@@ -529,7 +529,7 @@ int RasterManEngine::MakeConcurrent(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    int eResult = RasterManager::MakeConcurrent(argv[2], argv[3]);
+    int eResult = Raster::MakeRasterConcurrent(argv[2], argv[3]);
 
     PrintRasterProperties(argv[3]);
     return eResult;
@@ -552,7 +552,7 @@ int RasterManEngine::Mask(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    eResult =  RasterManager::Mask(
+    eResult =  Raster::RasterMask(
                 argv[2],
             argv[3],
             argv[4]);
@@ -985,6 +985,7 @@ int RasterManEngine::dist(int argc, char * argv[])
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {
+    return PROCESS_OK;
     if (argc < 6)
     {
         std::cout << "\n Convert a Vector file into a raster.";
@@ -1103,6 +1104,8 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
 
 int RasterManEngine::AreaThresh(int argc, char * argv[])
 {
+    return PROCESS_OK;
+
     if (argc != 5)
     {
         std::cout << "\n Area Threshold: Threshold features separated by NoData value below a certain area.";

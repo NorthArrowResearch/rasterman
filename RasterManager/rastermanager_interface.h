@@ -2,6 +2,7 @@
 #define RASTERINTERFACE_H
 
 #include "rastermanager_global.h"
+#include "rastermanager_exception.h"
 #include "rastermeta.h"
 
 #include <limits>
@@ -99,7 +100,7 @@ extern "C" RM_DLL_API int GetStatFromString(const char * psStat);
  * A string representing the plain English words describing the error code.
  * e.g. passing the argument INPUT_FILE_ERROR would return the string "input file error."
  */
-extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize);
+extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr);
 
 /**
  * @brief
@@ -125,7 +126,7 @@ extern "C" RM_DLL_API void DestroyGDAL();
 extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
                                                double & fCellHeight, double & fCellWidth,
                                                double & fLeft, double & fTop, int & nRows, int & nCols,
-                                               double & fNoData, int & bHasNoData, int & nDataType);
+                                               double & fNoData, int & bHasNoData, int & nDataType, char *sErr);
 /**
  * @brief PrintRasterProperties
  *
@@ -156,7 +157,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster);
  */
 extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                            const char *ppszOutputRaster, double fNewCellSize,
-                                           double fLeft, double fTop, int nRows, int nCols);
+                                           double fLeft, double fTop, int nRows, int nCols, char *sErr);
 
 /**
  * @brief Copy
@@ -172,7 +173,7 @@ extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
                                const char *ppszOutputRaster, double fNewCellSize,
-                               double fLeft, double fTop, int nRows, int nCols);
+                               double fLeft, double fTop, int nRows, int nCols, char * sErr);
 
 
 /**
@@ -186,7 +187,7 @@ extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                     const char * ppszOriginalRaster2,
                                     const double *dOperator,
                                     const int iOperation,
-                                    const char * psOutput);
+                                    const char * psOutput, char *sErr);
 
 /**
  * @brief CreateOutputDSfromRef
@@ -197,7 +198,11 @@ extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
  * @param pReferenceDS
  * @return
  */
-RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, bool bHasNoData, double fNoDataValue, GDALDataset * pReferenceDS);
+RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
+                                               GDALDataType eDataType,
+                                               bool bHasNoData,
+                                               double fNoDataValue,
+                                               GDALDataset * pReferenceDS);
 
 /**
  * @brief CreateOutputDS
@@ -227,7 +232,7 @@ RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALD
  * @param psOutput
  * @return int
  */
-extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput);
+extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1, const char * psRaster2, const char * psOutput, char *sErr);
 
 /**
  * @brief
@@ -236,7 +241,7 @@ extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1, const char * ps
  * @param psOutput
  * @return int
  */
-extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput);
+extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput, char *sErr);
 
 /**
  * @brief Combine
@@ -245,7 +250,7 @@ extern "C" RM_DLL_API int Mosaic(const char *psRasters, const char * psOutput);
  * @param psMethod
  * @return
  */
-extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod);
+extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod, char *sErr);
 
 
 /**
@@ -255,7 +260,7 @@ extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,
  * @param csRasterOutputs
  * @return int
  */
-extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs);
+extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * csRasterOutputs, char *sErr);
 
 /**
  * @brief LinearThreshold
@@ -272,7 +277,7 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
                                           double dLowThresh,
                                           double dLowThreshVal,
                                           double dHighThresh,
-                                          double dHighThreshVal);
+                                          double dHighThreshVal, char *sErr);
 /**
  * @brief AreaThreshold
  * @param psInputRaster
@@ -282,14 +287,14 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
  */
 extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
                                           const char * psOutputRaster,
-                                          double dAreaThresh);
+                                          double dAreaThresh, char *sErr);
 
 /**
  * @brief IsConcurrent
  * @param csRaster
  * @return
  */
-extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2);
+extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRaster2, char *sErr);
 
 /**
  * @brief
@@ -298,7 +303,7 @@ extern "C" RM_DLL_API int IsConcurrent(const char * csRaster1, const char * csRa
  * @param psOutput
  * @return int
  */
-extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput);
+extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRaster, const char * psOutput, char *sErr);
 
 /**
  * @brief
@@ -308,7 +313,7 @@ extern "C" RM_DLL_API int Mask(const char * psInputRaster, const char *psMaskRas
  * @param dMaskValue
  * @return int
  */
-extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue);
+extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psOutput, double dMaskValue, char *sErr);
 
 /**
  * @brief CreateHillshade
@@ -316,7 +321,7 @@ extern "C" RM_DLL_API int MaskValue(const char * psInputRaster, const char * psO
  * @param psOutputHillshade
  * @return
  */
-extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade);
+extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char * psOutputHillshade, char *sErr);
 
 /**
  * @brief CreateSlope
@@ -325,7 +330,7 @@ extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char
  * @param nSlopeType
  * @return
  */
-extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType);
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType, char *sErr);
 
 /**
  * @brief RasterInvert
@@ -336,7 +341,8 @@ extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * p
  */
 extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
                                        const char * psRaster2,
-                                       double dValue);
+                                       double dValue,
+                                       char *sErr);
 
 /**
  * @brief RasterNormalize
@@ -345,7 +351,8 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
  * @return
  */
 extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
-                                          const char * psRaster2);
+                                          const char * psRaster2,
+                                          char *sErr);
 
 /**
  * @brief RasterFilter
@@ -360,7 +367,8 @@ extern "C" RM_DLL_API int RasterFilter(const char * psOperation,
                                        const char * psInputRaster,
                                        const char * psOutputRaster,
                                        int nWidth,
-                                       int nHeight );
+                                       int nHeight ,
+                                       char *sErr);
 
 /**
  * @brief ExtractRasterPoints
@@ -377,7 +385,8 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
                                               const char * sCSVOutputPath,
                                               const char * sXField,
                                               const char * sYField,
-                                              const char * sNodata);
+                                              const char * sNodata,
+                                              char *sErr);
 
 /**
  * @brief CreatePNG
@@ -389,7 +398,9 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
  * @param eRasterType
  * @return
  */
-extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType);
+extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality,
+                                    int nLongAxisPixels, int nOpacity, int eRasterType,
+                                    char *sErr);
 
 /**
  * @brief GetSymbologyStyleFromString
@@ -410,7 +421,7 @@ extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod);
  * @param psOperation
  * @return
  */
-extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char *psInputRaster);
+extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char *psInputRaster, char *sErr);
 
 /**
  * @brief GetStatOperationFromString
@@ -434,7 +445,8 @@ extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
                                                    const char * sRasterTemplate,
                                                    const char * sXField,
                                                    const char * sYField,
-                                                   const char * sDataField );
+                                                   const char * sDataField ,
+                                                   char *sErr);
 /**
  * @brief RasterFromCSVandExtents
  * @param sCSVSourcePath
@@ -460,7 +472,8 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
                                                   double dNoDataVal,
                                                   const char * sXField,
                                                   const char * sYField,
-                                                  const char * sDataField);
+                                                  const char * sDataField,
+                                                  char *sErr);
 
 /**
  * @brief RasterEuclideanDistance
@@ -469,7 +482,20 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
  * @return
  */
 extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
-                                                  const char * psRaster2);
+                                                  const char * psRaster2,
+                                                  char *sErr);
+/**
+ * @brief InitCInterfaceError
+ * @param sErr
+ */
+void InitCInterfaceError(char * sErr);
+
+/**
+ * @brief SetCInterfaceError
+ * @param e
+ * @param sErr
+ */
+void SetCInterfaceError(RasterManagerException e, char * sErr);
 
 /**
  * @brief
