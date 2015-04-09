@@ -123,7 +123,7 @@ extern "C" RM_DLL_API void DestroyGDAL();
  * @param bHasNoData
  * @param nDataType
  */
-extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
+extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
                                                double & fCellHeight, double & fCellWidth,
                                                double & fLeft, double & fTop, int & nRows, int & nCols,
                                                double & fNoData, int & bHasNoData, int & nDataType, char *sErr);

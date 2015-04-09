@@ -472,7 +472,7 @@ extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * cs
  * Raster property methods
  */
 
-extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
+extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
                                                           double & fNoData, int & bHasNoData, int & nDataType, char * sErr)
@@ -492,8 +492,9 @@ extern "C" RM_DLL_API void GetRasterProperties(const char * ppszRaster,
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
-        // e.GetErrorCode();
+        return e.GetErrorCode();
     }
+    return PROCESS_OK;
 }
 
 extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
