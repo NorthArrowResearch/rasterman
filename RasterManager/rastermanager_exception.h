@@ -7,7 +7,7 @@
 namespace RasterManager{
 
 enum RasterManagerOutputCodes {
-    PROCESS_OK
+    PROCESS_OK = 0
     , INPUT_FILE_ERROR
     , INPUT_FILE_TRANSFORM_ERROR
     , INPUT_FILE_NOT_VALID
