@@ -45,11 +45,19 @@ win32 {
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    # When we compile this for an ESRI Addin we have change its name
+    # To Avoid Collisions
+    CONFIG(GCD){
+        TOOL = "GCD"
+        TOOLDIR= "GCD/"
+    }else{
+        TOOL = ""
+        TOOLDIR= ""
+    }
 
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$DESTDIR -lRasterManager
+    TARGET = $$TARGET$$TOOL
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    LIBS += -L$$DESTDIR -lRasterManager$$TOOL
 
 }
 macx{

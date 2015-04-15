@@ -8,7 +8,6 @@ QT       += core widgets
 QT       -= gui
 
 TARGET = RasterManager
-TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
 VERSION = 6.1.6
@@ -75,12 +74,24 @@ win32 {
 
     # GDAL is required
     GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    TARGET_EXT = .dll # prevent version suffix on dll
     LIBS += -L$$GDALWIN/lib/ -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
     DEPENDPATH += $$GDALWIN/include
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE$$ARCH
+    # When we compile this for an ESRI Addin we have change its name
+    # To Avoid Collisions
+    CONFIG(GCD){
+        TOOL = "GCD"
+        TOOLDIR= "GCD/"
+    }else{
+        TOOL = ""
+        TOOLDIR= ""
+    }
+
+    TARGET = $$TARGET$$TOOL
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+
 }
 macx{
     ## OSX common build here
