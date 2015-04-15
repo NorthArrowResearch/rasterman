@@ -81,12 +81,11 @@ win32 {
 
     # When we compile this for an ESRI Addin we have change its name
     # To Avoid Collisions
-    CONFIG(GCD){
-        TOOL = "GCD"
-        TOOLDIR= "GCD/"
-    }else{
-        TOOL = ""
+    TOOL = $$(TOOLSUFFIX)
+    isEmpty(TOOL){
         TOOLDIR= ""
+    }else{
+        TOOLDIR=$$TOOL/
     }
 
     TARGET = $$TARGET$$TOOL
