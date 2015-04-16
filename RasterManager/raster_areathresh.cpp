@@ -57,33 +57,33 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
 }
 
 void RasterArray::GetFeatures(){
-    ResetChecked();
-    for (size_t ID = 0; ID < GetTotalCells(); ID++){
-        SetChecked(ID);
-        if (Terrain.at(ID) != GetNoDataValue() ){
-            Queue.addItem(ID);
-            while (queue has items) {
-                ExploreFeature(ID);
-            }
-        }
-    }
+//    ResetChecked();
+//    for (size_t ID = 0; ID < GetTotalCells(); ID++){
+//        SetChecked(ID);
+//        if (Terrain.at(ID) != GetNoDataValue() ){
+//            Queue.addItem(ID);
+//            while (queue has items) {
+//                ExploreFeature(ID);
+//            }
+//        }
+//    }
 }
 
-void RasterArray::ExploreFeature(size_t ID){
-    // Now see if we have neighbours
-    if (Queue is full)
-        return;
+//void RasterArray::ExploreFeature(size_t ID){
+//    // Now see if we have neighbours
+//    if (Queue is full)
+//        return;
 
-    SetChecked(ID);
+//    SetChecked(ID);
 
-    foreach queue{
-        for (int d = DIR_NW; d <= DIR_W; d++)
-        {
-            if (!IsChecked() && Terrain.at(0) != GetNoDataValue())
-            SetChecked(GetNeighborID(ID, (eDirection)d));
-        }
-    }
-}
+//    foreach queue{
+//        for (int d = DIR_NW; d <= DIR_W; d++)
+//        {
+//            if (!IsChecked() && Terrain.at(0) != GetNoDataValue())
+//            SetChecked(GetNeighborID(ID, (eDirection)d));
+//        }
+//    }
+//}
 
 bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int * CurrentFeatureID,

@@ -87,7 +87,6 @@ private:
     std::map<double, double> FillFunction;  // Stores paired elevation/cost data
     std::map<double, double> BlankMap;      // Used to reset Cut and Fill Functions
 
-    std::priority_queue<RasterArray::point, std::vector<RasterArray::point>, RasterArray::ComparePoint> MainQueue;
     std::priority_queue<RasterArray::point, std::vector<RasterArray::point>, RasterArray::ComparePoint> NeighborQueue;
     std::priority_queue<RasterArray::point, std::vector<RasterArray::point>, RasterArray::ComparePoint> DepressionQueue;
 
