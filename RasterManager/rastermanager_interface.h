@@ -433,6 +433,17 @@ extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod);
 extern "C" RM_DLL_API double RasterGetStat(const char * psOperation, const char *psInputRaster, char *sErr);
 
 /**
+ * @brief StackStats
+ * @param psOperation
+ * @param csRasters
+ * @param psOutput
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int StackStats(const char * psOperation, const char * csRasters, const char * psOutput, char * sErr);
+
+
+/**
  * @brief GetStatOperationFromString
  * @param psStyle
  * @return

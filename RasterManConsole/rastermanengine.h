@@ -12,7 +12,6 @@ public:
 
     int Run(int argc, char *argv[]);
 
-
 private:
 
     /**
@@ -226,7 +225,15 @@ private:
      * @param argv
      * @return
      */
-    int stats(int argc, char *argv[]);
+    int Stats(int argc, char *argv[]);
+
+    /**
+     * @brief StackStats
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int StackStats(int argc, char *argv[]);
 
     /**
      * @brief LinThresh

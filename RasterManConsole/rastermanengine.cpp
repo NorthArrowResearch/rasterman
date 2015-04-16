@@ -127,7 +127,10 @@ int RasterManEngine::Run(int argc, char * argv[])
             eResult = Combine(argc, argv);
 
         else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
-            eResult = stats(argc, argv);
+            eResult = Stats(argc, argv);
+
+        else if (QString::compare(sCommand, "stackstats", Qt::CaseInsensitive) == 0)
+            eResult = StackStats(argc, argv);
 
         else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
             eResult = Compare(argc, argv);
@@ -155,6 +158,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    raster          Display basic properties (rows, cols etc) for a raster.";
         std::cout << "\n    stats           Display specific statistics (mean, max, min, etc) for a raster.";
         std::cout << "\n    compare         Compare two rasters: check divisible, orthogonal, concurrent and by cell";
+        std::cout << "\n    stackstats      Create a raster from a stack of rasters using a statistic (mean, max, min, etc).";
 
         std::cout << "\n";
         std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
@@ -1035,7 +1039,12 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
 }
 
 
+<<<<<<< HEAD
 int RasterManEngine::stats(int argc, char * argv[])
+=======
+
+int RasterManEngine::Stats(int argc, char * argv[])
+>>>>>>> Stack stats prototyping
 {
     if (argc != 4)
     {
@@ -1072,6 +1081,7 @@ int RasterManEngine::stats(int argc, char * argv[])
 }
 
 
+<<<<<<< HEAD
 int RasterManEngine::Compare(int argc, char * argv[])
 {
     if (argc != 4)
@@ -1083,10 +1093,36 @@ int RasterManEngine::Compare(int argc, char * argv[])
         std::cout << "\n    operation:";
         std::cout << "\n              raster1: Path to first raster";
         std::cout << "\n              raster2: Path to second raster";
+=======
+int RasterManEngine::StackStats(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Raster Stack Statistics:";
+        std::cout << "\n    Usage: rasterman stackstats <operation> <raster_file_paths> <output_file_path>";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    operation:";
+        std::cout << "\n              mean: Mean (average) of the inputs";
+//        std::cout << "\n          majority: Value that occurs most often";
+        std::cout << "\n           maximum: determines the largest value";
+//        std::cout << "\n            median: Median of inputs";
+        std::cout << "\n           minimum: Smallest non-nodata vlaue of hte inputs";
+//        std::cout << "\n          minority: Value that occurs the most often";
+        std::cout << "\n             range: distance between max and min";
+        std::cout << "\n               std: Calculates the standard deviation of the inpluts";
+//        std::cout << "\n               sum: Total of all values";
+//        std::cout << "\n             count: number of cells with values.";
+//        std::cout << "\n           variety: Number of unique Values";
+        std::cout << "\n                                                     ";
+        std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
+        std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
+>>>>>>> Stack stats prototyping
         std::cout << "\n";
         return PROCESS_OK;
     }
 
+<<<<<<< HEAD
     RasterManager::RasterArray raRaster1(argv[2]);
     RasterManager::RasterArray raRaster2(argv[3]);
 
@@ -1122,6 +1158,11 @@ int RasterManEngine::Compare(int argc, char * argv[])
     RasterManager::printLine( QString("            CellCompare: %1").arg(sCellCompare));
 
     return PROCESS_OK;
+=======
+    double eResult = Raster::StackStats( (Raster_Stats_Operation) GetStatFromString(argv[2]), argv[3], argv[4] );
+
+    return eResult;
+>>>>>>> Stack stats prototyping
 }
 
 int RasterManEngine::LinThresh(int argc, char * argv[])

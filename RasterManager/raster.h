@@ -427,6 +427,16 @@ public:
       */
      double RasterStat(Raster_Stats_Operation eOperation);
 
+     /**
+      * @brief StackStats
+      * @param eOperation
+      * @param csRasters
+      * @param psOutput
+      * @return
+      */
+     static int StackStats(Raster_Stats_Operation eOperation, const char *csRasters, const char *psOutput);
+
+
      static inline bool isEqual(double x, double y){ return fabs(x-y) > DOUBLECOMPARE; }
 
      /**

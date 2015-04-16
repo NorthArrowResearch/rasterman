@@ -426,6 +426,19 @@ extern "C" RM_DLL_API int Mosaic(const char * csRasters, const char * psOutput, 
 
 }
 
+extern "C" RM_DLL_API int StackStats(const char * psOperation, const char * csRasters, const char * psOutput, char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        return Raster::StackStats((Raster_Stats_Operation) GetStatFromString(psOperation), csRasters, psOutput);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+
+}
+
 extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,  const char * psMethod, char * sErr)
 {
     InitCInterfaceError(sErr);
