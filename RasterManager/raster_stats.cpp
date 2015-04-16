@@ -289,6 +289,7 @@ double Raster::RasterStatMedian(std::vector<double> * RasterArray){
 //    return dMedian;
     return -1;
 }
+
 double Raster::RasterStatMajority(std::vector<double> * RasterArray){
     return -1;
 }

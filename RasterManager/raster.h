@@ -537,6 +537,7 @@ private:
      */
     static int ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
 
+    // The following Stats functions are designed to work over all cells on a single raster.
     static double RasterStatMedian(std::vector<double> * RasterArray);
     static double RasterStatMajority(std::vector<double> * RasterArray);
     static double RasterStatMinority(std::vector<double> * RasterArray);
@@ -546,7 +547,7 @@ private:
 
     static double PerformStackStatOp(Raster_Stats_Operation eOp, QHash<int, double> dCellContents, double dNoDataVal);
 
-
+    // The following Stats functions are designed to work on a single cell on multiple rasters
     static double StatStackMax(QHash<int, double> dCellContents, double dNoDataVal);
     static double StatStackMin(QHash<int, double> dCellContents, double dNoDataVal);
     static double StatStackMean(QHash<int, double> dCellContents, double dNoDataVal);
