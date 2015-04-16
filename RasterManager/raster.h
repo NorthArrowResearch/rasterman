@@ -537,12 +537,21 @@ private:
      */
     static int ResizeAndCompressImage(const char* inputImage, int nLongLength, int nQuality);
 
-    double RasterStatMedian(std::vector<double> * RasterArray);
-    double RasterStatMajority(std::vector<double> * RasterArray);
-    double RasterStatMinority(std::vector<double> * RasterArray);
-    double RasterStatSum(std::vector<double> * RasterArray);
-    double RasterStatVariety(std::vector<double> * RasterArray);
-    double RasterStatRange(std::vector<double> * RasterArray);
+    static double RasterStatMedian(std::vector<double> * RasterArray);
+    static double RasterStatMajority(std::vector<double> * RasterArray);
+    static double RasterStatMinority(std::vector<double> * RasterArray);
+    static double RasterStatSum(std::vector<double> * RasterArray);
+    static double RasterStatVariety(std::vector<double> * RasterArray);
+    static double RasterStatRange(std::vector<double> * RasterArray);
+
+    static double PerformStackStatOp(Raster_Stats_Operation eOp, QHash<int, double> dCellContents, double dNoDataVal);
+
+
+    static double StatStackMax(QHash<int, double> dCellContents, double dNoDataVal);
+    static double StatStackMin(QHash<int, double> dCellContents, double dNoDataVal);
+    static double StatStackMean(QHash<int, double> dCellContents, double dNoDataVal);
+    static double StatStackSTDev(QHash<int, double> dCellContents, double dNoDataVal);
+
 
     /**
      * @brief CombineRasterValues helper function for the combine RM operation
