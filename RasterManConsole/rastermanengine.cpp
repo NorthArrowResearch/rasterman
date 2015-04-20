@@ -610,13 +610,8 @@ int RasterManEngine::Slope(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    int nSlopeType = RasterManager::SLOPE_DEGREES;
-    QString sType(argv[2]);
-    if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
-        nSlopeType = RasterManager::SLOPE_PERCENT;
-
     RasterManager::Raster rOriginal(argv[3]);
-    int eResult = rOriginal.Slope(argv[4], nSlopeType);
+    int eResult = rOriginal.Slope(argv[4], argv[2]);
 
     return eResult;
 }

@@ -11,7 +11,18 @@
 
 namespace RasterManager {
 
-int Raster::Slope(const char * psOutputSlope, int nSlpType){
+int Raster::Slope(const char * psOutputSlope, const char * psSlpType){
+
+    int nSlopeType = 0;
+    QString sType(psSlpType);
+    if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
+        nSlopeType = RasterManager::SLOPE_PERCENT;
+    else if (sType.compare(sType, "degrees", Qt::CaseInsensitive) == 0){
+        nSlopeType = RasterManager::SLOPE_PERCENT;
+    }
+    else{
+        throw RasterManagerException( MISSING_ARGUMENT, "Could not detect a valid slope type. must be either \"degrees\" or \"percent\"");
+    }
 
     GDALDataset * pSlopeDS = CreateOutputDS(psOutputSlope, this);
     GDALDataset * pDemDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
@@ -52,11 +63,11 @@ int Raster::Slope(const char * psOutputSlope, int nSlpType){
                 dzdy = ((fElev[0]-fElev[6]) + ((2*fElev[1])-(2*fElev[7])) + (fElev[2]-fElev[8])) / (8* GetCellWidth());
                 dzxy = pow(dzdx, 2.0) + pow(dzdy, 2.0);
                 riseRun = pow(dzxy, 0.5);
-                if (nSlpType == SLOPE_DEGREES)
+                if (nSlopeType == SLOPE_DEGREES)
                 {
                     fSlope[j] = atan(riseRun) * (180.0/PI);
                 }
-                else if (nSlpType == SLOPE_PERCENT)
+                else if (nSlopeType == SLOPE_PERCENT)
                 {
                     fSlope[j] = riseRun*100.0;
                 }

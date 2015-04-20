@@ -325,12 +325,12 @@ extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char
 
 }
 
-extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType, char * sErr)
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, const char * psSlopeType, char * sErr)
 {
     InitCInterfaceError(sErr);
     try{
         Raster pDemRaster (psInputRaster);
-        return pDemRaster.Slope(psOutputSlope, nSlopeType);
+        return pDemRaster.Slope(psOutputSlope, psSlopeType);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

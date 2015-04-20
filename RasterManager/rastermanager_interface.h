@@ -339,7 +339,7 @@ extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char
  * @param nSlopeType
  * @return
  */
-extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, int nSlopeType, char *sErr);
+extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, const char *psSlopeType, char *sErr);
 
 /**
  * @brief RasterInvert

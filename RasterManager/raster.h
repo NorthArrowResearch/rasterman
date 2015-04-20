@@ -266,7 +266,7 @@ public:
      * @param type
      * @return
      */
-    int Slope(const char *psOutputSlope, int nSlpType);
+    int Slope(const char *psOutputSlope, const char *psSlpType);
 
     /**
       * @brief RastertoPng
