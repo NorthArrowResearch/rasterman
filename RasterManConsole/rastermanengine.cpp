@@ -1194,7 +1194,6 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
 
 int RasterManEngine::AreaThresh(int argc, char * argv[])
 {
-    return PROCESS_OK;
 
     if (argc != 5)
     {

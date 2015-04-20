@@ -141,14 +141,11 @@ public:
     void TestChecked(size_t id);
     void GetFeatures();
 
-<<<<<<< HEAD
-=======
 protected:
     // Instead of recursive algorithms which can cuase Stack Overflows we use a priority Queue
     // That we fill and empty
     std::priority_queue<RasterArray::point, std::vector<RasterArray::point>, RasterArray::ComparePoint> MainQueue;
 
->>>>>>> moving the main queue to RasterArray
 private:
 
     size_t invalidID;

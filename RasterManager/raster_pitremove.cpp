@@ -204,20 +204,13 @@ void RasterPitRemoval::AddToMainQueue(int ID, bool ConfirmDescend)
         CurCell.id = ID;
         CurCell.elev = Terrain.at(ID);
 
-        if (Terrain.at(ID) != GetNoDataValue()
- && HasValidNeighbor(ID) ){
+        if (Terrain.at(ID) != GetNoDataValue() && HasValidNeighbor(ID) )
             MainQueue.push(CurCell);
-        }
-
 
         if(ConfirmDescend)
-        {
             Flooded.at(ID)= FLOODEDDESC;
-        }
         else
-        {
             Flooded.at(ID) = FLOODED;
-        }
 
     }
 }

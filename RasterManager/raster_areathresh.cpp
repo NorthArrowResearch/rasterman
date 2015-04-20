@@ -50,75 +50,54 @@ int RasterArray::AreaThreshold(const char * psOutputRaster, double dArea){
         }
     }
 
-    GDALDataType debugdt = GDT_Float64;
     WriteArraytoRaster(psOutputRaster, &Terrain, NULL);
     return PROCESS_OK;
 
 }
 
-void RasterArray::GetFeatures(){
-//    ResetChecked();
-//    for (size_t ID = 0; ID < GetTotalCells(); ID++){
-//        SetChecked(ID);
-//        if (Terrain.at(ID) != GetNoDataValue() ){
-//            Queue.addItem(ID);
-//            while (queue has items) {
-//                ExploreFeature(ID);
-//            }
-//        }
-//    }
-}
-
-//void RasterArray::ExploreFeature(size_t ID){
-//    // Now see if we have neighbours
-//    if (Queue is full)
-//        return;
-
-//    SetChecked(ID);
-
-//    foreach queue{
-//        for (int d = DIR_NW; d <= DIR_W; d++)
-//        {
-//            if (!IsChecked() && Terrain.at(0) != GetNoDataValue())
-//            SetChecked(GetNeighborID(ID, (eDirection)d));
-//        }
-//    }
-//}
-
+// https://en.wikipedia.org/wiki/Flood_fill
 bool RasterArray::AreaThresholdWalker(size_t ID,
                                      int * CurrentFeatureID,
                                      int * pdCellsInArea,
                                      std::vector<int> * pAreaMap){
 
-    // Return if we've been here already
-    if (IsChecked(ID))
+
+    if (Terrain.at(ID) == GetNoDataValue() || IsChecked(ID))
         return false;
 
     SetChecked(ID);
 
-    // This is a dead end if it's Nodata. Check it off the list and return
-    if (Terrain.at(ID) == GetNoDataValue()){
-        pAreaMap->at(ID) = -1;
-        return false;
-    }
-
-    // Mark this feature on the map
-    pAreaMap->at(ID) = * CurrentFeatureID;
-    // Count this as part of the feature's total area
-    (*pdCellsInArea)++;
-
-    // Now see if we have neighbours
-    for (int d = DIR_NW; d <= DIR_W; d++)
+    std::queue<size_t> theQueue;
+    theQueue.push(ID);
+    while(!theQueue.empty())
     {
-        eDirection dir = (eDirection)d;
-        // As long as we're inside the bounds, recurse
-        PopulateNeighbors(ID); // We do this every time because the recursion disturbs it.
-        if ( IsDirectionValid(ID,dir) ){
+        size_t currID = theQueue.front();
+        theQueue.pop();
 
-            bool validneighbour = AreaThresholdWalker(Neighbors.at(d), CurrentFeatureID, pdCellsInArea, pAreaMap);
+        if (Terrain.at(currID) != GetNoDataValue() ){
+            // Mark this feature on the map
+            pAreaMap->at(currID) = * CurrentFeatureID;
+            // Count this as part of the feature's total area
+            (*pdCellsInArea)++;
+
+            PopulateNeighbors(currID);
+            // Now see if we have neighbours
+            for (int d = DIR_NW; d <= DIR_W; d++)
+            {
+                eDirection dir = (eDirection)d;
+                // Add any neighbour inside bounds to the queue
+                // if it's not already checked.
+                if ( IsDirectionValid(ID,dir) &&
+                     !IsChecked(Neighbors.at(dir)) &&
+                     Terrain.at(Neighbors.at(dir)) != GetNoDataValue()){
+                    SetChecked(Neighbors.at(dir));
+                    theQueue.push(Neighbors.at(d));
+                }
+            }
+
         }
-    }
 
+    }
     return true;
 }
 
