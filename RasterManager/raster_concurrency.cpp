@@ -62,7 +62,7 @@ int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOu
             MasterMeta.SetGDALDataType(&nDataType);
         }
         else{
-            if (erRasterInput.IsOrthogonal(&MasterMeta)){
+            if (!erRasterInput.IsOrthogonal(&MasterMeta)){
                 QString sErr = QString("All rasters must be orthogonal: %1").arg(sInPutFileName.c_str());
                 throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
             }
