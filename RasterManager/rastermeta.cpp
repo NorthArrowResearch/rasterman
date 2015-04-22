@@ -114,21 +114,57 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
 }
 
-int RasterMeta::IsOthogonal(){
+bool RasterMeta::IsDivisible(){
 
-    if ( GetCellWidth() != 0 && GetCellHeight() != 0
-         && fmod( GetLeft(), GetCellWidth() ) == 0
-         && fmod( GetTop(), GetCellHeight() ) == 0 ){
+    // Check that the cell width and height are valid AND
+    // 1. Left / CellWidth % 1 == 0
+    // 2. Top / CellHeight % 1 == 0
+    if ( !qFuzzyIsNull( GetCellWidth() ) || !qFuzzyIsNull(GetCellHeight()) ||
+         !qFuzzyIsNull( fmod( GetLeft() / GetCellWidth() , 1)) ||
+         !qFuzzyIsNull( fmod( GetTop()  / GetCellHeight(), 1 )) ){
         return true;
     }
     return false;
+}
+
+bool RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
+
+    // Concurrent is a special case of orthoginality so check that first.
+    if (!IsOrthogonal(pCompareMeta))
+        return false;
+
+    //
+    if (!qFuzzyCompare( (double)pCompareMeta->GetTop(), (double)GetTop()) ||
+            !qFuzzyCompare( (double)pCompareMeta->GetLeft(), (double)GetLeft() ) ||
+            !qFuzzyCompare( (double)pCompareMeta->GetRows(), (double)GetRows() ) ||
+            !qFuzzyCompare( (double)pCompareMeta->GetCols(), (double)GetCols() ) ){
+        return false;
+    }
+    return true;
+}
+
+bool RasterMeta::IsOrthogonal(RasterMeta * pCompareMeta){
+
+    // TODO: We really should check that the Projections are the same
+
+    // Cell dimensions must be the same
+    if ( !qFuzzyCompare( fabs(GetCellHeight()), fabs(pCompareMeta->GetCellHeight()) ) ||
+         !qFuzzyCompare( fabs(GetCellWidth() ), fabs(pCompareMeta->GetCellWidth() ) ))
+        return false;
+
+    // Make sure the difference between left and right is divisible by the cell dimentsions
+    if ( !qFuzzyIsNull( fmod((GetLeft() - pCompareMeta->GetLeft() ) / GetCellHeight(), 1 ) )  ||
+         !qFuzzyIsNull( fmod((GetTop()  - pCompareMeta->GetTop()  ) / GetCellWidth(),  1 ) ) )
+        return false;
+
+    return true;
 }
 
 int RasterMeta::GetPrecision(double num){
     int count = 0;
     num = fabs(num);
     num = num - int(num);
-    while ( fabs(num) >= 0.0000001 ){
+    while ( !qFuzzyIsNull( fabs(num) ) ){
         num = num * 10;
         num = num - int(num);
         count++;
@@ -232,11 +268,12 @@ QList<QString> RasterMeta::RasterUnDelimit(QString sRasters, bool bCheckExist, b
             counter++;
             if (bCheckOthogonal || bCheckConcurrent){
                 RasterMeta pOtherRaster(raster);
-                if (bCheckOthogonal && !pOtherRaster.IsOthogonal())
-                    throw RasterManagerException(RASTER_ORTHOGONAL, QString("%1").arg(raster) );
-                if (bCheckConcurrent && !pOtherRaster.IsConcurrent(&pFirstRaster))
-                    throw RasterManagerException(RASTER_CONCURRENCY, QString("%1 vs. %2").arg(sFirstRaster).arg(raster) );
-
+                if (bCheckOthogonal && !pOtherRaster.IsOrthogonal(&pFirstRaster)){
+                        throw RasterManagerException(RASTER_ORTHOGONAL, QString("%1").arg(raster) );
+                }
+                else if(bCheckConcurrent && !pOtherRaster.IsConcurrent(&pFirstRaster)){
+                        throw RasterManagerException(RASTER_CONCURRENCY, QString("%1 vs. %2").arg(sFirstRaster).arg(raster) );
+                }
             }
             slRasters.append(raster);
         }

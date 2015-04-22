@@ -38,6 +38,7 @@ enum RasterManagerOutputCodes {
 
     , RASTER_CONCURRENCY
     , RASTER_ORTHOGONAL
+    , RASTER_COMPARISON
 
     , DIVISION_BY_ZERO
 
@@ -175,6 +176,9 @@ public:
 
         case RASTER_ORTHOGONAL:
             return "Rasters are not Orthogonal";
+
+        case RASTER_COMPARISON:
+            return "Rasters are not the same";
 
         case GDALVERSION:
             return "Insufficient GDAL version detected.";

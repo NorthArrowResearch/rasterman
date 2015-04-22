@@ -8,18 +8,6 @@
 
 namespace RasterManager {
 
-int RasterMeta::IsConcurrent(RasterMeta * pCompareMeta){
-
-    if (pCompareMeta->GetTop() == GetTop()
-            && pCompareMeta->GetLeft() == GetLeft()
-            && pCompareMeta->GetRows() == GetRows()
-            && pCompareMeta->GetCols() == GetCols() ){
-        return 1;
-    }
-    return 0;
-}
-
-
 int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOutputs){
     // Loop through the strings, delimited by ;
     std::string sInPutFileName,
@@ -74,13 +62,8 @@ int Raster::MakeRasterConcurrent(const char * csRasters, const char * csRasterOu
             MasterMeta.SetGDALDataType(&nDataType);
         }
         else{
-            if (erRasterInput.IsOthogonal() == 0){
+            if (erRasterInput.IsOrthogonal(&MasterMeta)){
                 QString sErr = QString("All rasters must be orthogonal: %1").arg(sInPutFileName.c_str());
-                throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
-            }
-            else if(erRasterInput.GetCellHeight() != MasterMeta.GetCellHeight()
-                    || erRasterInput.GetCellWidth() != MasterMeta.GetCellWidth() ){
-                QString sErr = QString("Cell resolutions must be the same for all rasters: %1").arg(sInPutFileName.c_str());
                 throw RasterManagerException(INPUT_FILE_NOT_VALID, sErr);
             }
             else {

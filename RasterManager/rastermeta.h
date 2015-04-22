@@ -97,17 +97,25 @@ public:
      * @param fNoData
      */
     void SetNoDataValue(double *fNoData);
-    /**
-     * @brief IsOthogonal
-     * @return
-     */
-    int IsOthogonal();
 
     /**
      * @brief IsConcurrent
      * @param pCompareMeta
      */
-    int IsConcurrent(RasterMeta *pCompareMeta);
+    bool IsConcurrent(RasterMeta *pCompareMeta);
+
+    /**
+     * @brief IsOrthogonal
+     * @param pCompareMeta
+     * @return
+     */
+    bool IsOrthogonal(RasterMeta *pCompareMeta);
+
+    /**
+     * @brief IsDivisible
+     * @return
+     */
+    bool IsDivisible();
 
     /**
      * @brief SetProjectionRef
@@ -129,6 +137,7 @@ public:
      * @param bCheckExist
      */
     static QList<QString> RasterUnDelimit(QString sRasters, bool bCheckExist, bool bCheckOthogonal, bool bCheckConcurrent);
+
 
 protected:
 

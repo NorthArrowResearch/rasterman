@@ -129,6 +129,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "stats", Qt::CaseInsensitive) == 0)
             eResult = stats(argc, argv);
 
+        else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
+            eResult = Compare(argc, argv);
+
         else
             bRecognizedCommand = false;
 
@@ -151,6 +154,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n Commands (type rasterman followed by the command to retrieve parameter information):\n";
         std::cout << "\n    raster          Display basic properties (rows, cols etc) for a raster.";
         std::cout << "\n    stats           Display specific statistics (mean, max, min, etc) for a raster.";
+        std::cout << "\n    compare         Compare two rasters: check divisible, orthogonal, concurrent and by cell";
 
         std::cout << "\n";
         std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
@@ -1031,7 +1035,6 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
 }
 
 
-
 int RasterManEngine::stats(int argc, char * argv[])
 {
     if (argc != 4)
@@ -1068,6 +1071,58 @@ int RasterManEngine::stats(int argc, char * argv[])
     return PROCESS_OK;
 }
 
+
+int RasterManEngine::Compare(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Raster Compare: check rasters for orthogonality, divisibility, concurrency.";
+        std::cout << "\n    Usage: rasterman compare <raster1> <raster2>";
+        std::cout << "\n";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    operation:";
+        std::cout << "\n              raster1: Path to first raster";
+        std::cout << "\n              raster2: Path to second raster";
+        std::cout << "\n";
+        return PROCESS_OK;
+    }
+
+    RasterManager::RasterArray raRaster1(argv[2]);
+    RasterManager::RasterArray raRaster2(argv[3]);
+
+    const QString sFalse = "False";
+    const QString sTrue = "True";
+
+    QString sDivisible1 = sFalse;
+    QString sDivisible2 = sFalse;
+    QString sOrthogonal = sFalse;
+    QString sConcurrent = sFalse;
+    QString sCellCompare = "Cells are not the same";
+
+    if (raRaster1.IsDivisible())
+        sDivisible1 = sTrue;
+    if (raRaster2.IsDivisible())
+        sDivisible2 = sTrue;
+    if (raRaster1.IsOrthogonal(&raRaster2))
+        sOrthogonal = sTrue;
+    if (raRaster1.IsConcurrent(&raRaster2))
+        sConcurrent = sTrue;
+    if (raRaster1.CellCompare(&raRaster2))
+        sConcurrent = "Cells are the same";
+
+    RasterManager::printLine( QString(" Raster: %1").arg(argv[2]));
+    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible1));
+    RasterManager::printLine("");
+    RasterManager::printLine( QString(" Raster: %1").arg(argv[3]));
+    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible2));
+    RasterManager::printLine("");
+    RasterManager::printLine( QString(" Comparison: "));
+    RasterManager::printLine( QString("             Orthogonal: %1").arg(sOrthogonal));
+    RasterManager::printLine( QString("             Concurrent: %1").arg(sConcurrent));
+    RasterManager::printLine( QString("            CellCompare: %1").arg(sCellCompare));
+
+    return PROCESS_OK;
+}
 
 int RasterManEngine::LinThresh(int argc, char * argv[])
 {

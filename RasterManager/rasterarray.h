@@ -33,6 +33,9 @@ class RM_DLL_API RasterArray : public Raster
 public:
     RasterArray(const char * raster);
 
+    bool operator ==(RasterArray &src);
+    bool operator !=(RasterArray &src);
+
     // Testing Functions
     bool IsBorder(size_t ID);
 
@@ -40,6 +43,13 @@ public:
     // It's kind of the only point of this class.
     std::vector<double> Terrain;    // This begins as the input DEM and is modified by the algorithm.
     std::vector<size_t> Neighbors;     // Stores the ID of the curent Cell's eight neighbors
+
+
+    /**
+     * @brief TestChecked: Compare all cells in a raster
+     * @param id
+     */
+    void TestChecked(size_t id);
 
     // Neighbour Functions
     size_t GetNeighborID(size_t id, eDirection dir);
@@ -51,6 +61,9 @@ public:
     bool IsDirectionValid(size_t ID, eDirection dir);
 
     int GetIDFromCoords(int row, int col);
+
+    inline double GetCell(size_t ID){ return Terrain.at(ID); }
+
 
     // We don't allow access to the checked array directly
     inline void SetChecked(size_t ID){ if (ID < Checked.size()) Checked.at(ID) = 1; }
@@ -107,8 +120,22 @@ public:
      */
     int AreaThreshold(const char * psOutputRaster, double dArea);
 
+    /**
+     * @brief reCurseDebug
+     * @param ID
+     * @param row
+     * @param col
+     */
     void reCurseDebug(size_t ID, size_t row, size_t col);
-    void TestChecked(size_t id);
+
+
+    /**
+     * @brief CellCompare
+     * @param raArray2
+     * @return
+     */
+    bool CellCompare(RasterArray *raArray2);
+
 private:
 
     size_t invalidID;

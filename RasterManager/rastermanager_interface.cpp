@@ -497,6 +497,22 @@ extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
     return PROCESS_OK;
 }
 
+extern "C" RM_DLL_API int RasterCompare(const char * ppszRaster1, const char * ppszRaster2, char * sErr){
+    InitCInterfaceError(sErr);
+    try{
+        RasterManager::RasterArray rRasterArray1(ppszRaster1);
+        RasterManager::RasterArray rRasterArray2(ppszRaster2);
+
+        if (rRasterArray1 != rRasterArray2)
+            return RASTER_COMPARISON;
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+    return PROCESS_OK;
+}
+
 extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
 {
     try{
@@ -512,7 +528,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         double dRasterMax = 0;
         double dRasterMin = 0;
         int bHasNoData = 0;
-        int orthogonal = 0;
+        int divisible = 0;
         int nDataType;
 
         RasterManager::Raster r(ppszRaster);
@@ -528,7 +544,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         nCols = r.GetCols();
         dRasterMax = r.GetMaximum();
         dRasterMin = r.GetMinimum();
-        orthogonal = r.IsOthogonal();
+        divisible = r.IsDivisible();
         fNoData = r.GetNoDataValue();
         bHasNoData = (int) r.HasNoDataValue();
         nDataType = (int) *r.GetGDALDataType();
@@ -543,11 +559,11 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         printLine( QString("              Min: %1      Max: %2").arg(dRasterMin).arg(dRasterMax));
         printLine( QString("             Left: %1      Right: %2").arg(fLeft).arg(fRight));
 
-        if (orthogonal == 1 ){
-            printLine( QString("       Orthogonal: True" ) );
+        if (divisible == 1 ){
+            printLine( QString("       Divisible: True" ) );
         }
         else {
-            printLine( QString("       Orthogonal: False" ) );
+            printLine( QString("       Divisible: False" ) );
         }
         std::cout << "\n";
         switch (nDataType)
@@ -805,7 +821,7 @@ extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char *
     sErr[ ERRBUFFERSIZE - 1 ] = 0;
 }
 
-void printLine(QString theString)
+void RM_DLL_API printLine(QString theString)
 {
     std::string sString = theString.toStdString();
     std::cout << "\n" << sString;

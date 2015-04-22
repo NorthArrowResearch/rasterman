@@ -93,6 +93,15 @@ extern "C" RM_DLL_API const char * GetDriverFromFileName(const char *psFileName)
 extern "C" RM_DLL_API int GetStatFromString(const char * psStat);
 
 /**
+ * @brief CompareRasters
+ * @param ppszRaster1
+ * @param ppszRaster2
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int RasterCompare(const char * ppszRaster1, const char * ppszRaster2, char * sErr);
+
+/**
  * @brief Retrieves the plain english words for a particular raster manager error code
  *
  * @param eErrorCode One of the enumeration integers for the raster manager error codes. e.g. INPUT_FILE_ERROR = 1
@@ -510,7 +519,7 @@ bool EndsWith(const char * psFullString, const char * psEnding);
  * @brief printString
  * @param theString
  */
-void printLine(QString theString);
+void RM_DLL_API printLine(QString theString);
 
 
 /**

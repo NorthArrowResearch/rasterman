@@ -251,6 +251,13 @@ private:
      * @return
      */
     int AreaThresh(int argc, char *argv[]);
+    /**
+     * @brief Compare
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int Compare(int argc, char *argv[]);
 };
 
 }

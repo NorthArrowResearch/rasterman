@@ -13,6 +13,11 @@ class GDALRasterBand;
 
 namespace RasterManager {
 
+// When comparing floats we need a number that is "close enough"
+// to zero for comparison purposes
+static const double OMEGA = 0.0000001;
+
+
 enum RasterManagerCombineOperations {
     COMBINE_MULTIPLY,
 };

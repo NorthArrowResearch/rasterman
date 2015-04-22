@@ -29,7 +29,28 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
         }
     }
     CPLFree(pInputLine);
+}
 
+bool RasterArray::operator ==( RasterArray &src)
+{
+    if (IsConcurrent(&src) && CellCompare(&src) )
+        return true;
+    else
+        return false;
+}
+bool RasterArray::operator !=( RasterArray &src){
+    return !(*this==src);
+}
+
+bool RasterArray::CellCompare(RasterArray * raArray2){
+
+    if (!IsConcurrent(raArray2))
+        return false;
+
+    for (size_t ID = 0; ID < GetTotalCells(); ID++){
+        if (!qFuzzyCompare(Terrain.at(ID), raArray2->GetCell(ID)))
+            return false;
+    }
 
 }
 
