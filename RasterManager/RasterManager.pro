@@ -10,7 +10,7 @@ QT       -= gui
 TARGET = RasterManager
 TEMPLATE = lib
 
-VERSION = 6.1.6
+VERSION = 6.1.7
 DEFINES += RMLIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
 
