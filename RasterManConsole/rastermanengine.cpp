@@ -1033,12 +1033,7 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
 }
 
 
-<<<<<<< HEAD
-int RasterManEngine::stats(int argc, char * argv[])
-=======
-
 int RasterManEngine::Stats(int argc, char * argv[])
->>>>>>> Stack stats prototyping
 {
     if (argc != 4)
     {
@@ -1074,8 +1069,6 @@ int RasterManEngine::Stats(int argc, char * argv[])
     return PROCESS_OK;
 }
 
-
-<<<<<<< HEAD
 int RasterManEngine::Compare(int argc, char * argv[])
 {
     if (argc != 4)
@@ -1087,7 +1080,47 @@ int RasterManEngine::Compare(int argc, char * argv[])
         std::cout << "\n    operation:";
         std::cout << "\n              raster1: Path to first raster";
         std::cout << "\n              raster2: Path to second raster";
-=======
+        std::cout << "\n";
+        return PROCESS_OK;
+    }
+
+    RasterManager::RasterArray raRaster1(argv[2]);
+    RasterManager::RasterArray raRaster2(argv[3]);
+
+    const QString sFalse = "False";
+    const QString sTrue = "True";
+
+    QString sDivisible1 = sFalse;
+    QString sDivisible2 = sFalse;
+    QString sOrthogonal = sFalse;
+    QString sConcurrent = sFalse;
+    QString sCellCompare = "Cells are not the same";
+
+    if (raRaster1.IsDivisible())
+        sDivisible1 = sTrue;
+    if (raRaster2.IsDivisible())
+        sDivisible2 = sTrue;
+    if (raRaster1.IsOrthogonal(&raRaster2))
+        sOrthogonal = sTrue;
+    if (raRaster1.IsConcurrent(&raRaster2))
+        sConcurrent = sTrue;
+    if (raRaster1.CellCompare(&raRaster2))
+        sCellCompare = "Cells are the same";
+
+    RasterManager::printLine( QString(" Raster: %1").arg(argv[2]));
+    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible1));
+    RasterManager::printLine("");
+    RasterManager::printLine( QString(" Raster: %1").arg(argv[3]));
+    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible2));
+    RasterManager::printLine("");
+    RasterManager::printLine( QString(" Comparison: "));
+    RasterManager::printLine( QString("             Orthogonal: %1").arg(sOrthogonal));
+    RasterManager::printLine( QString("             Concurrent: %1").arg(sConcurrent));
+    RasterManager::printLine( QString("            CellCompare: %1").arg(sCellCompare));
+
+    return PROCESS_OK;
+}
+
 int RasterManEngine::StackStats(int argc, char * argv[])
 {
     if (argc != 4)
@@ -1111,52 +1144,14 @@ int RasterManEngine::StackStats(int argc, char * argv[])
         std::cout << "\n                                                     ";
         std::cout << "\n    raster_file_paths: two or more raster file paths; semicolon delimited.";
         std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
->>>>>>> Stack stats prototyping
         std::cout << "\n";
         return PROCESS_OK;
     }
 
-<<<<<<< HEAD
-    RasterManager::RasterArray raRaster1(argv[2]);
-    RasterManager::RasterArray raRaster2(argv[3]);
-
-    const QString sFalse = "False";
-    const QString sTrue = "True";
-
-    QString sDivisible1 = sFalse;
-    QString sDivisible2 = sFalse;
-    QString sOrthogonal = sFalse;
-    QString sConcurrent = sFalse;
-    QString sCellCompare = "Cells are not the same";
-
-    if (raRaster1.IsDivisible())
-        sDivisible1 = sTrue;
-    if (raRaster2.IsDivisible())
-        sDivisible2 = sTrue;
-    if (raRaster1.IsOrthogonal(&raRaster2))
-        sOrthogonal = sTrue;
-    if (raRaster1.IsConcurrent(&raRaster2))
-        sConcurrent = sTrue;
-    if (raRaster1.CellCompare(&raRaster2))
-        sConcurrent = "Cells are the same";
-
-    RasterManager::printLine( QString(" Raster: %1").arg(argv[2]));
-    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible1));
-    RasterManager::printLine("");
-    RasterManager::printLine( QString(" Raster: %1").arg(argv[3]));
-    RasterManager::printLine( QString("     Divisible: %1").arg(sDivisible2));
-    RasterManager::printLine("");
-    RasterManager::printLine( QString(" Comparison: "));
-    RasterManager::printLine( QString("             Orthogonal: %1").arg(sOrthogonal));
-    RasterManager::printLine( QString("             Concurrent: %1").arg(sConcurrent));
-    RasterManager::printLine( QString("            CellCompare: %1").arg(sCellCompare));
-
-    return PROCESS_OK;
-=======
     double eResult = Raster::StackStats( (Raster_Stats_Operation) GetStatFromString(argv[2]), argv[3], argv[4] );
 
     return eResult;
->>>>>>> Stack stats prototyping
+
 }
 
 int RasterManEngine::LinThresh(int argc, char * argv[])

@@ -48,10 +48,13 @@ bool RasterArray::CellCompare(RasterArray * raArray2){
         return false;
 
     for (size_t ID = 0; ID < GetTotalCells(); ID++){
-        if (!qFuzzyCompare(Terrain.at(ID), raArray2->GetCell(ID)))
+        if (!qFuzzyCompare(Terrain.at(ID), raArray2->GetCell(ID))){
+            double a = GetCell(ID);
+            double b = raArray2->GetCell(ID);
             return false;
+        }
     }
-
+    return true;
 }
 
 
