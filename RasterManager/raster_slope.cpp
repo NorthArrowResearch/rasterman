@@ -18,7 +18,7 @@ int Raster::Slope(const char * psOutputSlope, const char * psSlpType){
     if (sType.compare(sType, "percent", Qt::CaseInsensitive) == 0)
         nSlopeType = RasterManager::SLOPE_PERCENT;
     else if (sType.compare(sType, "degrees", Qt::CaseInsensitive) == 0){
-        nSlopeType = RasterManager::SLOPE_PERCENT;
+        nSlopeType = RasterManager::SLOPE_DEGREES;
     }
     else{
         throw RasterManagerException( MISSING_ARGUMENT, "Could not detect a valid slope type. must be either \"degrees\" or \"percent\"");
