@@ -25,47 +25,17 @@ private:
      */
     int RasterProperties(int argc, char *argv[]);
     /**
+     * @brief RasterMath
+     * @param argc
+     * @param argv
+     */
+    int RasterMath(int argc, char * argv[]);
+    /**
      * @brief RasterCopy
      * @param argc
      * @param argv
      */
     int RasterCopy(int argc, char * argv[]);
-    /**
-     * @brief RasterAdd
-     * @param argc
-     * @param argv
-     */
-    int RasterAdd(int argc, char * argv[]);
-    /**
-     * @brief RasterSubtract
-     * @param argc
-     * @param argv
-     */
-    int RasterSubtract(int argc, char * argv[]);
-    /**
-     * @brief RasterDivide
-     * @param argc
-     * @param argv
-     */
-    int RasterDivide(int argc, char * argv[]);
-    /**
-     * @brief RasterMultiply
-     * @param argc
-     * @param argv
-     */
-    int RasterMultiply(int argc, char * argv[]);
-    /**
-     * @brief RasterPower
-     * @param argc
-     * @param argv
-     */
-    int RasterPower(int argc, char * argv[]);
-    /**
-     * @brief RasterSqrt
-     * @param argc
-     * @param argv
-     */
-    int RasterSqrt(int argc, char * argv[]);
     /**
      * @brief Mosaic
      * @param argc

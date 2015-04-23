@@ -310,8 +310,8 @@ public:
       */
      static int RasterMath(const char * psRaster1,
                     const char * psRaster2,
-                    const double *dOperator,
-                    const int iOperation,
+                    const double *dNumericArg,
+                    const char *psOperation,
                     const char * psOutput);
 
      /**

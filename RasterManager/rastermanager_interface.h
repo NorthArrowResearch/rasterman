@@ -86,6 +86,13 @@ extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName);
 extern "C" RM_DLL_API const char * GetDriverFromFileName(const char *psFileName);
 
 /**
+ * @brief GetMathOpFromString
+ * @param psOp
+ * @return
+ */
+extern "C" RM_DLL_API int GetMathOpFromString(const char * psOp);
+
+/**
  * @brief GetStatFromString
  * @param psStat
  * @return
@@ -194,8 +201,8 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                     const char * ppszOriginalRaster2,
-                                    const double *dOperator,
-                                    const int iOperation,
+                                    const double *dNumericArg,
+                                    const char *psOperation,
                                     const char * psOutput, char *sErr);
 
 /**

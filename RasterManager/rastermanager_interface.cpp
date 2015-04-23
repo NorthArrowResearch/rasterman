@@ -137,8 +137,8 @@ extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
 
 extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
                                     const char * psRaster2,
-                                    const double * dOperator,
-                                    const int iOperation,
+                                    const double * dNumericArg,
+                                    const char * psOperation,
                                     const char * psOutput,
                                     char * sErr)
 {
@@ -146,8 +146,8 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
     try {
         return Raster::RasterMath(psRaster1,
                    psRaster2,
-                   dOperator,
-                   iOperation,
+                   dNumericArg,
+                   psOperation,
                    psOutput);
     }
     catch (RasterManagerException e){
@@ -795,6 +795,28 @@ extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod)
         return FILL_BAL;
     else if (QString::compare(sMethod , "cut", Qt::CaseInsensitive) == 0)
         return FILL_CUT;
+    else
+        return -1;
+}
+
+extern "C" RM_DLL_API int GetMathOpFromString(const char * psOp)
+{
+    QString sOp(psOp);
+
+    if (QString::compare(sOp , "add", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_ADD;
+    else if (QString::compare(sOp , "subtract", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_SUBTRACT;
+    else if (QString::compare(sOp , "multiply", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_MULTIPLY;
+    else if (QString::compare(sOp , "divide", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_DIVIDE;
+    else if (QString::compare(sOp , "sqrt", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_SQRT;
+    else if (QString::compare(sOp , "power", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_POWER;
+    else if (QString::compare(sOp , "std", Qt::CaseInsensitive) == 0)
+        return STATS_STD;
     else
         return -1;
 }

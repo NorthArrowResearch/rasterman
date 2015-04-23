@@ -22,15 +22,17 @@ namespace RasterManager {
 
 int Raster::RasterMath(const char * psRaster1,
                const char * psRaster2,
-               const double * dOperator,
-               const int iOperation,
+               const double * dNumericArg,
+               const char * psOperation,
                const char * psOutput){
+
+    int iOperation = GetMathOpFromString(psOperation);
 
     if (iOperation < 0)
         return NO_OPERATION_SPECIFIED;
 
     // Everything except square root needs at least one other parameter (raster or doube)
-    if (psRaster2 == NULL && dOperator == NULL && iOperation != RM_BASIC_MATH_SQRT)
+    if (psRaster2 == NULL && dNumericArg == NULL && iOperation != RM_BASIC_MATH_SQRT)
         return MISSING_ARGUMENT;
 
     /*****************************************************************************************
@@ -144,7 +146,7 @@ int Raster::RasterMath(const char * psRaster1,
 
 
     }
-    else if (dOperator != NULL || iOperation == RM_BASIC_MATH_SQRT){
+    else if (dNumericArg != NULL || iOperation == RM_BASIC_MATH_SQRT){
         /*****************************************************************************************
         * Numerical Value to be used
         */
@@ -163,25 +165,25 @@ int Raster::RasterMath(const char * psRaster1,
                 else
                 {
                     if (iOperation == RM_BASIC_MATH_ADD)
-                        pOutputLine[j] = pInputLine1[j] + *dOperator;
+                        pOutputLine[j] = pInputLine1[j] + *dNumericArg;
 
                     else if (iOperation == RM_BASIC_MATH_SUBTRACT)
-                        pOutputLine[j] = pInputLine1[j] - *dOperator;
+                        pOutputLine[j] = pInputLine1[j] - *dNumericArg;
 
                     else if (iOperation == RM_BASIC_MATH_MULTIPLY)
-                        pOutputLine[j] = pInputLine1[j] * (*dOperator);
+                        pOutputLine[j] = pInputLine1[j] * (*dNumericArg);
 
                     else if (iOperation == RM_BASIC_MATH_DIVIDE){
                         // Remember to cover the divide by zero case
-                        if(dOperator != 0)
-                            pOutputLine[j] = pInputLine1[j] / *dOperator;
+                        if(dNumericArg != 0)
+                            pOutputLine[j] = pInputLine1[j] / *dNumericArg;
                         else
                             pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_POWER){
                         // We're throwing away imaginary numbers
-                        if (dOperator >= 0)
-                            pOutputLine[j] = pow(pInputLine1[j], *dOperator);
+                        if (dNumericArg >= 0)
+                            pOutputLine[j] = pow(pInputLine1[j], *dNumericArg);
                         else
                             pOutputLine[j] = fNoDataValue;
                     }

@@ -57,23 +57,8 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "Copy", Qt::CaseInsensitive) == 0)
             eResult = RasterCopy(argc, argv);
 
-        else if (QString::compare(sCommand, "Add", Qt::CaseInsensitive) == 0)
-            eResult = RasterAdd(argc, argv);
-
-        else if (QString::compare(sCommand, "Subtract", Qt::CaseInsensitive) == 0)
-            eResult = RasterSubtract(argc, argv);
-
-        else if (QString::compare(sCommand, "Divide", Qt::CaseInsensitive) == 0)
-            eResult = RasterDivide(argc, argv);
-
-        else if (QString::compare(sCommand, "Multiply", Qt::CaseInsensitive) == 0)
-            eResult = RasterMultiply(argc, argv);
-
-        else if (QString::compare(sCommand, "Power", Qt::CaseInsensitive) == 0)
-            eResult = RasterPower(argc, argv);
-
-        else if (QString::compare(sCommand, "Sqrt", Qt::CaseInsensitive) == 0)
-            eResult = RasterSqrt(argc, argv);
+        else if (QString::compare(sCommand, "math", Qt::CaseInsensitive) == 0)
+            eResult = RasterMath(argc, argv);
 
         else if (QString::compare(sCommand, "csv2raster", Qt::CaseInsensitive) == 0)
             eResult = CSVToRaster(argc, argv);
@@ -169,19 +154,14 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    mask            Mask one raster using another raster or a vector.";
         std::cout << "\n    maskval         Mask one raster using one of its values.";
         std::cout << "\n ";
-        std::cout << "\n    add          Add two rasters or a raster and a constant.";
-        std::cout << "\n    subtract     Subtract two rasters or a constant from a raster.";
-        std::cout << "\n    divide       Divide a raster by a number or another raster.";
-        std::cout << "\n    multiply     Multiply a raster by a number or another raster.";
-        std::cout << "\n    power        Raise a raster to a power.";
-        std::cout << "\n    sqrt         Get the square root of a raster.";
+        std::cout << "\n    math         Perform basic math on two rasters or a raster and a number.";
         std::cout << "\n    invert       Create a raster from nodata values of another.";
         std::cout << "\n    filter       Perform operations like \"smooth\" over a moving window.";
         std::cout << "\n    normalize    Normalize a raster.";
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n    linthesh     Linear thresholding of a raster.";
-//        std::cout << "\n    areathresh   Thresholding of features below a certain area.";
+        std::cout << "\n    areathresh   Thresholding of features below a certain area.";
 
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
@@ -288,186 +268,64 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
         return eResult;
 }
 
-int RasterManEngine::RasterAdd(int argc, char * argv[])
+
+int RasterManEngine::RasterMath(int argc, char * argv[])
 {
-    if (argc != 5)
-    {
-        std::cout << "\n Raster Addition:";
-        std::cout << "\n    Usage: rasterman add <raster1_file_path> <raster2_file_path> <output_file_path>";
-        std::cout << "\n";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    raster1_file_path: Absolute full path to existing first raster.";
-        std::cout << "\n    raster2_file_path: Absolute full path to existing second raster.";
-        std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n";
-        return PROCESS_OK;
-    }
-
-    QString sArg2 = argv[3];
-
     int eResult = PROCESS_OK;
-
-    bool FileisNumeric;
-    double dOperator = sArg2.toDouble(&FileisNumeric);
-
-    if (!FileisNumeric){
-        eResult =  Raster::RasterMath(argv[2],
-                argv[3], NULL, RasterManager::RM_BASIC_MATH_ADD,
-                argv[4]);
-    }
-    else {
-        eResult =  Raster::RasterMath(argv[2],
-                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                argv[4]);
-    }
-    return eResult;
-}
-
-int RasterManEngine::RasterSubtract(int argc, char * argv[])
-{
-    if (argc != 5)
+    if (argc != 6 && argc != 5 && argc !=4)
     {
-        std::cout << "\n Raster Subtraction: Subtract the second raster from the first.";
-        std::cout << "\n    Usage: rasterman subtract <raster1_file_path> <raster2_file_path> <output_file_path>";
-        std::cout << "\n";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    raster1_file_path: Absolute full path to existing first raster.";
-        std::cout << "\n    raster2_file_path: Absolute full path to existing second raster.";
-        std::cout << "\n     output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n";
-        return PROCESS_OK;
-    }
-
-    QString sArg2 = argv[3];
-
-    int eResult = PROCESS_OK;
-
-    bool FileisNumeric;
-    double dOperator = sArg2.toDouble(&FileisNumeric);
-
-    if (!FileisNumeric){
-        eResult =  Raster::RasterMath(argv[2],
-                argv[3], NULL, RasterManager::RM_BASIC_MATH_SUBTRACT,
-                argv[4]);
-    }
-    else {
-        eResult =  Raster::RasterMath(argv[2],
-                NULL, &dOperator, RasterManager::RM_BASIC_MATH_ADD,
-                argv[4]);
-    }
-    return eResult;
-
-}
-int RasterManEngine::RasterDivide(int argc, char * argv[])
-{
-    if (argc != 5)
-    {
-        std::cout << "\n Raster Division: Divide the first raster by the second.";
-        std::cout << "\n    Usage: rasterman divide <raster1_file_path> <raster2_file_path> <output_file_path>";
+        std::cout << "\n Raster Multiplication: Perform basi math on a raster and a number or on two rasters";
+        std::cout << "\n    Usage: rasterman math <operation> <raster1_file_path> [<raster2_file_path>|<numeric_arg>] <output_file_path>";
+        std::cout << "\n    Usage: rasterman math pow <raster1_file_path> <numeric_arg> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
+        std::cout << "\n           operation:  Mathematical operation. Currently supported";
+        std::cout << "\n ";
+        std::cout << "\n                                 add: Add two rasters or a raster and a number.";
+        std::cout << "\n                            subtract: Add two rasters or a raster and a number.";
+        std::cout << "\n                            multiply: Add two rasters or a raster and a number.";
+        std::cout << "\n                              divide: Divide one raster by another or a raster by a number.";
+        std::cout << "\n                            multiply: Multiply two rasters or a raster by a number.";
+        std::cout << "\n                               power: Take a raster to the power of a number.";
+        std::cout << "\n                                sqrt: Take the square root of a raster.";
+        std::cout << "\n ";
         std::cout << "\n    raster1_file_path:  Absolute full path to existing first raster.";
-        std::cout << "\n    raster2_file_path:  Absolute full path to existing second raster.";
+        std::cout << "\n    raster2_file_path:  Absolute full path to existing second raster. (optional)";
+        std::cout << "\n          numeric_arg:  A numeric operator. Use instead of raster2    (optional)";
         std::cout << "\n     output_file_path:  Absolute full path to desired output raster file.";
+        std::cout << "\n                                 ";
+        std::cout << "\n      Notes: pow cannot use two rasters.";
+        std::cout << "\n             sqrt only takes raster1 as an argument";
         std::cout << "\n ";
-        return PROCESS_OK;
+        return eResult;
     }
 
-    QString sArg2 = argv[3];
+    QString sOperator = argv[3];
 
-    int eResult = PROCESS_OK;
-
-    bool FileisNumeric;
-    double dOperator = sArg2.toDouble(&FileisNumeric);
-
-    if (!FileisNumeric){
-        eResult =  Raster::RasterMath(argv[2],
-                argv[3], NULL, RasterManager::RM_BASIC_MATH_DIVIDE,
-                argv[4]);
+    // This is the SQRT Case
+    if (argc == 4 && sOperator.compare("sqrt", Qt::CaseInsensitive) == 0){
+        eResult =  Raster::RasterMath(argv[2], NULL, NULL, argv[2], argv[5]);
     }
-    else {
-        eResult =  Raster::RasterMath(argv[2],
-                NULL, &dOperator, RasterManager::RM_BASIC_MATH_DIVIDE,
-                argv[4]);
+    // This is the Power case
+    else if (argc == 5 && sOperator.compare("pow", Qt::CaseInsensitive) == 0){
+        eResult =  Raster::RasterMath(argv[2], argv[3], NULL, argv[2], argv[5]);
     }
-    return eResult;
-
-}
-
-int RasterManEngine::RasterMultiply(int argc, char * argv[])
-{
-    if (argc != 5)
-    {
-        std::cout << "\n Raster Multiplication: Multiply two rasters.";
-        std::cout << "\n    Usage: rasterman multiply <raster1_file_path> <raster2_file_path> <output_file_path>";
-        std::cout << "\n ";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    raster1_file_path:  Absolute full path to existing first raster.";
-        std::cout << "\n    raster2_file_path:  Absolute full path to existing second raster.";
-        std::cout << "\n     output_file_path:   Absolute full path to desired output raster file.";
-        std::cout << "\n ";
-        return PROCESS_OK;
+    // This is every other case: add, subtract, multiply, divide
+    else if (argc == 6){
+        bool FileisNumeric;
+        QString sArg2(argv[4]);
+        double dOperator = sArg2.toDouble(&FileisNumeric);
+        if (!FileisNumeric){
+            eResult =  Raster::RasterMath(argv[2], argv[3], NULL, argv[2], argv[5]);
+        }
+        else {
+            eResult =  Raster::RasterMath(argv[2], NULL, &dOperator, argv[2], argv[5]);
+        }
+    }
+    else{
+        throw RasterManagerException(ARGUMENT_VALIDATION, "Could not validate arguments.");
     }
 
-    QString sArg2 = argv[3];
-
-    int eResult = PROCESS_OK;
-
-    bool FileisNumeric;
-    double dOperator = sArg2.toDouble(&FileisNumeric);
-
-    if (!FileisNumeric){
-        eResult =  Raster::RasterMath(argv[2],
-                argv[3], NULL, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                argv[4]);
-    }
-    else {
-        eResult =  Raster::RasterMath(argv[2],
-                NULL, &dOperator, RasterManager::RM_BASIC_MATH_MULTIPLY,
-                argv[4]);
-    }
-    return eResult;
-
-}
-int RasterManEngine::RasterPower(int argc, char * argv[])
-{
-    if (argc != 5)
-    {
-        std::cout << "\n Raise every value in a raster to the power of a value.";
-        std::cout << "\n    Usage: rasterman power <raster_file_path> <power_value> <output_file_path>";
-        std::cout << "\n ";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    raster_file_path: Absolute full path to existing first raster.";
-        std::cout << "\n         power_value: Value to be used as the power.";
-        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n ";
-        return PROCESS_OK;
-    }
-
-    double dPower = GetDouble(argc, argv, 3);
-    int eResult = PROCESS_OK;
-
-    eResult = Raster::RasterMath(argv[2], NULL, &dPower, RasterManager::RM_BASIC_MATH_POWER, argv[4]);
-    return eResult;
-}
-int RasterManEngine::RasterSqrt(int argc, char * argv[])
-{
-    if (argc != 4)
-    {
-        std::cout << "\n Get the square root of a raster.";
-        std::cout << "\n    Usage: rasterman sqrt <raster_file_path> <output_file_path>";
-        std::cout << "\n ";
-        std::cout << "\n Arguments:";
-        std::cout << "\n    raster_file_path: Absolute full path to existing first raster.";
-        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n ";
-        return PROCESS_OK;
-    }
-
-    int eResult = PROCESS_OK;
-
-    eResult = Raster::RasterMath(argv[2], NULL, NULL, RasterManager::RM_BASIC_MATH_SQRT,
-            argv[3]);
     return eResult;
 
 }
