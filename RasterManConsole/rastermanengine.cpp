@@ -276,7 +276,7 @@ int RasterManEngine::RasterMath(int argc, char * argv[])
     {
         std::cout << "\n Raster Multiplication: Perform basi math on a raster and a number or on two rasters";
         std::cout << "\n    Usage: rasterman math <operation> <raster1_file_path> [<raster2_file_path>|<numeric_arg>] <output_file_path>";
-        std::cout << "\n    Usage: rasterman math pow <raster1_file_path> <numeric_arg> <output_file_path>";
+        std::cout << "\n    Usage: rasterman math power <raster1_file_path> <numeric_arg> <output_file_path>";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n           operation:  Mathematical operation. Currently supported";
@@ -294,32 +294,36 @@ int RasterManEngine::RasterMath(int argc, char * argv[])
         std::cout << "\n          numeric_arg:  A numeric operator. Use instead of raster2    (optional)";
         std::cout << "\n     output_file_path:  Absolute full path to desired output raster file.";
         std::cout << "\n                                 ";
-        std::cout << "\n      Notes: pow cannot use two rasters.";
+        std::cout << "\n      Notes: powwe cannot use two rasters.";
         std::cout << "\n             sqrt only takes raster1 as an argument";
         std::cout << "\n ";
         return eResult;
     }
 
-    QString sOperator = argv[3];
+    QString sOperator = argv[2];
 
     // This is the SQRT Case
-    if (argc == 4 && sOperator.compare("sqrt", Qt::CaseInsensitive) == 0){
-        eResult =  Raster::RasterMath(argv[2], NULL, NULL, argv[2], argv[5]);
+    if (argc == 5 && sOperator.compare("sqrt", Qt::CaseInsensitive) == 0){
+        eResult =  Raster::RasterMath(argv[3], NULL, NULL, argv[2], argv[4]);
     }
     // This is the Power case
-    else if (argc == 5 && sOperator.compare("pow", Qt::CaseInsensitive) == 0){
-        eResult =  Raster::RasterMath(argv[2], argv[3], NULL, argv[2], argv[5]);
-    }
+
     // This is every other case: add, subtract, multiply, divide
     else if (argc == 6){
+
         bool FileisNumeric;
         QString sArg2(argv[4]);
         double dOperator = sArg2.toDouble(&FileisNumeric);
+
+        if (FileisNumeric && sOperator.compare("power", Qt::CaseInsensitive) == 0){
+            eResult =  Raster::RasterMath(argv[3], NULL, &dOperator, argv[2], argv[5]);
+        }
+
         if (!FileisNumeric){
-            eResult =  Raster::RasterMath(argv[2], argv[3], NULL, argv[2], argv[5]);
+            eResult =  Raster::RasterMath(argv[3], argv[4], NULL, argv[2], argv[5]);
         }
         else {
-            eResult =  Raster::RasterMath(argv[2], NULL, &dOperator, argv[2], argv[5]);
+            eResult =  Raster::RasterMath(argv[3], NULL, &dOperator, argv[2], argv[5]);
         }
     }
     else{
