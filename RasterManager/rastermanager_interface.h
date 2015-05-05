@@ -306,6 +306,19 @@ extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
                                           double dAreaThresh, char *sErr);
 
 /**
+ * @brief SmoothEdges
+ * @param psInputRaster
+ * @param psOutputRaster
+ * @param nCells
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int SmoothEdges(const char * psInputRaster,
+                                      const char * psOutputRaster,
+                                      int nCells,
+                                      char * sErr);
+
+/**
  * @brief IsConcurrent
  * @param csRaster
  * @return

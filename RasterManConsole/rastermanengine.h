@@ -228,6 +228,15 @@ private:
      * @return
      */
     int AreaThresh(int argc, char *argv[]);
+
+    /**
+     * @brief SmoothEdges
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int SmoothEdges(int argc, char *argv[]);
+
     /**
      * @brief Compare
      * @param argc

@@ -108,6 +108,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "areathresh", Qt::CaseInsensitive) == 0)
             eResult = AreaThresh(argc, argv);
 
+        else if (QString::compare(sCommand, "smoothedge", Qt::CaseInsensitive) == 0)
+            eResult = SmoothEdges(argc, argv);
+
         else if (QString::compare(sCommand, "combine", Qt::CaseInsensitive) == 0)
             eResult = Combine(argc, argv);
 
@@ -1069,6 +1072,33 @@ int RasterManEngine::AreaThresh(int argc, char * argv[])
 
     RasterArray raRaster(argv[2]);
     int eResult = raRaster.AreaThresholdRaster(argv[3], dAreaThresh);
+
+    PrintRasterProperties(argv[3]);
+    return eResult;
+
+}
+
+
+int RasterManEngine::SmoothEdges(int argc, char * argv[])
+{
+
+    if (argc != 5)
+    {
+        std::cout << "\n Smooth Edge: Subtract pixels from the edges and then add them back to smooth.";
+        std::cout << "\n    Usage: rasterman smoothedges <raster_input_path> <raster_output_path> <cells>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n     raster_input_path: Path to an existing raster file.";
+        std::cout << "\n    raster_output_path: Path to the desired output raster file.";
+        std::cout << "\n                 cells: Number of cells (pixels) to remove and then add back.";
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    int nCells = GetInteger(argc, argv, 4);
+
+    RasterArray raRaster(argv[2]);
+    int eResult = raRaster.SmoothEdge(argv[3], nCells);
 
     PrintRasterProperties(argv[3]);
     return eResult;

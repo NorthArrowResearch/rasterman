@@ -20,7 +20,8 @@
 
 namespace RasterManager {
 
-int RasterArray::SmoothEdge(const char * psOutputRaster,
+int RasterArray::SmoothEdge(
+                            const char * psOutputRaster,
                             int nCells)
 {
 
