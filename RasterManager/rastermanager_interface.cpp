@@ -388,7 +388,7 @@ extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
     InitCInterfaceError(sErr);
     try{
         RasterArray raRaster(psInputRaster);
-        return raRaster.AreaThreshold(psOutputRaster, dAreaThresh);
+        return raRaster.AreaThresholdRaster(psOutputRaster, dAreaThresh);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

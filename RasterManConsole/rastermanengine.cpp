@@ -1068,7 +1068,7 @@ int RasterManEngine::AreaThresh(int argc, char * argv[])
     double dAreaThresh = GetDouble(argc, argv, 4);
 
     RasterArray raRaster(argv[2]);
-    int eResult = raRaster.AreaThreshold(argv[3], dAreaThresh);
+    int eResult = raRaster.AreaThresholdRaster(argv[3], dAreaThresh);
 
     PrintRasterProperties(argv[3]);
     return eResult;

@@ -1,5 +1,19 @@
 --------------------------------
 
+## 6.1.7
+
+### New Features
+
+* Rolling all the math commands up into one "rasterman math" command.
+* Re-implement the area thresholding as a non-recursive algorithm. 
+* **New Operation**: `stackstats`: Create a raster with the cumulative stats for each cell in a stack of rasters.
+
+### Fixes
+
+* Worked out the kinks in the 'slope' interface so we can start using that everywhere.
+
+--------------------------------
+
 ## 6.1.6
 
 This release is in preparation for our GUT tool and contains a lot of new features for ways to process raster files.

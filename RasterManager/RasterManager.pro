@@ -42,9 +42,10 @@ SOURCES += \
     raster_eucliddist.cpp \
     raster_stats.cpp \
     raster_linthresh.cpp \
-    raster_areathresh.cpp \
     rasterarray.cpp \
-    raster_combine.cpp
+    raster_combine.cpp \
+    raster_smoothedge.cpp \
+    raster_area.cpp
 
 HEADERS +=\
     rastermanager_global.h \

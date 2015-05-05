@@ -116,11 +116,27 @@ public:
     };
 
     /**
+     * @brief AreaRaster -- Write a raster with areas for each different value
+     * @param psOutputRaster
+     * @return
+     */
+    int AreaRaster(const char * psOutputRaster);
+
+    /**
      * @brief AreaThreshold
      * @param psOutputRaster
      * @param dArea
      */
-    int AreaThreshold(const char * psOutputRaster, double dArea);
+    int AreaThresholdRaster(const char * psOutputRaster, double dArea);
+
+    /**
+     * @brief SmoothEdge
+     * @param psInputRaster
+     * @param psOutput
+     * @param nCells
+     * @return
+     */
+    int SmoothEdge(const char *psOutputRaster, int nCells);
 
     /**
      * @brief reCurseDebug
@@ -150,10 +166,32 @@ private:
     size_t invalidID;
     std::vector<int> Checked;      // Convenience Array used to decide if a cell has been visited.
 
-    bool AreaThresholdWalker(size_t ID,
-                             int *CurrentFeatureID,
-                             int *pdCellsInArea,
-                             std::vector<int> *pAreaMap);
+    /**
+     * @brief FindAreas -- This is a wrapper to kick-start the AreaWalker (below)
+     * @param AreaMap
+     * @param AreaFeatures
+     * @return
+     */
+    int FindAreas(std::vector<int> *AreaMap, QHash<int, double> *AreaFeatures, bool bValDelim);
+
+    /**
+     * @brief RasterArray::AreaWalker -- Queue-based algorithm to find the size of each area.
+     *                                      In the process we find area IDs too.
+     * @param ID
+     * @param CurrentFeatureID
+     * @param pdCellsInArea
+     * @param pAreaMap
+     * @param bMask -- False: Every different value is a new area, True: Areas are surrounded by nodatavalue
+     * @return
+     *
+     *
+     * https://en.wikipedia.org/wiki/Flood_fill
+     *
+     */
+    bool AreaWalker(size_t ID,
+                    int *CurrentFeatureID,
+                    int *pdCellsInArea,
+                    std::vector<int> *pAreaMap, bool bValDelim);
 };
 
 }
