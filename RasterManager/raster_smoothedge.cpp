@@ -25,6 +25,8 @@ int RasterArray::SmoothEdge(
                             int nCells)
 {
 
+
+
     std::vector<double> WorkingCopyMap;
     WorkingCopyMap.resize(GetTotalCells());
 
@@ -33,21 +35,29 @@ int RasterArray::SmoothEdge(
         WorkingCopyMap.at(id) = Terrain.at(id);
     }
 
+
     // Subtract n Cells from the edges
     for (int nCell = 0; nCell < nCells; nCell++){
+        ResetChecked();
         // Subtract all cells that touch an edge. Do this nCells times
         for (size_t id = 0; id < GetTotalCells(); id++){
             if (WorkingCopyMap.at(id) != GetNoDataValue()){
                 PopulateNeighbors(id);
-                // Now see if we have neighbours
+                // Now see if we have neighbours that have a nodata value
                 for (int d = DIR_NW; d <= DIR_W; d++)
                 {
                     if ( IsDirectionValid(id,(eDirection)d) &&
                          WorkingCopyMap.at(Neighbors.at((eDirection) d)) == GetNoDataValue() ){
-                        WorkingCopyMap.at(id) = GetNoDataValue();
+
+                        SetChecked(id); // Add this cell to the subtraction map
                     }
                 }
             }
+        }
+        // Apply the mask to the Raster
+        for (size_t id = 0; id < GetTotalCells(); id++){
+            if (IsChecked(id))
+                WorkingCopyMap.at(id) = GetNoDataValue();
         }
     }
 
@@ -68,11 +78,17 @@ int RasterArray::SmoothEdge(
                     if ( dir == DIR_N || dir == DIR_E || dir == DIR_S || dir == DIR_W ){
                         if ( IsDirectionValid(id,(eDirection)d) &&
                              WorkingCopyMap.at(Neighbors.at((eDirection) d)) != GetNoDataValue() ){
-                            WorkingCopyMap.at(id) = Terrain.at(id);
+
+                            SetChecked(id);
                         }
                     }
                 }
             }
+        }
+        // Apply the mask to the Raster and put cells back if we need to
+        for (size_t id = 0; id < GetTotalCells(); id++){
+            if (IsChecked(id))
+                WorkingCopyMap.at(id) = Terrain.at(id);
         }
     }
 

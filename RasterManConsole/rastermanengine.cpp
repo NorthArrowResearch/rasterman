@@ -108,7 +108,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "areathresh", Qt::CaseInsensitive) == 0)
             eResult = AreaThresh(argc, argv);
 
-        else if (QString::compare(sCommand, "smoothedge", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(sCommand, "smoothedges", Qt::CaseInsensitive) == 0)
             eResult = SmoothEdges(argc, argv);
 
         else if (QString::compare(sCommand, "combine", Qt::CaseInsensitive) == 0)
@@ -165,6 +165,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n    linthesh     Linear thresholding of a raster.";
         std::cout << "\n    areathresh   Thresholding of features below a certain area.";
+        std::cout << "\n    smoothedges  Smooth the edges of features delineated by NoData.";
 
         std::cout << "\n";
         std::cout << "\n    hillshade    Create a hillshade raster.";
@@ -297,7 +298,7 @@ int RasterManEngine::RasterMath(int argc, char * argv[])
         std::cout << "\n          numeric_arg:  A numeric operator. Use instead of raster2    (optional)";
         std::cout << "\n     output_file_path:  Absolute full path to desired output raster file.";
         std::cout << "\n                                 ";
-        std::cout << "\n      Notes: powwe cannot use two rasters.";
+        std::cout << "\n      Notes: power cannot use two rasters.";
         std::cout << "\n             sqrt only takes raster1 as an argument";
         std::cout << "\n ";
         return eResult;
