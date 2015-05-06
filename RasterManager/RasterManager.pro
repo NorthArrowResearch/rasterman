@@ -33,7 +33,6 @@ SOURCES += \
     raster_rootsumsquare.cpp \
     raster_mosaic.cpp \
     rastermanager.cpp \
-    raster_vector.cpp \
     raster_invert.cpp \
     raster_normalize.cpp \
     raster_filter.cpp \
@@ -45,7 +44,9 @@ SOURCES += \
     rasterarray.cpp \
     raster_combine.cpp \
     raster_smoothedge.cpp \
-    raster_area.cpp
+    raster_area.cpp \
+    raster_gutpolygon.cpp \
+    raster_vector2raster.cpp
 
 HEADERS +=\
     rastermanager_global.h \
@@ -58,7 +59,8 @@ HEADERS +=\
     rastermanager.h \
     raster_pitremove.h \
     benchmark.h \
-    rasterarray.h
+    rasterarray.h \
+    raster_gutpolygon.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
