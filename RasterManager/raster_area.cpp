@@ -100,7 +100,7 @@ bool RasterArray::AreaWalker(size_t ID,
             eDirection dir = (eDirection)d;
             // Add any neighbour inside bounds to the queue
             // if it's not already checked and it's confirmed as part of this area
-            if ( IsDirectionValid(ID,dir) && !IsChecked(Neighbors.at(dir)) ){
+            if ( IsDirectionValid(currID,dir) && !IsChecked(Neighbors.at(dir)) ){
                 // NODATA is aleays an area delineator
                 if ( Terrain.at(Neighbors.at(dir)) != GetNoDataValue()){
                     // if the bValDelim flag is set then different values become delineators
