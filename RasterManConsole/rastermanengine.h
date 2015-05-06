@@ -244,6 +244,15 @@ private:
      * @return
      */
     int Compare(int argc, char *argv[]);
+
+    /**
+     * @brief GutPoly
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int GutPoly(int argc, char *argv[]);
+
 };
 
 }

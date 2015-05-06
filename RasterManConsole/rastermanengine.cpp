@@ -10,6 +10,7 @@
 #include "rastermanager_interface.h"
 #include "rastermanager_exception.h"
 #include "raster_pitremove.h"
+#include "raster_gutpolygon.h"
 
 namespace RasterManager {
 
@@ -122,6 +123,12 @@ int RasterManEngine::Run(int argc, char * argv[])
 
         else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
             eResult = Compare(argc, argv);
+
+        else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
+            eResult = Compare(argc, argv);
+
+        else if (QString::compare(sCommand, "gutpoly", Qt::CaseInsensitive) == 0)
+            eResult = GutPoly(argc, argv);
 
         else
             bRecognizedCommand = false;
@@ -1052,6 +1059,29 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
     return eResult;
 }
 
+int RasterManEngine::GutPoly(int argc, char * argv[]){
+    if (argc != 6)
+    {
+        std::cout << "\n GutPoly: Vectorize a GUT evidence raster and cram it into a SHP file.";
+        std::cout << "\n    Usage: rasterman gutpoly <shp_input_path> <raster_input_path> <tier1> <tier2>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n       shp_input_path: Path to an existing raster file.";
+        std::cout << "\n    raster_input_path: Path to the desired output raster file.";
+        std::cout << "\n                tier1: Name of tier1 unit.";
+        std::cout << "\n                tier2: Name of tier2 unit.";
+        std::cout << "\n ";
+        std::cout << "\n        Note: This interface is EXPERIMENTAL and used for testing only.";
+        std::cout << "\n              what could possibleye go wrong?";
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    int eResult = Raster2Polygon::AddGut(argv[2], argv[3], argv[4], argv[5]);
+
+    return eResult;
+
+}
 
 int RasterManEngine::AreaThresh(int argc, char * argv[])
 {
