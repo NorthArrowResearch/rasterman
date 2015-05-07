@@ -4,12 +4,13 @@
 #include <QDebug>
 #include <gdal_alg.h>
 
+#include "rastermanager_global.h"
 #include "ogrsf_frmts.h"
 
 
 namespace RasterManager {
 
-class Raster2Polygon
+class RM_DLL_API Raster2Polygon
 {
 public:
     Raster2Polygon();
