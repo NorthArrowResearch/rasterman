@@ -270,6 +270,19 @@ extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,
 
 
 /**
+ * @brief AddGut
+ * @param psShpFile
+ * @param psInput
+ * @param tier1
+ * @param tier2
+ * @return
+ */
+extern "C" RM_DLL_API int AddGut(const char *psShpFile,
+                                 const char *psInput,
+                                 const char *tier1,
+                                 const char *tier2, char *sErr);
+
+/**
  * @brief
  *
  * @param csRasters

@@ -3,6 +3,7 @@
 #include "rastermanager_interface.h"
 #include "extentrectangle.h"
 #include "rasterarray.h"
+#include "raster_gutpolygon.h"
 
 #include <stdio.h>
 #include "extentrectangle.h"
@@ -460,6 +461,22 @@ extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,
     InitCInterfaceError(sErr);
     try{
         return Raster::CombineRaster(csRasters, psOutput, psMethod);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+
+}
+
+extern "C" RM_DLL_API int AddGut(const char *psShpFile,
+                  const char *psInput,
+                  const char *tier1,
+                  const char *tier2, char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        return Raster2Polygon::AddGut(psShpFile, psInput, tier1, tier2);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
