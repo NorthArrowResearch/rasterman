@@ -412,6 +412,23 @@ extern "C" RM_DLL_API int SmoothEdges(const char * psInputRaster,
     }
 }
 
+extern "C" RM_DLL_API int SetNull(const char * psInputRaster,
+                                  const char * psOutputRaster,
+                                  const char * psOperator,
+                                  double dThreshVal1,
+                                  double dThreshVal2,
+                                  char * sErr){
+    InitCInterfaceError(sErr);
+    try{
+        Raster raRaster(psInputRaster);
+        return raRaster.SetNull(psOutputRaster, psOperator, dThreshVal1, dThreshVal2);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
 
 extern "C" RM_DLL_API int RootSumSquares(const char * psRaster1,
                                          const char * psRaster2,

@@ -106,6 +106,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "linthresh", Qt::CaseInsensitive) == 0)
             eResult = LinThresh(argc, argv);
 
+        else if (QString::compare(sCommand, "setnull", Qt::CaseInsensitive) == 0)
+            eResult = SetNull(argc, argv);
+
         else if (QString::compare(sCommand, "areathresh", Qt::CaseInsensitive) == 0)
             eResult = AreaThresh(argc, argv);
 
@@ -163,6 +166,8 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    makeconcurrent  Make all input rasters concurrent.";
         std::cout << "\n    mask            Mask one raster using another raster or a vector.";
         std::cout << "\n    maskval         Mask one raster using one of its values.";
+        std::cout << "\n ";
+        std::cout << "\n    setnull         Remove values a number of different ways (high-pass, low-pass etc.)";
         std::cout << "\n ";
         std::cout << "\n    math         Perform basic math on two rasters or a raster and a number.";
         std::cout << "\n    invert       Create a raster from nodata values of another.";
@@ -436,6 +441,40 @@ int RasterManEngine::Mask(int argc, char * argv[])
                 argv[2],
             argv[3],
             argv[4]);
+
+    return eResult;
+
+}
+
+
+int RasterManEngine::SetNull(int argc, char * argv[])
+{
+    int eResult = PROCESS_OK;
+
+    if (argc != 6 && argc !=7)
+    {
+        std::cout << "\n Set values of a raster to NoData using simple rules.";
+        std::cout << "\n    Usage: rasterman setnull <rule> <raster_file_path> <output_file_path> [<arg>| <lowval> <highval>]";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n                rule: Can be one of \"above\", \"below\", \"between\" .";
+        std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
+        std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
+        std::cout << "\n                 arg: Value to threshold below or above. Use for \"above\" and \"below\"";
+        std::cout << "\n    lowval & highval: Low / high value. Use for \"above\" and \"below\"";
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    Raster theRaster(argv[3]);
+
+    double dThresh1 = GetDouble(argc, argv, 5);
+    double dThresh2 = 0;
+
+    if (argc == 7)
+        dThresh2 = GetDouble(argc, argv, 6);
+
+    eResult = theRaster.SetNull(argv[4], argv[2], dThresh1, dThresh2);
 
     return eResult;
 

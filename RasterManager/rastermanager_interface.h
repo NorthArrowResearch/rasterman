@@ -47,6 +47,12 @@ enum Raster_SymbologyStyle{
     GSS_Unknown  = 8,  // This one is for when the user doesn't enter it.
 };
 
+enum Raster_Setnull_ops{
+    SETNULL_ABOVE,
+    SETNULL_BELOW,
+    SETNULL_BETWEEN
+};
+
 
 enum Raster_Stats_Operation{
     STATS_MEAN,
@@ -443,6 +449,24 @@ extern "C" RM_DLL_API int ExtractRasterPoints(const char * sCSVInputSourcePath,
 extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality,
                                     int nLongAxisPixels, int nOpacity, int eRasterType,
                                     char *sErr);
+
+
+/**
+ * @brief SetNull
+ * @param psInputRaster
+ * @param psOutputRaster
+ * @param psOperator
+ * @param dThreshVal1
+ * @param dThreshVal2
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int SetNull(const char * psInputRaster,
+                                  const char * psOutputRaster,
+                                  const char * psOperator,
+                                  double dThreshVal1,
+                                  double dThreshVal2,
+                                  char * sErr);
 
 /**
  * @brief GetSymbologyStyleFromString

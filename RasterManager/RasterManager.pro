@@ -46,7 +46,8 @@ SOURCES += \
     raster_smoothedge.cpp \
     raster_area.cpp \
     raster_gutpolygon.cpp \
-    raster_vector2raster.cpp
+    raster_vector2raster.cpp \
+    raster_setnull.cpp
 
 HEADERS +=\
     rastermanager_global.h \

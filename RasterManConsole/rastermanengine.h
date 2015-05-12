@@ -252,7 +252,13 @@ private:
      * @return
      */
     int GutPoly(int argc, char *argv[]);
-
+    /**
+     * @brief SetNull
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int SetNull(int argc, char *argv[]);
 };
 
 }

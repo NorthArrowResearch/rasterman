@@ -420,6 +420,15 @@ public:
                                  const char * sRasterOutput,
                                  FillMode eMethod);
 
+
+     /**
+      * @brief SetNull
+      * @param psOutputSlope
+      * @param psOperator
+      * @return
+      */
+     int SetNull(const char *psOutputSlope, const char *psOperator, double dThresh1, double dThresh2);
+
      /**
       * @brief RasterStats
       * @param sOperation
@@ -462,6 +471,7 @@ public:
              const char * psInputRasters,
              const char * psOutputRaster,
              const char * psOperation );
+
 
 protected:
 
