@@ -139,7 +139,7 @@ extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}
 
 extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
                                     const char * psRaster2,
-                                    const double * dNumericArg,
+                                    const double dNumericArg,
                                     const char * psOperation,
                                     const char * psOutput,
                                     char * sErr)
@@ -148,7 +148,7 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
     try {
         return Raster::RasterMath(psRaster1,
                    psRaster2,
-                   dNumericArg,
+                   &dNumericArg,
                    psOperation,
                    psOutput);
     }

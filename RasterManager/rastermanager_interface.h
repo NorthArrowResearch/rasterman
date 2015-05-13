@@ -218,7 +218,7 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                     const char * ppszOriginalRaster2,
-                                    const double *dNumericArg,
+                                    const double dNumericArg,
                                     const char *psOperation,
                                     const char * psOutput, char *sErr);
 
