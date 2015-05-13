@@ -171,7 +171,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n ";
         std::cout << "\n    math         Perform basic math on two rasters or a raster and a number.";
         std::cout << "\n    invert       Create a raster from nodata values of another.";
-        std::cout << "\n    filter       Perform operations like \"smooth\" over a moving window.";
+        std::cout << "\n    filter       Perform operations like \"mean\" and \"range\" over a moving window.";
         std::cout << "\n    normalize    Normalize a raster.";
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
@@ -761,14 +761,16 @@ int RasterManEngine::filter(int argc, char * argv[])
         std::cout << "\n    Usage: rasterman filter <operation> <input_raster_path> <output_raster_path> [<window_width> <window_height>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
-        std::cout << "\n           operation: What to do over a moving window. For now \"mean\" is the only option.";
+        std::cout << "\n           operation: What to do over a moving window. For now \"mean\", and \"range\" are currently supported.";
+        std::cout << "\n                            Mean: Take a mean or Average over all valid cells in the window.";
+        std::cout << "\n                           range: Max - Min of valid values in the window.";
         std::cout << "\n           ";
         std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
         std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
         std::cout << "\n           ";
         std::cout << "\n        window_width: (optional) Width (in cells) of moving window. Default is 3. Must be odd.";
         std::cout << "\n       window_height: (optional) Height (in cells) of moving window. Default is 3. Must be odd";
-        std::cout << "\n                NOTE: The maximum widths allowed are 15 pixels or equivalent length in units";
+        std::cout << "\n                NOTE: The maximum widths allowed are 15 cells";
         std::cout << "\n\n";
 
         return PROCESS_OK;

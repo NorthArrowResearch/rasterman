@@ -25,8 +25,6 @@ int RasterArray::SmoothEdge(
                             int nCells)
 {
 
-
-
     std::vector<double> WorkingCopyMap;
     WorkingCopyMap.resize(GetTotalCells());
 
@@ -62,7 +60,7 @@ int RasterArray::SmoothEdge(
     }
 
     //  DEBUG
-    WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-Subtract"), &WorkingCopyMap, NULL);
+    //WriteArraytoRaster(appendToBaseFileName(psOutputRaster, "_DEBUG-Subtract"), &WorkingCopyMap, NULL);
 
     // Add it back one border pixel at a time.
     for (int nCell = 0; nCell < nCells; nCell++){

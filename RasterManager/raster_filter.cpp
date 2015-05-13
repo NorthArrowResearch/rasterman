@@ -20,8 +20,8 @@ const int MAX_WINDOW_HEIGHT = 15;
 
 enum RasterManagerFilterOperations {
     FILTER_MEAN,
+    FILTER_RANGE,
 };
-
 
 int Raster::FilterRaster(
         const char * psOperation,
@@ -49,8 +49,10 @@ int Raster::FilterRaster(
     GDALRasterBand * pRBInput = pDSInput->GetRasterBand(1);
 
     if (QString(psOperation).compare("mean", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         nFilterOp = FILTER_MEAN;
+    }
+    else if (QString(psOperation).compare("range", Qt::CaseInsensitive) == 0){
+        nFilterOp = FILTER_RANGE;
     }
     else{
         throw RasterManagerException(ARGUMENT_VALIDATION, QString("Operation argument was invalid: %1").arg(psOperation) );
@@ -153,21 +155,44 @@ int Raster::FilterRaster(
 
                 // Loop over the window for this particular output cell (i,j)
                 double dSum = 0;
+                double dMin = fNoDataValue;
+                double dMax = fNoDataValue;
                 int nCells = 0;
                 for ( int nWrow = 0; nWrow < nWindowHeightAdj; nWrow++ ){
                     for ( int nWcol = 0; nWcol < nWindowWidthAdj; nWcol++ ){
-
                         // Translate the window coords into raster coords
                         int nWindowRasterInd = ( nWrow * rmRasterMeta.GetCols() ) + (nWcol + nWindowLeftCol);
-                        if (pInputWindow[ nWindowRasterInd ] != fNoDataValue){
-                            nCells++;
-                            dSum += pInputWindow[ nWindowRasterInd ];
+
+                        // For Mean we need to sum so we can divide by total points later
+                        if (nFilterOp == FILTER_MEAN){
+                            if (pInputWindow[ nWindowRasterInd ] != fNoDataValue){
+                                nCells++;
+                                dSum += pInputWindow[ nWindowRasterInd ];
+                            }
                         }
 
+                        // For Range we need to set max and min if appropriate
+                        else if (nFilterOp == FILTER_RANGE){
+                            double val = pInputWindow[ nWindowRasterInd ];
+                            if (val != fNoDataValue){
+                                if (dMin == fNoDataValue || val < dMin)
+                                    dMin = val;
+                                if (dMax == fNoDataValue || val > dMax)
+                                    dMax = val;
+                            }
+                        }
                     }
                 }
+                // Final Combination Method
                 if (nFilterOp == FILTER_MEAN)
                     pOutputLine[nOutCol] = dSum / nCells;
+                else if (nFilterOp == FILTER_RANGE){
+                    if (dMax != fNoDataValue && dMin != fNoDataValue)
+                        pOutputLine[nOutCol] = dMax - dMin;
+                    else{
+                        pOutputLine[nOutCol] = fNoDataValue;
+                    }
+                }
             }
         }
 
