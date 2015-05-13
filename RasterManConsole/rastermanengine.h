@@ -51,6 +51,14 @@ private:
     int BiLinearResample(int argc, char * argv[]);
 
     /**
+     * @brief Uniform
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int Uniform(int argc, char *argv[]);
+
+    /**
      * @brief Slope
      * @param argc
      * @param argv

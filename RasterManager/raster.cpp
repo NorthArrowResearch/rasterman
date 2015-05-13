@@ -329,6 +329,59 @@ int  Raster::Copy(const char * pOutputRaster,
 }
 
 
+int Raster::Uniform(const char * pOutputRaster, double fValue)
+{
+
+    // Open up the Input File
+    GDALDataset * pInputDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
+    if (pInputDS == NULL)
+        throw RasterManagerException( INPUT_FILE_ERROR, "Input file could not be opened");
+
+    GDALRasterBand * pRBInput = pInputDS->GetRasterBand(1);
+
+    // Create the output dataset for writing
+    GDALDataset * pOutputDS = CreateOutputDS(pOutputRaster, this);
+    GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
+
+    // Assign our buffers
+    double * pInputLine = (double*) CPLMalloc(sizeof(double) * GetCols());
+    double * pOutputLine = (double*) CPLMalloc(sizeof(double) * GetCols());
+
+    // Loop over rows
+    for (int i=0; i < GetRows(); i++)
+    {
+        // Populate the buffer
+        pRBInput->RasterIO(GF_Read, 0,  i, GetCols(), 1, pInputLine, GetCols(), 1, GDT_Float64, 0, 0);
+
+        // Loop over columns
+        for (int j=0; j < GetCols(); j++)
+        {
+            if (pInputLine[j] != GetNoDataValue()){
+                pOutputLine[j] = fValue;
+            }
+            else {
+                pOutputLine[j] = GetNoDataValue();
+            }
+
+        }
+        // Write the row
+        pOutputRB->RasterIO(GF_Write, 0, i, GetCols(), 1, pOutputLine, GetCols(), 1, GDT_Float64, 0, 0 );
+    }
+
+    CPLFree(pOutputLine);
+    CPLFree(pInputLine);
+
+    CalculateStats(pOutputDS->GetRasterBand(1));
+
+    if ( pInputDS != NULL)
+        GDALClose(pInputDS);
+    if ( pOutputDS != NULL)
+        GDALClose(pOutputDS);
+
+    return PROCESS_OK;
+
+}
+
 /*
  * Algorithm taken from: http://www.quantdec.com/SYSEN597/GTKAV/section9/map_algebra.htm
  *

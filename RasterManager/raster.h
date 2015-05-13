@@ -422,6 +422,14 @@ public:
 
 
      /**
+      * @brief Uniform
+      * @param pOutputRaster
+      * @param fNewCellSize
+      * @return
+      */
+     int Uniform(const char *pOutputRaster, double fValue);
+
+     /**
       * @brief SetNull
       * @param psOutputSlope
       * @param psOperator
@@ -471,7 +479,6 @@ public:
              const char * psInputRasters,
              const char * psOutputRaster,
              const char * psOperation );
-
 
 protected:
 

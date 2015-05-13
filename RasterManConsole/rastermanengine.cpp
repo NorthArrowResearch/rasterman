@@ -127,6 +127,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
             eResult = Compare(argc, argv);
 
+        else if (QString::compare(sCommand, "uniform", Qt::CaseInsensitive) == 0)
+            eResult = Uniform(argc, argv);
+
         else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
             eResult = Compare(argc, argv);
 
@@ -173,6 +176,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    invert       Create a raster from nodata values of another.";
         std::cout << "\n    filter       Perform operations like \"mean\" and \"range\" over a moving window.";
         std::cout << "\n    normalize    Normalize a raster.";
+        std::cout << "\n    uniform      Make a uniform raster.";
         std::cout << "\n    fill         Optimized Pit Removal.";
         std::cout << "\n    dist         Euclidean distance calculation.";
         std::cout << "\n    linthesh     Linear thresholding of a raster.";
@@ -501,6 +505,29 @@ int RasterManEngine::MaskVal(int argc, char * argv[])
 
     double dMaskVal = GetDouble(argc, argv, 4);
     eResult =  Raster::RasterMaskValue( argv[2], argv[3], dMaskVal );
+
+    return eResult;
+
+}
+
+int RasterManEngine::Uniform(int argc, char * argv[])
+{
+    if (argc != 5)
+    {
+        std::cout << "\n Uniform: Make a Raster that has a uniform value everywhere there is data";
+        std::cout << "\n    Usage: rasterman uniform <raster_file_path> <output_file_path> <value>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n    raster_file_path: Absolute full path to existing raster file.";
+        std::cout << "\n    output_file_path: Absolute full path to output, slope raster.";
+        std::cout << "\n               value: Value to use.";
+        std::cout << "\n";
+        return PROCESS_OK;
+    }
+
+    RasterManager::Raster rOriginal(argv[2]);
+    double dVal = GetDouble(argc, argv, 4);
+    int eResult = rOriginal.Uniform(argv[3], dVal);
 
     return eResult;
 
