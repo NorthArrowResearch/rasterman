@@ -21,6 +21,9 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
     else if (sType.compare(sType, "between", Qt::CaseInsensitive) == 0){
         nOpType = SETNULL_BETWEEN;
     }
+    else if (sType.compare(sType, "value", Qt::CaseInsensitive) == 0){
+        nOpType = SETNULL_VALUE;
+    }
     else{
         throw RasterManagerException( MISSING_ARGUMENT, "Could not detect a valid setnull Operation.");
     }
@@ -51,7 +54,8 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
         {
             if ((nOpType == SETNULL_ABOVE && pInputLine[j] > dThresh1) ||
                     (nOpType == SETNULL_BELOW && pInputLine[j] < dThresh1) ||
-                    (nOpType == SETNULL_BETWEEN && (pInputLine[j] < dThresh1 || pInputLine[j] > dThresh2) )){
+                    (nOpType == SETNULL_BETWEEN && (pInputLine[j] < dThresh1 || pInputLine[j] > dThresh2) ) ||
+                    (nOpType == SETNULL_VALUE && pInputLine[j] == dThresh1 )){
                 pOutputLine[j] = GetNoDataValue();
             }
             else {

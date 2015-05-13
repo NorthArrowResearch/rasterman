@@ -457,10 +457,10 @@ int RasterManEngine::SetNull(int argc, char * argv[])
         std::cout << "\n    Usage: rasterman setnull <rule> <raster_file_path> <output_file_path> [<arg>| <lowval> <highval>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
-        std::cout << "\n                rule: Can be one of \"above\", \"below\", \"between\" .";
+        std::cout << "\n                rule: Can be one of \"above\", \"below\", \"between\" and \"value\".";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
-        std::cout << "\n                 arg: Value to threshold below or above. Use for \"above\" and \"below\"";
+        std::cout << "\n                 arg: Value to threshold below or above. Use for \"above\", \"below\" and \"value\"";
         std::cout << "\n    lowval & highval: Low / high value. Use for \"above\" and \"below\"";
         std::cout << "\n ";
         return PROCESS_OK;

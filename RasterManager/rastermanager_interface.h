@@ -50,7 +50,8 @@ enum Raster_SymbologyStyle{
 enum Raster_Setnull_ops{
     SETNULL_ABOVE,
     SETNULL_BELOW,
-    SETNULL_BETWEEN
+    SETNULL_BETWEEN,
+    SETNULL_VALUE,
 };
 
 
