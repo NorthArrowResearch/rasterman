@@ -65,7 +65,7 @@ int RasterArray::FindAreas(std::vector<int> * AreaMap, QHash<int, double> * Area
             }
         }
     }
-
+    return PROCESS_OK;
 }
 
 bool RasterArray::AreaWalker(size_t ID,
