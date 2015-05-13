@@ -166,6 +166,16 @@ extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
  */
 extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster);
 
+
+/**
+ * @brief Uniform
+ * @param pOutputRaster
+ * @param dValue
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int Uniform(const char * psInputRaster, const char *psOutputRaster, double dValue, char * sErr);
+
 /**
  * @brief BiLinearResample
  *

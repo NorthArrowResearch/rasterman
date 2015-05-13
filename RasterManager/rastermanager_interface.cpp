@@ -199,6 +199,21 @@ extern "C" RM_DLL_API int RasterFilter(
     }
 }
 
+
+extern "C" RM_DLL_API int Uniform(const char * psInputRaster, const char * psOutputRaster, double dValue, char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try {
+        Raster theRaster(psInputRaster);
+        return theRaster.Uniform(psOutputRaster, dValue);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
+
 extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
                                                    const char * psOutput,
                                                    const char * sRasterTemplate,
