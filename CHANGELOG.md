@@ -9,6 +9,9 @@
 * **New Operation**: `stackstats`: Create a raster with the cumulative stats for each cell in a stack of rasters.
 * **New Operation**: `areathresh`: Threshold out small areas delineated by nodata values. 
 * **New Operation**: `smoothedges`: subtract cells from the edge and add them back to smooth things.
+* **New Operation**: `uniform`: create a raster with a uniform value anywhere your input raster has values. 
+* **New Operation**: `filter Range`: Instead of just `mean`, now you can filter over a moving window and have each cell represent the `max-min` of that window.
+
 
 ### Fixes
 
