@@ -181,6 +181,16 @@ extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
                                            const char *ppszOutputRaster, double fNewCellSize,
                                            double fLeft, double fTop, int nRows, int nCols, char *sErr);
 
+
+/**
+ * @brief RasterPitRemoval
+ * @param sRasterInput
+ * @param sRasterOutput
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOutput, char * sErr);
+
 /**
  * @brief Copy
  *

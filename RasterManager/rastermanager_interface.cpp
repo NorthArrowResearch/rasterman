@@ -1,6 +1,7 @@
 #define MY_DLL_EXPORT
 
 #include "rastermanager_interface.h"
+#include "raster_pitremove.h"
 #include "extentrectangle.h"
 #include "rasterarray.h"
 #include "raster_gutpolygon.h"
@@ -483,6 +484,26 @@ extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,
         SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
+
+}
+
+extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOutput, char * sErr){
+
+
+    InitCInterfaceError(sErr);
+    try{
+        //    Mincost is the default
+        FillMode nMethod = FILL_MINCOST;
+
+        RasterPitRemoval rasterPitRemove( sRasterInput, sRasterOutput, nMethod );
+        return rasterPitRemove.Run();
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+
+
 
 }
 
