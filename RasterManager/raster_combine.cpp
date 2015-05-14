@@ -53,14 +53,15 @@ int Raster::CombineRaster(
 
     int sRasterRows = OutputMeta.GetRows();
     int sRasterCols = OutputMeta.GetCols();
-    double dNoDataVal = OutputMeta.GetNoDataValue();
 
     // Step it down to char* for Rasterman and create+open an output file
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
+    double dNoDataVal = (double) -std::numeric_limits<float>::max();
 
     // We store all the datasets in a hash
     QHash<int, GDALRasterBand *> dDatasets;
+    QHash<int, double> dNoDataVals;
     QHash<int, double *> dInBuffers;
 
     // Populate the hashes with enough buffers and datasets
@@ -78,6 +79,7 @@ int Raster::CombineRaster(
         // Notice these get the same keys.
         dDatasets.insert(counter, pInputRB);
         dInBuffers.insert(counter, pReadBuffer);
+        dNoDataVals.insert(counter, pInputRB->GetNoDataValue());
     }
 
     // Loop over rows
@@ -94,13 +96,19 @@ int Raster::CombineRaster(
         // Loop over columns
         for (int j=0; j < sRasterCols; j++)
         {
+            bool bDisqualify = false; // if one value is nodata then that's all we do.
             QHash<int, double> dCellContents;
             QHashIterator<int, double *> QHIBIterator(dInBuffers);
             while (QHIBIterator.hasNext()) {
                 QHIBIterator.next();
+                if (QHIBIterator.value()[j] == dNoDataVals.value(QHIBIterator.key()) )
+                    bDisqualify = true;
                 dCellContents.insert(QHIBIterator.key(), QHIBIterator.value()[j]);
             }
-            pReadBuffer[j] = CombineRasterValues(eOp, dCellContents, dNoDataVal);
+            if (!bDisqualify)
+                pReadBuffer[j] = CombineRasterValues(eOp, dCellContents, dNoDataVal);
+            else
+                pReadBuffer[j] = dNoDataVal;
         }
         // Write the row
         pOutputRB->RasterIO(GF_Write, 0, i, sRasterCols, 1, pReadBuffer, sRasterCols, 1, GDT_Float64, 0, 0 );
