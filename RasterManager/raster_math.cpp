@@ -61,6 +61,7 @@ int Raster::RasterMath(const char * psRaster1,
     rmOutputMeta.SetGDALDataType(&outDataType);
 
     double fNoDataValue = (double) -std::numeric_limits<float>::max();
+    rmOutputMeta.SetNoDataValue(&fNoDataValue);
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmOutputMeta);

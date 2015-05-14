@@ -78,13 +78,8 @@ int Raster::FilterRaster(
     GDALDataType outDataType = GDT_Float64;
     rmOutputMeta.SetGDALDataType(&outDataType);
 
-    double fNoDataValue;
-    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) -std::numeric_limits<float>::max();
-    }
-    else {
-        fNoDataValue = rmRasterMeta.GetNoDataValue();
-    }
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
+    rmOutputMeta.SetNoDataValue(&fNoDataValue);
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);

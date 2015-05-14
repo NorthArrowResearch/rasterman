@@ -57,7 +57,8 @@ int Raster::CombineRaster(
     // Step it down to char* for Rasterman and create+open an output file
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
-    double dNoDataVal = (double) -std::numeric_limits<float>::max();
+    double dOutputNoDataVal = (double) -std::numeric_limits<float>::max();
+    OutputMeta.SetNoDataValue(&dOutputNoDataVal);
 
     // We store all the datasets in a hash
     QHash<int, GDALRasterBand *> dDatasets;
@@ -106,9 +107,9 @@ int Raster::CombineRaster(
                 dCellContents.insert(QHIBIterator.key(), QHIBIterator.value()[j]);
             }
             if (!bDisqualify)
-                pReadBuffer[j] = CombineRasterValues(eOp, dCellContents, dNoDataVal);
+                pReadBuffer[j] = CombineRasterValues(eOp, dCellContents, dOutputNoDataVal);
             else
-                pReadBuffer[j] = dNoDataVal;
+                pReadBuffer[j] = dOutputNoDataVal;
         }
         // Write the row
         pOutputRB->RasterIO(GF_Write, 0, i, sRasterCols, 1, pReadBuffer, sRasterCols, 1, GDT_Float64, 0, 0 );

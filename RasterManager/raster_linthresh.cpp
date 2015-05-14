@@ -38,19 +38,14 @@ int Raster::LinearThreshold(const char * psInputRaster,
      * The default output type is 32 bit floating point.
      */
 
-    double fNoDataValue;
-    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) -std::numeric_limits<float>::max();
-    }
-    else {
-        fNoDataValue = rmRasterMeta.GetNoDataValue();
-    }
-
     RasterMeta rmOutputMeta = rmRasterMeta;
 
     // Decision: Output needs to be a double raster.
     GDALDataType outDataType = GDT_Float64;
     rmOutputMeta.SetGDALDataType(&outDataType);
+
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
+    rmOutputMeta.SetNoDataValue(&fNoDataValue);
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
