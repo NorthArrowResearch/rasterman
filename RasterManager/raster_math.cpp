@@ -56,16 +56,14 @@ int Raster::RasterMath(const char * psRaster1,
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta1;
 
-    double fNoDataValue;
-    if (rmRasterMeta1.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) -std::numeric_limits<float>::max();
-    }
-    else {
-        fNoDataValue = rmRasterMeta1.GetNoDataValue();
-    }
+    // Decision: We can't mix types here so the output will always be double
+    GDALDataType outDataType = GDT_Float64;
+    rmOutputMeta.SetGDALDataType(&outDataType);
+
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmRasterMeta1);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &rmOutputMeta);
 
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
 
