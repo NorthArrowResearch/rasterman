@@ -47,6 +47,8 @@ int Raster::CombineRaster(
     // Decision: We can't mix types here so the output will always be double
     GDALDataType outDataType = GDT_Float64;
     OutputMeta.SetGDALDataType(&outDataType);
+    double dOutputNoDataVal = (double) -std::numeric_limits<float>::max();
+    OutputMeta.SetNoDataValue(&dOutputNoDataVal);
 
     // Create the output dataset for writing
     GDALDataset * pOutputDS = CreateOutputDS(psOutputRaster, &OutputMeta);
@@ -57,8 +59,6 @@ int Raster::CombineRaster(
     // Step it down to char* for Rasterman and create+open an output file
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
     double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * sRasterCols);
-    double dOutputNoDataVal = (double) -std::numeric_limits<float>::max();
-    OutputMeta.SetNoDataValue(&dOutputNoDataVal);
 
     // We store all the datasets in a hash
     QHash<int, GDALRasterBand *> dDatasets;
