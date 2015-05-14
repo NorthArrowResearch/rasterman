@@ -107,7 +107,7 @@ int Raster::RasterMath(const char * psRaster1,
             for (j = 0; j < rmOutputMeta.GetCols(); j++)
             {
                 if ( (pInputLine1[j] == rmRasterMeta1.GetNoDataValue()) ||
-                     (pInputLine2[j] == rmRasterMeta1.GetNoDataValue()) )
+                     (pInputLine2[j] == rmRasterMeta2.GetNoDataValue()) )
                 {
                     pOutputLine[j] = rmOutputMeta.GetNoDataValue();
                 }
@@ -157,7 +157,7 @@ int Raster::RasterMath(const char * psRaster1,
 
             for (j = 0; j < pRBInput1->GetXSize(); j++)
             {
-                if (pInputLine1[j] == fNoDataValue)
+                if (pInputLine1[j] == rmRasterMeta1.GetNoDataValue())
                 {
                     pOutputLine[j] = fNoDataValue;
                 }
