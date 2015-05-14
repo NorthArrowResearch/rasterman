@@ -37,16 +37,16 @@ int Raster::InvertRaster(const char * psInputRaster,
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta;
 
-    double fNoDataValue;
-    if (rmRasterMeta.GetNoDataValuePtr() == NULL){
-        fNoDataValue = (double) -std::numeric_limits<float>::max();
-    }
-    else {
-        fNoDataValue = rmRasterMeta.GetNoDataValue();
-    }
+    // Decision: We can't mix types here so the output will always be double
+    GDALDataType outDataType = GDT_Float64;
+    rmOutputMeta.SetGDALDataType(&outDataType);
+
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
+    rmOutputMeta.SetNoDataValue(&fNoDataValue);
+
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmOutputMeta);
 
     double * pOutputLine = (double *) CPLMalloc(sizeof(double)*rmOutputMeta.GetCols());
 
