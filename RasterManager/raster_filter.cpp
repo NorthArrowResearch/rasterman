@@ -82,7 +82,7 @@ int Raster::FilterRaster(
     rmOutputMeta.SetNoDataValue(&fNoDataValue);
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmOutputMeta);
 
     // Our Read Buffer is 2D: [nWindowHeight x entire row legnth]
     double * pInputWindow = (double *) CPLMalloc(sizeof(double)*rmRasterMeta.GetCols() * nWindowHeight);
@@ -154,8 +154,8 @@ int Raster::FilterRaster(
 
                 // Loop over the window for this particular output cell (i,j)
                 double dSum = 0;
-                double dMin = fNoDataValue;
-                double dMax = fNoDataValue;
+                double dMin = rmRasterMeta.GetNoDataValue();
+                double dMax = rmRasterMeta.GetNoDataValue();
                 int nCells = 0;
                 for ( int nWrow = 0; nWrow < nWindowHeightAdj; nWrow++ ){
                     for ( int nWcol = 0; nWcol < nWindowWidthAdj; nWcol++ ){
@@ -164,7 +164,7 @@ int Raster::FilterRaster(
 
                         // For Mean we need to sum so we can divide by total points later
                         if (nFilterOp == FILTER_MEAN){
-                            if (pInputWindow[ nWindowRasterInd ] != fNoDataValue){
+                            if (pInputWindow[ nWindowRasterInd ] != rmRasterMeta.GetNoDataValue()){
                                 nCells++;
                                 dSum += pInputWindow[ nWindowRasterInd ];
                             }
@@ -173,10 +173,10 @@ int Raster::FilterRaster(
                         // For Range we need to set max and min if appropriate
                         else if (nFilterOp == FILTER_RANGE){
                             double val = pInputWindow[ nWindowRasterInd ];
-                            if (val != fNoDataValue){
-                                if (dMin == fNoDataValue || val < dMin)
+                            if (val !=  rmRasterMeta.GetNoDataValue()){
+                                if (dMin == rmRasterMeta.GetNoDataValue() || val < dMin)
                                     dMin = val;
-                                if (dMax == fNoDataValue || val > dMax)
+                                if (dMax == rmRasterMeta.GetNoDataValue() || val > dMax)
                                     dMax = val;
                             }
                         }
@@ -186,7 +186,7 @@ int Raster::FilterRaster(
                 if (nFilterOp == FILTER_MEAN)
                     pOutputLine[nOutCol] = dSum / nCells;
                 else if (nFilterOp == FILTER_RANGE){
-                    if (dMax != fNoDataValue && dMin != fNoDataValue)
+                    if (dMax != rmRasterMeta.GetNoDataValue() && dMin != rmRasterMeta.GetNoDataValue())
                         pOutputLine[nOutCol] = dMax - dMin;
                     else{
                         pOutputLine[nOutCol] = fNoDataValue;
