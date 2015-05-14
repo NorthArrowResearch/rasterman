@@ -442,7 +442,7 @@ public:
       * @param sOperation
       * @return
       */
-     double RasterStat(Raster_Stats_Operation eOperation);
+     int RasterStat(Raster_Stats_Operation eOperation, double *pdResult);
 
      /**
       * @brief StackStats

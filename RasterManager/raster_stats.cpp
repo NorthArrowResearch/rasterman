@@ -134,15 +134,30 @@ double Raster::PerformStackStatOp(Raster_Stats_Operation eOp,
 }
 
 
-double Raster::RasterStat(Raster_Stats_Operation eOperation){
+int Raster::RasterStat(Raster_Stats_Operation eOperation, double * pdResult){
 
     // Get the easy stuff out of the way first
     switch (eOperation) {
-    case STATS_MAXIMUM:  return m_dRasterMax; break;
-    case STATS_MINIMUM:  return m_dRasterMin; break;
-    case STATS_MEAN:     return m_dRasterMean; break;
-    case STATS_STD:      return m_dRasterStdDev; break;
-    case STATS_RANGE:    return m_dRasterMax - m_dRasterMin; break;
+    case STATS_MAXIMUM:
+        *pdResult = m_dRasterMax;
+        return PROCESS_OK;
+        break;
+    case STATS_MINIMUM:
+        *pdResult = m_dRasterMin;
+        return PROCESS_OK;
+        break;
+    case STATS_MEAN:
+        *pdResult = m_dRasterMean;
+        return PROCESS_OK;
+        break;
+    case STATS_STD:
+        *pdResult = m_dRasterStdDev;
+        return PROCESS_OK;
+        break;
+    case STATS_RANGE:
+        *pdResult = m_dRasterMax - m_dRasterMin;
+        return PROCESS_OK;
+        break;
     default: break;
     }
 

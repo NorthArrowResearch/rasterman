@@ -1001,9 +1001,10 @@ int RasterManEngine::Stats(int argc, char * argv[])
     }
 
     RasterManager::Raster rRaster(argv[3]);
-    double eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(argv[2]) );
+    double dVal;
+    int eResult = rRaster.RasterStat( (Raster_Stats_Operation) GetStatFromString(argv[2]), &dVal);
 
-    QString msg = QString("Raster Property \"%1\" is: %2").arg(argv[2]).arg(eResult);
+    QString msg = QString("Raster Property \"%1\" is: %2").arg(argv[2]).arg(dVal);
 
     std::cout << "\n" << msg.toStdString();
 
