@@ -74,6 +74,10 @@ int Raster::FilterRaster(
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta;
 
+    // Decision: We can't mix types here so the output will always be double
+    GDALDataType outDataType = GDT_Float64;
+    rmOutputMeta.SetGDALDataType(&outDataType);
+
     double fNoDataValue;
     if (rmRasterMeta.GetNoDataValuePtr() == NULL){
         fNoDataValue = (double) -std::numeric_limits<float>::max();

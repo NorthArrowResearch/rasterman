@@ -44,6 +44,10 @@ int Raster::CombineRaster(
     //Orthogonal and concurrent means we can set the output meta equal to the input
     RasterMeta OutputMeta(slRasters.at(0));
 
+    // Decision: We can't mix types here so the output will always be double
+    GDALDataType outDataType = GDT_Float64;
+    OutputMeta.SetGDALDataType(&outDataType);
+
     // Create the output dataset for writing
     GDALDataset * pOutputDS = CreateOutputDS(psOutputRaster, &OutputMeta);
 

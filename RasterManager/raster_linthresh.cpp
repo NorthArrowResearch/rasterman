@@ -46,6 +46,12 @@ int Raster::LinearThreshold(const char * psInputRaster,
         fNoDataValue = rmRasterMeta.GetNoDataValue();
     }
 
+    RasterMeta rmOutputMeta = rmRasterMeta;
+
+    // Decision: Output needs to be a double raster.
+    GDALDataType outDataType = GDT_Float64;
+    rmOutputMeta.SetGDALDataType(&outDataType);
+
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
 
