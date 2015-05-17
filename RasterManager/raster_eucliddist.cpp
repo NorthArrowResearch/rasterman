@@ -25,10 +25,14 @@ int Raster::EuclideanDistance(
 
     RasterMeta rmRasterMeta(psInputRaster);
 
-    //"Pixels not square, distances will be inaccurate."
+    // Pixel units are the default
     double dfDistMult = 1.0;
-    dfDistMult = fabs(rmRasterMeta.GetCellWidth());
 
+    // If geo is specified then we multiply by cell width
+    if (QString(psUnits).compare("geo", Qt::CaseInsensitive) == 0){
+        //Mean is the only operation we currently supportl
+        dfDistMult = fabs(rmRasterMeta.GetCellWidth());
+    }
 
 
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInputRaster, GA_ReadOnly);
@@ -43,20 +47,105 @@ int Raster::EuclideanDistance(
     RasterMeta rmOutputMeta;
     rmOutputMeta = rmRasterMeta;
 
+    int nCols = rmRasterMeta.GetCols();
+    int nRows = rmRasterMeta.GetRows();
+
+    // Crude Maximum Distance
+    double dfMaxDist = (double)(nRows + nCols);
+
+
+    // Decision: We can't mix types here so the output will always be double
+    GDALDataType outDataType = GDT_Float64;
+    rmOutputMeta.SetGDALDataType(&outDataType);
+
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
+    rmOutputMeta.SetNoDataValue(&fNoDataValue);
+
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(psOutputRaster, &rmRasterMeta);
     GDALRasterBand * pRBOutput = pDSOutput->GetRasterBand(1);
 
-//    char **papszOptions = NULL;
-//    papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-//    papszOptions = CSLSetNameValue(papszOptions, "DISTUNITS", "GEO");
+    double * pReadBuffer = (double*) CPLMalloc(sizeof(double) * nCols);
+    double * pOutputBuffer = (double*) CPLMalloc(sizeof(double) * nCols);
 
-    //  We're using GDAL's computeproximity
-    //  http://www.gdal.org/gdal__alg_8h.html#a851815400a579aae9de01199b416fa42
-    //    CPLErr err = GDALComputeProximity(pRBInput, pRBOutput, papszOptions, NULL, NULL);
+    int * panNearX = (int *) CPLMalloc(sizeof(int) * nCols);
+    int * panNearY = (int *) CPLMalloc(sizeof(int) * nCols);
+
+    // Read from top to bottom of file
+    //----------------------------------------------------
+
+    // Reset the buffers
+    for( int i = 0; i < nCols; i++ )
+        panNearX[i] = panNearY[i] = -1;
+
+    for ( int iLine = 0; iLine > nRows; iLine--)
+    {
+        pRBInput->RasterIO(GF_Read, 0,  iLine, nCols, 1, pReadBuffer, nCols, 1, GDT_Float64, 0, 0);
+
+        for( int j = 0; j < nCols; j++ )
+            pOutputBuffer[j] = -1.0;
+
+        // Left to rightpOutputBuffer
+        EuclideanDistanceProcessLine( pReadBuffer, panNearX, panNearY,
+                                      TRUE, iLine, nCols, dfMaxDist,
+                                      pOutputBuffer, rmRasterMeta.GetNoDataValue());
+
+        // Right to Left
+        EuclideanDistanceProcessLine( pReadBuffer, panNearX, panNearY,
+                                      FALSE, iLine, nCols, dfMaxDist,
+                                      pOutputBuffer, rmRasterMeta.GetNoDataValue());
+
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  iLine, nCols, 1, pOutputBuffer,
+                                              nCols, 1, GDT_Float64, 0, 0);
+
+    }
+
+    // Read from bottom to top of file
+    //----------------------------------------------------
+
+    // Reset the buffers
+    for( int i = 0; i < nCols; i++ )
+        panNearX[i] = panNearY[i] = -1;
+
+    for( int iLine = nRows -1; iLine >= 0; iLine-- )
+    {
+        pRBInput->RasterIO(GF_Read, 0,  iLine, nCols, 1, pReadBuffer, nCols, 1, GDT_Float64, 0, 0);
+
+        // Read the output buffer from the previous for loop
+        pRBOutput->RasterIO(GF_Read, 0,  iLine, nCols, 1, pOutputBuffer, nCols, 1, GDT_Float64, 0, 0);
+
+        // Right to Left
+        EuclideanDistanceProcessLine( pReadBuffer, panNearX, panNearY,
+                                      FALSE, iLine, nCols, dfMaxDist,
+                                      pOutputBuffer, rmRasterMeta.GetNoDataValue());
+
+        // Left to rightpOutputBuffer
+        EuclideanDistanceProcessLine( pReadBuffer, panNearX, panNearY,
+                                      TRUE, iLine, nCols, dfMaxDist,
+                                      pOutputBuffer, rmRasterMeta.GetNoDataValue());
+
+        // Final post processing of distances.
+        for( int iCol = 0; iCol < nCols; iCol++ )
+        {
+            if( pOutputBuffer[iCol] < 0.0 )
+                pOutputBuffer[iCol] = rmRasterMeta.GetNoDataValue();
+            else if( pOutputBuffer[iCol] > 0.0 )
+            {
+                pOutputBuffer[iCol] = pOutputBuffer[iCol] * dfDistMult;
+            }
+        }
+
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  iLine, nCols, 1, pOutputBuffer,
+                                              nCols, 1, GDT_Float64, 0, 0);
+    }
+
+    CPLFree(pReadBuffer);
+    CPLFree(pOutputBuffer);
+
+    CPLFree(panNearX);
+    CPLFree(panNearY);
 
     CalculateStats(pRBOutput);
-//    CSLDestroy( papszOptions );
 
     GDALClose(pDSInput);
     GDALClose(pDSOutput);
@@ -66,14 +155,14 @@ int Raster::EuclideanDistance(
 }
 
 
-int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, int *panNearY,
+int Raster::EuclideanDistanceProcessLine(double *pReadBuffer, int *panNearX, int *panNearY,
                                          int bForward, int iLine, int nXSize, double dfMaxDist,
-                                         float *pafProximity,
-                                         int nTargetValues, int *panTargetValues)
+                                         double *pOutputBuffer, double dNoData )
 {
 
     int iStart, iEnd, iStep, iPixel;
 
+    // Going forwards or backwards?
     if( bForward )
     {
         iStart = 0;
@@ -94,22 +183,11 @@ int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, 
         /* -------------------------------------------------------------------- */
         /*      Is the current pixel a target pixel?                            */
         /* -------------------------------------------------------------------- */
-        if( nTargetValues == 0 )
-            bIsTarget = (panSrcScanline[iPixel] != 0);
-        else
-        {
-            int i;
-
-            for( i = 0; i < nTargetValues; i++ )
-            {
-                if( panSrcScanline[iPixel] == panTargetValues[i] )
-                    bIsTarget = TRUE;
-            }
-        }
+        bIsTarget = (pReadBuffer[iPixel] != dNoData);
 
         if( bIsTarget )
         {
-            pafProximity[iPixel] = 0.0;
+            pOutputBuffer[iPixel] = 0.0;
             panNearX[iPixel] = iPixel;
             panNearY[iPixel] = iLine;
             continue;
@@ -119,12 +197,12 @@ int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, 
         /*      Are we near(er) to the closest target to the above (below)      */
         /*      pixel?                                                          */
         /* -------------------------------------------------------------------- */
-        float fNearDistSq = (float) (MAX(dfMaxDist,nXSize) * MAX(dfMaxDist,nXSize) * 2);
-        float fDistSq;
+        double fNearDistSq = (double) (MAX(dfMaxDist,nXSize) * MAX(dfMaxDist,nXSize) * 2);
+        double fDistSq;
 
         if( panNearX[iPixel] != -1 )
         {
-            fDistSq = (float)
+            fDistSq = (double)
                     ((panNearX[iPixel] - iPixel) * (panNearX[iPixel] - iPixel)
                      + (panNearY[iPixel] - iLine) * (panNearY[iPixel] - iLine));
 
@@ -147,7 +225,7 @@ int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, 
 
         if( iPixel != iStart && panNearX[iLast] != -1 )
         {
-            fDistSq = (float)
+            fDistSq = (double)
                     ((panNearX[iLast] - iPixel) * (panNearX[iLast] - iPixel)
                      + (panNearY[iLast] - iLine) * (panNearY[iLast] - iLine));
 
@@ -167,7 +245,7 @@ int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, 
 
         if( iTR != iEnd && panNearX[iTR] != -1 )
         {
-            fDistSq = (float)
+            fDistSq = (double)
                     ((panNearX[iTR] - iPixel) * (panNearX[iTR] - iPixel)
                      + (panNearY[iTR] - iLine) * (panNearY[iTR] - iLine));
 
@@ -184,12 +262,12 @@ int Raster::EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, 
         /* -------------------------------------------------------------------- */
         if( panNearX[iPixel] != -1
                 && fNearDistSq <= dfMaxDist * dfMaxDist
-                && (pafProximity[iPixel] < 0
-                    || fNearDistSq < pafProximity[iPixel] * pafProximity[iPixel]) )
-            pafProximity[iPixel] = sqrt(fNearDistSq);
+                && (pOutputBuffer[iPixel] < 0
+                    || fNearDistSq < pOutputBuffer[iPixel] * pOutputBuffer[iPixel]) )
+            pOutputBuffer[iPixel] = sqrt(fNearDistSq);
     }
 
-    return CE_None;
+    return PROCESS_OK;
 }
 
 

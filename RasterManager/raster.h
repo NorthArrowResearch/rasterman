@@ -588,7 +588,20 @@ private:
      * @return
      */
     static double CombineRasterValuesMultiply(QHash<int, double> dCellContents, double dNoDataVal);
-    int EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, int *panNearY, int bForward, int iLine, int nXSize, double dfMaxDist, float *pafProximity, int nTargetValues, int *panTargetValues);
+
+    /**
+     * @brief EuclideanDistanceProcessLine -- Helper function for euclideanDistance
+     * @param panSrcScanline
+     * @param panNearX
+     * @param panNearY
+     * @param bForward
+     * @param iLine
+     * @param nXSize
+     * @param dfMaxDist
+     * @param pafProximity
+     * @return
+     */
+    static int EuclideanDistanceProcessLine(double *panSrcScanline, int *panNearX, int *panNearY, int bForward, int iLine, int nXSize, double dfMaxDist, double *pOutputBuffer, double dNoData);
 };
 
 
