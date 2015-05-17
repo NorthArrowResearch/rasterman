@@ -72,7 +72,7 @@ int Raster::EuclideanDistance(
     int * panNearY = (int *) CPLMalloc(sizeof(int) * nCols);
 
     // Read from top to bottom of file
-    //----------------------------------------------------
+    // ----------------------------------------------------
 
     // Reset the buffers
     for( int i = 0; i < nCols; i++ )
@@ -101,7 +101,7 @@ int Raster::EuclideanDistance(
     }
 
     // Read from bottom to top of file
-    //----------------------------------------------------
+    // ----------------------------------------------------
 
     // Reset the buffers
     for( int i = 0; i < nCols; i++ )
@@ -159,7 +159,6 @@ int Raster::EuclideanDistanceProcessLine(double *pReadBuffer, int *panNearX, int
                                          int bForward, int iLine, int nXSize, double dfMaxDist,
                                          double *pOutputBuffer, double dNoData )
 {
-
     int iStart, iEnd, iStep, iPixel;
 
     // Going forwards or backwards?
@@ -206,12 +205,10 @@ int Raster::EuclideanDistanceProcessLine(double *pReadBuffer, int *panNearX, int
                     ((panNearX[iPixel] - iPixel) * (panNearX[iPixel] - iPixel)
                      + (panNearY[iPixel] - iLine) * (panNearY[iPixel] - iLine));
 
-            if( fDistSq < fNearDistSq )
-            {
+            if( fDistSq < fNearDistSq ) {
                 fNearDistSq = fDistSq;
             }
-            else
-            {
+            else {
                 panNearX[iPixel] = -1;
                 panNearY[iPixel] = -1;
             }
