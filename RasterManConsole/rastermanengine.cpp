@@ -904,22 +904,27 @@ int RasterManEngine::normalize(int argc, char * argv[])
 
 int RasterManEngine::dist(int argc, char * argv[])
 {
-    if (argc != 4)
+    if ( argc != 4 && argc != 5 )
     {
         std::cout << "\n Euclidean distance calculation.";
-        std::cout << "\n    Usage: rasterman dist <input_raster_path> <output_raster_path>";
+        std::cout << "\n    Usage: rasterman dist <input_raster_path> <output_raster_path> [<units>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
         std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n               units: (optional) \"pixels\" or \"geo\" for georeferenced units.";
+        std::cout << "\n                      pixels is the default. ";
+        std::cout << "\n                      NOTE: non-square cells will produce non-exact distances";
         std::cout << "\n\n";
 
         return PROCESS_OK;
     }
     int eResult = PROCESS_OK;
-    eResult = RasterManager::Raster::EuclideanDistance(
-            argv[2],
-            argv[3] );
+
+    if (argc == 4)
+        eResult = RasterManager::Raster::EuclideanDistance(argv[2], argv[3], "" );
+    else
+        eResult = RasterManager::Raster::EuclideanDistance(argv[2], argv[3], argv[4] );
 
     PrintRasterProperties(argv[3]);
     return eResult;

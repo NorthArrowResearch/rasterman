@@ -313,14 +313,15 @@ extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
     }
 }
 
-extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
-                                 const char * psRaster2, char * sErr)
+extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psInput,
+                                 const char * psOutput, const char * psUnits, char * sErr)
 {
     InitCInterfaceError(sErr);
     try {
         return Raster::EuclideanDistance(
-                    psRaster1,
-                    psRaster2);
+                    psInput,
+                    psOutput,
+                    psUnits);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

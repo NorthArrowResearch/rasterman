@@ -365,8 +365,8 @@ public:
       * @param psOutputRaster
       * @return
       */
-     static int EuclideanDistance( const char * psInputRaster,
-                                   const char * psOutputRaster );
+     static int EuclideanDistance(const char * psInputRaster,
+                                   const char * psOutputRaster , const char *psUnits);
 
      /**
       * @brief NormalizeRaster
@@ -588,6 +588,7 @@ private:
      * @return
      */
     static double CombineRasterValuesMultiply(QHash<int, double> dCellContents, double dNoDataVal);
+    int EuclideanDistanceProcessLine(GInt32 *panSrcScanline, int *panNearX, int *panNearY, int bForward, int iLine, int nXSize, double dfMaxDist, float *pafProximity, int nTargetValues, int *panTargetValues);
 };
 
 

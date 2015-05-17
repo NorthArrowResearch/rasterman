@@ -579,8 +579,8 @@ extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,
  * @param psRaster2
  * @return
  */
-extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psRaster1,
-                                                  const char * psRaster2,
+extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psInput,
+                                                  const char * psOutput, const char *psUnits,
                                                   char *sErr);
 /**
  * @brief InitCInterfaceError
