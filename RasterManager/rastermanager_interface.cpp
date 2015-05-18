@@ -387,10 +387,11 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
                                           double dLowThreshVal,
                                           double dHighThresh,
                                           double dHighThreshVal,
+                                          int nKeepNodata,
                                           char * sErr){
     InitCInterfaceError(sErr);
     try{
-        return Raster::LinearThreshold(psInputRaster, psOutputRaster, dLowThresh, dLowThreshVal, dHighThresh, dHighThreshVal);
+        return Raster::LinearThreshold(psInputRaster, psOutputRaster, dLowThresh, dLowThreshVal, dHighThresh, dHighThreshVal, nKeepNodata);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

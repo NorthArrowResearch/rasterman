@@ -1103,10 +1103,10 @@ int RasterManEngine::StackStats(int argc, char * argv[])
 
 int RasterManEngine::LinThresh(int argc, char * argv[])
 {
-    if (argc != 8)
+    if (argc != 8 && argc != 9 )
     {
         std::cout << "\n LinThresh: Threshold the values of a raster using linear interpolation.";
-        std::cout << "\n    Usage: rasterman linthesh <raster_input_path> <raster_output_path> <min_thresh> <min_thesh_val> <max_thresh> <max_thresh_val>";
+        std::cout << "\n    Usage: rasterman linthesh <raster_input_path> <raster_output_path> <min_thresh> <min_thesh_val> <max_thresh> <max_thresh_val> [<keepNodata>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n     raster_input_path: Path to an existing raster file.";
@@ -1115,6 +1115,8 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
         std::cout << "\n         min_thesh_val: The value to use for the low threshold point.";
         std::cout << "\n            max_thresh: Raster value, above which the max_thresh_val will be used.";
         std::cout << "\n        max_thresh_val: The value to use for the high threshold point.";
+        std::cout << "\n            keepNodata: (optional) Default is true. Maintain the nodata values of the input if false";
+        std::cout << "\n                         then all nodata values will be set to min_thresh_val";
         std::cout << "\n ";
         std::cout << "\n     Notes: - Anything between min_thresh and max_thresh will be linearly interpolated";
         std::cout << "\n            - Set min_thresh = max_thresh to get a straight dropoff";
@@ -1127,7 +1129,14 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
     double dMaxThresh = GetDouble(argc, argv, 6);
     double dMaxThreshVal = GetDouble(argc, argv, 7);
 
-    int eResult = Raster::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal);
+    int nKeepNodata = 1;
+    if (argc == 9){
+        QString sKeep(argv[8]);
+        if (sKeep.compare("false", Qt::CaseInsensitive) == 0)
+            nKeepNodata = 0;
+    }
+
+    int eResult = Raster::LinearThreshold(argv[2], argv[3], dMinThresh, dMinThreshVal, dMaxThresh, dMaxThreshVal, nKeepNodata);
 
     PrintRasterProperties(argv[3]);
     return eResult;

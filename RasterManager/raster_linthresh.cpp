@@ -17,7 +17,10 @@ int Raster::LinearThreshold(const char * psInputRaster,
                             double dLowThresh,
                             double dLowThreshVal,
                             double dHighThresh,
-                            double dHighThreshVal){
+                            double dHighThreshVal,
+                            int nKeepNodata){
+
+    bool bKeepNodata = (bool) nKeepNodata;
 
     // Check for input and output files
     CheckFile(psInputRaster, true);
@@ -68,8 +71,14 @@ int Raster::LinearThreshold(const char * psInputRaster,
         for (int j = 0; j < rmRasterMeta.GetCols(); j++)
         {
             // First the 3 easy cases: greater than upper threshold, less than lower or nodataval.
+            // if KeepNodata is set to false (0) then nodata becomes dLowThresh.
             if (pInputLine[j] == fNoDataValue){
-                pOutputLine[j] = fNoDataValue;
+                if (bKeepNodata){
+                    pOutputLine[j] = fNoDataValue;
+                }
+                else{
+                    pOutputLine[j] = dLowThreshVal;
+                }
             }
             else if (pInputLine[j] >= dHighThresh)
                 pOutputLine[j] = dHighThreshVal;

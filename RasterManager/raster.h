@@ -466,7 +466,7 @@ public:
       * @param dHighThreshVal
       * @return
       */
-     static int LinearThreshold(const char *psInputRaster, const char *psOutputRaster, double dLowThresh, double dLowThreshVal, double dHighThresh, double dHighThreshVal);
+     static int LinearThreshold(const char *psInputRaster, const char *psOutputRaster, double dLowThresh, double dLowThreshVal, double dHighThresh, double dHighThreshVal, int nKeepNodata);
 
      /**
       * @brief Raster::CombineRaster
