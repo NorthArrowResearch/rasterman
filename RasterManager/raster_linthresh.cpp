@@ -72,7 +72,7 @@ int Raster::LinearThreshold(const char * psInputRaster,
         {
             // First the 3 easy cases: greater than upper threshold, less than lower or nodataval.
             // if KeepNodata is set to false (0) then nodata becomes dLowThresh.
-            if (pInputLine[j] == fNoDataValue){
+            if (pInputLine[j] == rmRasterMeta.GetNoDataValue()){
                 if (bKeepNodata){
                     pOutputLine[j] = fNoDataValue;
                 }
@@ -82,7 +82,7 @@ int Raster::LinearThreshold(const char * psInputRaster,
             }
             else if (pInputLine[j] >= dHighThresh)
                 pOutputLine[j] = dHighThreshVal;
-            else if (pInputLine[j] < dLowThresh)
+            else if (pInputLine[j] <= dLowThresh)
                 pOutputLine[j] = dLowThreshVal;
             else
             {
