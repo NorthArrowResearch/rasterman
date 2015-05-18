@@ -20,7 +20,7 @@ int Raster::LinearThreshold(const char * psInputRaster,
                             double dHighThreshVal,
                             int nKeepNodata){
 
-    bool bKeepNodata = (bool) nKeepNodata;
+    bool bKeepNodata = nKeepNodata==1 ? true: false;
 
     // Check for input and output files
     CheckFile(psInputRaster, true);

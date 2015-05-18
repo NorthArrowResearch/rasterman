@@ -1121,6 +1121,7 @@ int RasterManEngine::LinThresh(int argc, char * argv[])
         std::cout << "\n     Notes: - Anything between min_thresh and max_thresh will be linearly interpolated";
         std::cout << "\n            - Set min_thresh = max_thresh to get a straight dropoff";
         std::cout << "\n            - min_thresh must be less than or equal to max_thresh";
+        std::cout << "\n";
         return PROCESS_OK;
     }
 

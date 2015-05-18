@@ -333,7 +333,9 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
                                           double dLowThresh,
                                           double dLowThreshVal,
                                           double dHighThresh,
-                                          double dHighThreshVal, int nKeepNodata, char *sErr);
+                                          double dHighThreshVal,
+                                          int nKeepNodata,
+                                          char *sErr);
 /**
  * @brief AreaThreshold
  * @param psInputRaster
