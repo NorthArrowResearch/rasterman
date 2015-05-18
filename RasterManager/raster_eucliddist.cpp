@@ -18,7 +18,8 @@ namespace RasterManager {
 
 int Raster::EuclideanDistance(
         const char * psInputRaster,
-        const char * psOutputRaster, const char * psUnits ){
+        const char * psOutputRaster,
+        const char * psUnits ){
 
     CheckFile(psInputRaster, true);
     CheckFile(psOutputRaster, false);
@@ -27,6 +28,8 @@ int Raster::EuclideanDistance(
 
     // Pixel units are the default
     double dfDistMult = 1.0;
+    bool bInner = true;
+
 
     // If geo is specified then we multiply by cell width
     if (QString(psUnits).compare("geo", Qt::CaseInsensitive) == 0){
@@ -78,7 +81,7 @@ int Raster::EuclideanDistance(
     for( int i = 0; i < nCols; i++ )
         panNearX[i] = panNearY[i] = -1;
 
-    for ( int iLine = 0; iLine > nRows; iLine--)
+    for ( int iLine = 0; iLine < nRows; iLine++)
     {
         pRBInput->RasterIO(GF_Read, 0,  iLine, nCols, 1, pReadBuffer, nCols, 1, GDT_Float64, 0, 0);
 
@@ -127,7 +130,7 @@ int Raster::EuclideanDistance(
         // Final post processing of distances.
         for( int iCol = 0; iCol < nCols; iCol++ )
         {
-            if( pOutputBuffer[iCol] < 0.0 )
+            if( pOutputBuffer[iCol] < 0.0 || pReadBuffer[iCol] == rmRasterMeta.GetNoDataValue())
                 pOutputBuffer[iCol] = rmRasterMeta.GetNoDataValue();
             else if( pOutputBuffer[iCol] > 0.0 )
             {
@@ -182,7 +185,7 @@ int Raster::EuclideanDistanceProcessLine(double *pReadBuffer, int *panNearX, int
         /* -------------------------------------------------------------------- */
         /*      Is the current pixel a target pixel?                            */
         /* -------------------------------------------------------------------- */
-        bIsTarget = (pReadBuffer[iPixel] != dNoData);
+        bIsTarget = (pReadBuffer[iPixel] == dNoData);
 
         if( bIsTarget )
         {
