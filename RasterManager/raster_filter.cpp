@@ -15,9 +15,6 @@
 
 namespace RasterManager {
 
-const int MAX_WINDOW_WIDTH = 15;
-const int MAX_WINDOW_HEIGHT = 15;
-
 enum RasterManagerFilterOperations {
     FILTER_MEAN,
     FILTER_RANGE,
@@ -63,10 +60,6 @@ int Raster::FilterRaster(
     if ( nWindowHeight % 2 == 0 )
         throw RasterManagerException(ARGUMENT_VALIDATION, "width must be an odd number of cells.");
 
-    if ( nWindowWidth > MAX_WINDOW_WIDTH )
-        throw RasterManagerException(ARGUMENT_VALIDATION, QString("Width was greater than allowed window size of %1 cells").arg(MAX_WINDOW_WIDTH) );
-    if ( nWindowHeight > MAX_WINDOW_HEIGHT )
-        throw RasterManagerException(ARGUMENT_VALIDATION, QString("Height was greater than allowed window size of %1 cells").arg(MAX_WINDOW_HEIGHT) );
 
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
