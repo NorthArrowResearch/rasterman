@@ -519,10 +519,20 @@ extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOu
         SetCInterfaceError(e, sErr);
         return e.GetErrorCode();
     }
-
-
-
 }
+
+extern "C" RM_DLL_API int CreateDrain(const char * sRasterInput, const char * sRasterOutput, char * sErr){
+    InitCInterfaceError(sErr);
+    try{
+        RasterArray raInpu(sRasterInput);
+        return raInpu.CreateDrain(sRasterOutput);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
 
 extern "C" RM_DLL_API int AddGut(const char *psShpFile,
                   const char *psInput,

@@ -31,6 +31,33 @@ RasterArray::RasterArray(const char * psFilePath) : Raster(psFilePath)
     CPLFree(pInputLine);
 }
 
+int RasterArray::CreateDrain(const char * psOutputRaster)
+{
+    // Find the smallest cell
+    double dMinVal = GetNoDataValue();
+    size_t nSmallestid = -1;
+
+    for (size_t id = 0; id < GetTotalCells(); id++){
+        if (Terrain.at(id) != GetNoDataValue() &&
+                (dMinVal > Terrain.at(id) || dMinVal == GetNoDataValue()) ){
+            dMinVal = Terrain.at(id);
+            nSmallestid = id;
+        }
+    }
+
+    // Set the smallest pixel null
+    if (nSmallestid > 0 && dMinVal != GetNoDataValue()){
+        Terrain.at(nSmallestid) = GetNoDataValue();
+    }
+
+    qDebug() << QString("Row: %1 Col: %2")
+                .arg(getRow(nSmallestid)).arg(getCol(nSmallestid));
+
+    WriteArraytoRaster(psOutputRaster, &Terrain, NULL);
+
+    return PROCESS_OK;
+}
+
 bool RasterArray::operator ==( RasterArray &src)
 {
     if (IsConcurrent(&src) && CellCompare(&src) )

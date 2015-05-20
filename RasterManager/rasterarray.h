@@ -156,6 +156,8 @@ public:
 
     void GetFeatures();
 
+    int CreateDrain(const char *psOutputRaster);
+
 protected:
     // Instead of recursive algorithms which can cuase Stack Overflows we use a priority Queue
     // That we fill and empty

@@ -267,6 +267,15 @@ private:
      * @return
      */
     int SetNull(int argc, char *argv[]);
+
+    /**
+     * @brief CreateDrain
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int CreateDrain(int argc, char *argv[]);
+
 };
 
 }

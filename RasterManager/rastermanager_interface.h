@@ -202,6 +202,10 @@ extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOutput, char * sErr);
 
+
+extern "C" RM_DLL_API int CreateDrain(const char * sRasterInput, const char * sRasterOutput, char * sErr);
+
+
 /**
  * @brief Copy
  *
@@ -359,6 +363,7 @@ extern "C" RM_DLL_API int SmoothEdges(const char * psInputRaster,
                                       const char * psOutputRaster,
                                       int nCells,
                                       char * sErr);
+
 
 /**
  * @brief IsConcurrent

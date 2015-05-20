@@ -136,6 +136,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "gutpoly", Qt::CaseInsensitive) == 0)
             eResult = GutPoly(argc, argv);
 
+        else if (QString::compare(sCommand, "createdrain", Qt::CaseInsensitive) == 0)
+            eResult = CreateDrain(argc, argv);
+
         else
             bRecognizedCommand = false;
 
@@ -773,6 +776,32 @@ int RasterManEngine::fill(int argc, char * argv[])
     RasterPitRemoval rasterPitRemove( argv[2], argv[3], nMethod );
 
     eResult = rasterPitRemove.Run();
+
+    return eResult;
+
+}
+
+
+int RasterManEngine::CreateDrain(int argc, char * argv[])
+{
+    if (argc != 4)
+    {
+        std::cout << "\n Create Drain - remove the lowest point of a raster.";
+        std::cout << "\n    Usage: rasterman createdrain <input_raster_path> <output_raster_path>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n   input_raster_path: Absolute full path to existing input raster file.";
+        std::cout << "\n  output_raster_path: Absolute full path to desired output raster file.";
+        std::cout << "\n           ";
+        std::cout << "\n\n";
+
+        return PROCESS_OK;
+    }
+    int eResult = PROCESS_OK;
+
+    RasterArray theRaster(argv[2]);
+
+    eResult = theRaster.CreateDrain(argv[3]);
 
     return eResult;
 
