@@ -130,7 +130,8 @@ int Raster::EuclideanDistance(
         // Final post processing of distances.
         for( int iCol = 0; iCol < nCols; iCol++ )
         {
-            if( pOutputBuffer[iCol] < 0.0 || pReadBuffer[iCol] == rmRasterMeta.GetNoDataValue())
+            // Note the two if statements. We leave 0 our of it to save on operations time
+            if( pOutputBuffer[iCol] < 0.0)
                 pOutputBuffer[iCol] = rmRasterMeta.GetNoDataValue();
             else if( pOutputBuffer[iCol] > 0.0 )
             {

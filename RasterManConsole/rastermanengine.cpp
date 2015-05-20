@@ -906,7 +906,7 @@ int RasterManEngine::dist(int argc, char * argv[])
 {
     if ( argc != 4 && argc != 5 )
     {
-        std::cout << "\n Euclidean distance calculation.";
+        std::cout << "\n Euclidean distance calculation. Find distance to NodataValues";
         std::cout << "\n    Usage: rasterman dist <input_raster_path> <output_raster_path> [<units>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
