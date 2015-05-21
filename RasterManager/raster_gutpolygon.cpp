@@ -39,9 +39,14 @@ int Raster2Polygon::Initialize(const char * psShpFile, const char * psInput)
 
 
     // Create all the fields we are going to need
-    CreateField( poLayer, "Tier1", OFTString );
-    CreateField( poLayer, "Tier2", OFTString );
-    CreateField( poLayer, "Tier3", OFTString );
+    CreateField( poLayer, "OTier1", OFTString );
+    CreateField( poLayer, "OTier2", OFTString );
+    CreateField( poLayer, "OTier3", OFTString );
+
+    CreateField( poLayer, "UTier1", OFTString );
+    CreateField( poLayer, "UTier2", OFTString );
+    CreateField( poLayer, "UTier3", OFTString );
+
     CreateField( poLayer, "Area", OFTReal );
     CreateField( poLayer, "Orient", OFTReal );
     CreateField( poLayer, "Eccent", OFTReal );
@@ -115,8 +120,8 @@ int Raster2Polygon::AddGut(const char * psShpFile,
     for (int n = 0; n < poLayer->GetFeatureCount(); n++){
         OGRFeature * feat = poLayer->GetFeature(n);
         if (!existingGeometry.contains(feat->GetFID())){
-            feat->SetField("Tier1", tier1);
-            feat->SetField("Tier2", tier2);
+            feat->SetField("OTier1", tier1);
+            feat->SetField("OTier2", tier2);
             poLayer->SetFeature(feat);
         }
     }
