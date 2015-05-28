@@ -206,14 +206,6 @@ private:
     int Stats(int argc, char *argv[]);
 
     /**
-     * @brief StackStats
-     * @param argc
-     * @param argv
-     * @return
-     */
-    int StackStats(int argc, char *argv[]);
-
-    /**
      * @brief LinThresh
      * @param argc
      * @param argv

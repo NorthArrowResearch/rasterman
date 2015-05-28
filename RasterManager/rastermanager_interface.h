@@ -36,6 +36,15 @@ enum RasterManagerOperators {
     , RM_BASIC_MATH_THRESHOLD_PROP_ERROR
 };
 
+enum RasterManagerCombineOperations {
+    COMBINE_MULTIPLY,
+    COMBINE_MAXIMUM,
+    COMBINE_MINIMUM,
+    COMBINE_RANGE,
+    COMBINE_MEAN,
+};
+
+
 enum Raster_SymbologyStyle{
     GSS_DEM      = 1,  // DEM
     GSS_DoD      = 2,  // DoD
@@ -516,17 +525,6 @@ extern "C" RM_DLL_API int GetFillMethodFromString(const char * psMethod);
  * @return
  */
 extern "C" RM_DLL_API int RasterGetStat(const char * psOperation, double * pdValue, const char * psInputRaster, char * sErr);
-
-/**
- * @brief StackStats
- * @param psOperation
- * @param csRasters
- * @param psOutput
- * @param sErr
- * @return
- */
-extern "C" RM_DLL_API int StackStats(const char * psOperation, const char * csRasters, const char * psOutput, char * sErr);
-
 
 /**
  * @brief GetStatOperationFromString

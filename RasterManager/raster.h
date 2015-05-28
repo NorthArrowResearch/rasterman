@@ -17,11 +17,6 @@ namespace RasterManager {
 // to zero for comparison purposes
 static const double OMEGA = 0.0000001;
 
-
-enum RasterManagerCombineOperations {
-    COMBINE_MULTIPLY,
-};
-
 // Two doubles off by this much are considered equal in isEqual function
 const double DOUBLECOMPARE = 0.00000001;
 
@@ -444,16 +439,6 @@ public:
       */
      int RasterStat(Raster_Stats_Operation eOperation, double *pdResult);
 
-     /**
-      * @brief StackStats
-      * @param eOperation
-      * @param csRasters
-      * @param psOutput
-      * @return
-      */
-     static int StackStats(Raster_Stats_Operation eOperation, const char *csRasters, const char *psOutput);
-
-
      static inline bool isEqual(double x, double y){ return fabs(x-y) > DOUBLECOMPARE; }
 
      /**
@@ -562,15 +547,6 @@ private:
     static double RasterStatVariety(std::vector<double> * RasterArray);
     static double RasterStatRange(std::vector<double> * RasterArray);
 
-    static double PerformStackStatOp(Raster_Stats_Operation eOp, QHash<int, double> dCellContents, double dNoDataVal);
-
-    // The following Stats functions are designed to work on a single cell on multiple rasters
-    static double StatStackMax(QHash<int, double> dCellContents, double dNoDataVal);
-    static double StatStackMin(QHash<int, double> dCellContents, double dNoDataVal);
-    static double StatStackMean(QHash<int, double> dCellContents, double dNoDataVal);
-    static double StatStackSTDev(QHash<int, double> dCellContents, double dNoDataVal);
-
-
     /**
      * @brief CombineRasterValues helper function for the combine RM operation
      * @param eOp
@@ -588,6 +564,10 @@ private:
      * @return
      */
     static double CombineRasterValuesMultiply(QHash<int, double> dCellContents, double dNoDataVal);
+    static double CombineRasterValuesRange(QHash<int, double> dCellContents, double dNoDataVal);
+    static double CombineRasterValuesMax(QHash<int, double> dCellContents, double dNoDataVal);
+    static double CombineRasterValuesMin(QHash<int, double> dCellContents, double dNoDataVal);
+    static double CombineRasterValuesMean(QHash<int, double> dCellContents, double dNoDataVal);
 
     /**
      * @brief EuclideanDistanceProcessLine -- Helper function for euclideanDistance

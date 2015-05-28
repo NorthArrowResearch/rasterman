@@ -16,11 +16,11 @@
 \
 namespace RasterManager {
 
+
 int Raster::CombineRaster(
         const char * psInputRasters,
         const char * psOutputRaster,
-        const char * psOperation
-        ){
+        const char * psOperation ){
 
     // Check for input and output files
     CheckFile(psOutputRaster, false);
@@ -30,6 +30,22 @@ int Raster::CombineRaster(
     if (QString(psOperation).compare("multiply", Qt::CaseInsensitive) == 0){
         //Mean is the only operation we currently supportl
         eOp = COMBINE_MULTIPLY;
+    }
+    else if (QString(psOperation).compare("max", Qt::CaseInsensitive) == 0){
+        //Mean is the only operation we currently supportl
+        eOp = COMBINE_MAXIMUM;
+    }
+    else if (QString(psOperation).compare("min", Qt::CaseInsensitive) == 0){
+        //Mean is the only operation we currently supportl
+        eOp = COMBINE_MINIMUM;
+    }
+    else if (QString(psOperation).compare("range", Qt::CaseInsensitive) == 0){
+        //Mean is the only operation we currently supportl
+        eOp = COMBINE_RANGE;
+    }
+    else if (QString(psOperation).compare("mean", Qt::CaseInsensitive) == 0){
+        //Mean is the only operation we currently supportl
+        eOp = COMBINE_MEAN;
     }
     else{
         throw RasterManagerException(ARGUMENT_VALIDATION, QString("Operation argument was invalid: %1").arg(psOperation) );
@@ -149,6 +165,18 @@ double Raster::CombineRasterValues(RasterManagerCombineOperations eOp,
     case COMBINE_MULTIPLY:
         return CombineRasterValuesMultiply(dCellContents, dNoDataVal);
         break;
+    case COMBINE_MAXIMUM:
+        return CombineRasterValuesMax(dCellContents, dNoDataVal);
+        break;
+    case COMBINE_MINIMUM:
+        return CombineRasterValuesMin(dCellContents, dNoDataVal);
+        break;
+    case COMBINE_RANGE:
+        return CombineRasterValuesRange(dCellContents, dNoDataVal);
+        break;
+    case COMBINE_MEAN:
+        return CombineRasterValuesMean(dCellContents, dNoDataVal);
+        break;
     default:
         return dNoDataVal;
         break;
@@ -172,4 +200,80 @@ double Raster::CombineRasterValuesMultiply(QHash<int, double> dCellContents,
     return dProd;
 }
 
-};
+double Raster::CombineRasterValuesMax(QHash<int, double> dCellContents,
+                                           double dNoDataVal){
+    double dMax = dNoDataVal;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        if (dMax == dNoDataVal || x.value() > dMax)
+            dMax = x.value();
+    }
+    return dMax;
+}
+double Raster::CombineRasterValuesMin(QHash<int, double> dCellContents,
+                                           double dNoDataVal){
+    double dMin = dNoDataVal;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        if (dMin == dNoDataVal || x.value() < dMin)
+            dMin = x.value();
+    }
+    return dMin;
+}
+double Raster::CombineRasterValuesRange(QHash<int, double> dCellContents,
+                                           double dNoDataVal){
+    double dMax = dNoDataVal;
+    double dMin = dNoDataVal;
+    QHashIterator<int, double> x(dCellContents);
+    while (x.hasNext()) {
+        x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        if (dMin == dNoDataVal || x.value() < dMin)
+            dMin = x.value();
+
+        if (dMin == dNoDataVal || x.value() < dMin){
+            dMax = x.value();
+        }
+        if (dMax == dNoDataVal || dMin == dNoDataVal)
+           return dNoDataVal;
+    }
+    return dMax - dMin;
+}
+
+double Raster::CombineRasterValuesMean(QHash<int, double> dCellContents,
+                                       double dNoDataVal){
+    QHashIterator<int, double> x(dCellContents);
+    double dSum = 0;
+    int nCount = 0;
+    while (x.hasNext()) {
+        x.next();
+
+        // If anything is NoData then that's the return
+        if (x.value() == dNoDataVal)
+            return dNoDataVal;
+
+        dSum += x.value();
+        nCount++;
+
+    }
+    return dSum / nCount;
+}
+
+
+}
