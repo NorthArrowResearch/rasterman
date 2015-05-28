@@ -28,23 +28,18 @@ int Raster::CombineRaster(
     RasterManagerCombineOperations eOp;
 
     if (QString(psOperation).compare("multiply", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         eOp = COMBINE_MULTIPLY;
     }
     else if (QString(psOperation).compare("max", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         eOp = COMBINE_MAXIMUM;
     }
     else if (QString(psOperation).compare("min", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         eOp = COMBINE_MINIMUM;
     }
     else if (QString(psOperation).compare("range", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         eOp = COMBINE_RANGE;
     }
     else if (QString(psOperation).compare("mean", Qt::CaseInsensitive) == 0){
-        //Mean is the only operation we currently supportl
         eOp = COMBINE_MEAN;
     }
     else{
