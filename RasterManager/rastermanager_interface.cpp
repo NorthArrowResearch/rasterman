@@ -902,6 +902,8 @@ extern "C" RM_DLL_API int GetMathOpFromString(const char * psOp)
         return RM_BASIC_MATH_POWER;
     else if (QString::compare(sOp , "std", Qt::CaseInsensitive) == 0)
         return STATS_STD;
+    else if (QString::compare(sOp, "threshproperr", Qt::CaseInsensitive) == 0)
+        return RM_BASIC_MATH_THRESHOLD_PROP_ERROR;
     else
         return -1;
 }
