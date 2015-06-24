@@ -2,7 +2,7 @@
 
 ## 6.1.7
 
-### New Features
+### New Features   
 
 * Rolling all the math commands up into one "rasterman math" command.
 * Re-implement the area thresholding as a non-recursive algorithm. 
