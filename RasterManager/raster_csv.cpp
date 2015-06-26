@@ -132,7 +132,10 @@ int Raster::CSVtoRaster(const char * sCSVSourcePath,
                         csvY = (int) floor((p_rastermeta->GetTop() - dVal) / p_rastermeta->GetCellHeight() * -1);
                     }
                     else if (zcol == ncolnumber){
-                        csvDataVal = dVal;
+                        if (csvItem.length() == 0)
+                            csvDataVal = p_rastermeta->GetNoDataValue();
+                        else
+                            csvDataVal = dVal;
                     }
                 }
                 cellLoop.Tick(); //DEBUG Only
