@@ -1,5 +1,17 @@
 --------------------------------
 
+## 6.1.8
+
+### New Features
+
+* SetNull now allows for a blank operator. This was done to help us clean up ESRI rasters where the nodata value was not set precisely enough. 
+
+### Fixes
+
+* **raster2csv** now specifies the center of the cell like you would expect it to.
+
+--------------------------------
+
 ## 6.1.7
 
 ### New Features   
