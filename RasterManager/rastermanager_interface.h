@@ -61,6 +61,7 @@ enum Raster_Setnull_ops{
     SETNULL_BELOW,
     SETNULL_BETWEEN,
     SETNULL_VALUE,
+    SETNULL_CLEAN,
 };
 
 

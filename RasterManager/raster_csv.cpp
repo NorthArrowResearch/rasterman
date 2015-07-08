@@ -201,12 +201,12 @@ int Raster::RasterToCSV(const char * sRasterSourcePath,
             {
                 if ( pInputLine[j] != rmRasterMeta.GetNoDataValue())
                 {
-                    double dX = ( j * rmRasterMeta.GetCellWidth() ) + rmRasterMeta.GetLeft();
-                    double dY = ( i * rmRasterMeta.GetCellHeight() ) + rmRasterMeta.GetTop();
+                    double dX = ( j * rmRasterMeta.GetCellWidth() ) + rmRasterMeta.GetLeft() + rmRasterMeta.GetCellWidth()/2;
+                    double dY = ( i * rmRasterMeta.GetCellHeight() ) + rmRasterMeta.GetTop() + rmRasterMeta.GetCellHeight()/2;
 
                     QString csvLine = QString("%1,%2,%3")
-                            .arg( dX, 0, 'f', rmRasterMeta.GetHorizontalPrecision() )
-                            .arg( dY, 0, 'f', rmRasterMeta.GetVerticalPrecision() )
+                            .arg( dX, 0, 'f', rmRasterMeta.GetHorizontalPrecision()+1 )
+                            .arg( dY, 0, 'f', rmRasterMeta.GetVerticalPrecision()+1 )
                             .arg( pInputLine[j], 0, 'f', 10, '0' );
 
                     CSVWriteLine(&CSVfile, csvLine);

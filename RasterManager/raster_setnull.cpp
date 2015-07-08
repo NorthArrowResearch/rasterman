@@ -11,6 +11,8 @@ namespace RasterManager {
 
 int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double dThresh1, double dThresh2){
 
+    double dNodataValue = GetNoDataValue();
+
     int nOpType;
     QString sType(psOperator);
     if (sType.compare(sType, "above", Qt::CaseInsensitive) == 0)
@@ -24,9 +26,14 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
     else if (sType.compare(sType, "value", Qt::CaseInsensitive) == 0){
         nOpType = SETNULL_VALUE;
     }
+    else if (sType.compare(sType, "", Qt::CaseInsensitive) == 0){
+        nOpType = SETNULL_CLEAN;
+        dNodataValue =  (double) -std::numeric_limits<float>::max();
+    }
     else{
         throw RasterManagerException( MISSING_ARGUMENT, "Could not detect a valid setnull Operation.");
     }
+
 
     // Open up the Input File
     GDALDataset * pInputDS = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
@@ -38,6 +45,7 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
     // Create the output dataset for writing
     GDALDataset * pOutputDS = CreateOutputDS(psOutputSlope, this);
     GDALRasterBand * pOutputRB = pOutputDS->GetRasterBand(1);
+    pOutputRB->SetNoDataValue(dNodataValue);
 
     // Assign our buffers
     double * pInputLine = (double*) CPLMalloc(sizeof(double) * GetCols());
@@ -55,8 +63,9 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
             if ((nOpType == SETNULL_ABOVE && pInputLine[j] > dThresh1) ||
                     (nOpType == SETNULL_BELOW && pInputLine[j] < dThresh1) ||
                     (nOpType == SETNULL_BETWEEN && (pInputLine[j] < dThresh1 || pInputLine[j] > dThresh2) ) ||
-                    (nOpType == SETNULL_VALUE && pInputLine[j] == dThresh1 )){
-                pOutputLine[j] = GetNoDataValue();
+                    (nOpType == SETNULL_VALUE && pInputLine[j] == dThresh1 ) ||
+                    (nOpType == SETNULL_CLEAN && SetNullCompare(pInputLine[j], dNodataValue) )  ){
+                pOutputLine[j] = dNodataValue;
             }
             else {
                 pOutputLine[j] = pInputLine[j];
@@ -81,5 +90,22 @@ int Raster::SetNull(const char * psOutputSlope, const char * psOperator, double 
 
 
 }
+
+
+int Raster::SetNullCompare(double x, double y)
+{
+    if (qFuzzyCompare(x, y))
+        return true;
+    else{
+        int nXExp, nYExp;
+        double dXMant = frexp (x, &nXExp);
+        double dYMant = frexp (y, &nYExp);
+        // IF the order of magnitude is the same AND
+        if (nXExp == nYExp && fabs(dXMant-dYMant) < 0.00001 )
+            return true;
+        return false;
+    }
+}
+
 
 }

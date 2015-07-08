@@ -459,13 +459,17 @@ int RasterManEngine::SetNull(int argc, char * argv[])
 {
     int eResult = PROCESS_OK;
 
-    if (argc != 6 && argc !=7)
+    if (argc != 6 && argc !=7 && argc !=4)
     {
         std::cout << "\n Set values of a raster to NoData using simple rules.";
-        std::cout << "\n    Usage: rasterman setnull <rule> <raster_file_path> <output_file_path> [<arg>| <lowval> <highval>]";
+        std::cout << "\n    Usage: rasterman setnull [<rule>] <raster_file_path> <output_file_path> [<arg>| <lowval> <highval>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n                rule: Can be one of \"above\", \"below\", \"between\" and \"value\".";
+        std::cout << "\n                      NB: If this parameter is not specified setnull will compare the value of a nodata";
+        std::cout << "\n                          cell with the value specified in the raster header. It will then unify the two";
+        std::cout << "\n                          this is special function for dealing with a quirk of ESRI rasters where these ";
+        std::cout << "\n                          two values can sometimes be mismatched.";
         std::cout << "\n    raster_file_path: two or more raster file paths, space delimited.";
         std::cout << "\n    output_file_path: Absolute full path to desired output raster file.";
         std::cout << "\n                 arg: Value to threshold below or above. Use for \"above\", \"below\" and \"value\"";
@@ -474,15 +478,23 @@ int RasterManEngine::SetNull(int argc, char * argv[])
         return PROCESS_OK;
     }
 
-    Raster theRaster(argv[3]);
+    if (argc == 4){
+        Raster theRaster(argv[2]);
+        eResult = theRaster.SetNull(argv[3], "", 0, 0);
+    }
+    else{
 
-    double dThresh1 = GetDouble(argc, argv, 5);
-    double dThresh2 = 0;
+        Raster theRaster(argv[3]);
 
-    if (argc == 7)
-        dThresh2 = GetDouble(argc, argv, 6);
+        double dThresh1 = GetDouble(argc, argv, 5);
+        double dThresh2 = 0;
 
-    eResult = theRaster.SetNull(argv[4], argv[2], dThresh1, dThresh2);
+        if (argc == 7)
+            dThresh2 = GetDouble(argc, argv, 6);
+
+        eResult = theRaster.SetNull(argv[4], argv[2], dThresh1, dThresh2);
+
+    }
 
     return eResult;
 

@@ -570,6 +570,14 @@ private:
     static double CombineRasterValuesMean(QHash<int, double> dCellContents, double dNoDataVal);
 
     /**
+     * @brief SetNullCompare
+     * @param x
+     * @param y
+     * @return
+     */
+    static int SetNullCompare(double x, double y);
+
+    /**
      * @brief EuclideanDistanceProcessLine -- Helper function for euclideanDistance
      * @param panSrcScanline
      * @param panNearX
