@@ -153,8 +153,8 @@ bool RasterMeta::IsOrthogonal(RasterMeta * pCompareMeta){
         return false;
 
     // Make sure the difference between left and right is divisible by the cell dimentsions
-    if ( !qFuzzyIsNull( fmod((GetLeft() - pCompareMeta->GetLeft() ) / GetCellHeight(), 1 ) )  ||
-         !qFuzzyIsNull( fmod((GetTop()  - pCompareMeta->GetTop()  ) / GetCellWidth(),  1 ) ) )
+    if ( !qFuzzyIsNull( fmod((GetLeft() - pCompareMeta->GetLeft() ) / GetCellWidth(), 1 ) )  ||
+         !qFuzzyIsNull( fmod((GetTop()  - pCompareMeta->GetTop()  ) / GetCellHeight(),  1 ) ) )
         return false;
 
     return true;

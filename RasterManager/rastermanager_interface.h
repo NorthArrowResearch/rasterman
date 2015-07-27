@@ -551,6 +551,27 @@ extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
                                                    const char * sYField,
                                                    const char * sDataField ,
                                                    char *sErr);
+
+
+/**
+ * @brief RasterToCSVandTemplate
+ * @param sCSVSourcePath
+ * @param psOutput
+ * @param sRasterTemplate
+ * @param sXField
+ * @param sYField
+ * @param sDataField
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int RasterToCSVandTemplate(const char * sRasterSourcePath,
+                                                 const char * psOutput,
+                                                 const char * sRasterTemplate,
+                                                 const char * sXField,
+                                                 const char * sYField,
+                                                 const char * sDataField,
+                                                 char * sErr);
+
 /**
  * @brief RasterFromCSVandExtents
  * @param sCSVSourcePath
