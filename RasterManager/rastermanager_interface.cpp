@@ -239,22 +239,14 @@ extern "C" RM_DLL_API int RasterFromCSVandTemplate(const char * sCSVSourcePath,
 }
 
 
-extern "C" RM_DLL_API int RasterToCSVandTemplate(const char * sRasterSourcePath,
-                                                   const char * psOutput,
-                                                   const char * sRasterTemplate,
-                                                   const char * sXField,
-                                                   const char * sYField,
-                                                   const char * sDataField,
-                                                   char * sErr){
+extern "C" RM_DLL_API int RasterToCSV(const char * sRasterSourcePath,
+                                      const char * sOutputCSVPath,
+                                      char * sErr){
 
     InitCInterfaceError(sErr);
     try {
         return  RasterManager::Raster::RasterToCSV(sRasterSourcePath,
-                                                   psOutput,
-                                                   sRasterTemplate,
-                                                   sXField,
-                                                   sYField,
-                                                   sDataField );
+                                                   sOutputCSVPath);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

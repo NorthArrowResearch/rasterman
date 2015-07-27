@@ -1,5 +1,20 @@
 --------------------------------
 
+## 6.1.9
+
+This release is just to get some minor fixes in, mostly for our C# tools that call into RasterMan.
+
+### New Features
+
+* RasterToCSV didn't have a C++ API so we gave it one. 
+
+### Fixes
+
+* A [minor problem with the cell width and height being swapped](https://github.com/NorthArrowResearch/rasterman/issues/5). Easy fix.
+
+
+--------------------------------
+
 ## 6.1.8
 
 ### New Features
