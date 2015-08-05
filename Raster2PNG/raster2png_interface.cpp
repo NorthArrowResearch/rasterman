@@ -1,14 +1,21 @@
 #include "raster2png_interface.h"
 #include "raster2png_global.h"
 #include "raster2png_exception.h"
-#include "renderer.h"
+#include "renderer_bytedata.h"
 #include <QString>
 namespace Raster2PNG {
 
-extern "C" R2PNG_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nLegend, int nTransparency, int eRasterType)
+extern "C" R2PNG_DLL_API int CreatePNG(const char * psInputRaster,
+                                       const char * psOutputPNG,
+                                       int nImageQuality,
+                                       int nLongAxisPixels,
+                                       int nLegend,
+                                       int nTransparency,
+                                       int eRasterType,
+                                       char * sErr)
 {
     try {
-        Renderer myPNG(psInputRaster, eRasterType, nTransparency, FALSE );
+        Renderer_ByteData myPNG(psInputRaster);
         if (nLegend > 0)
             myPNG.printLegend();
         int eResult = myPNG.rasterToPNG(psOutputPNG, nImageQuality, nLongAxisPixels);

@@ -713,21 +713,6 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
     }
 }
 
-extern "C" RM_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG,
-                                    int nImageQuality, int nLongAxisPixels, int nOpacity, int eRasterType, char * sErr)
-{
-    InitCInterfaceError(sErr);
-    try {
-        RasterManager::Raster rOriginal(psInputRaster);
-        int eResult = rOriginal.RastertoPng(psOutputPNG, nImageQuality, nLongAxisPixels, nOpacity, (Raster_SymbologyStyle) eRasterType);
-        return eResult;
-    }
-    catch (RasterManagerException e){
-        SetCInterfaceError(e, sErr);
-        return e.GetErrorCode();
-    }
-}
-
 extern "C" RM_DLL_API int RasterGetStat(const char * psOperation, double * pdValue, const char * psInputRaster, char * sErr){
     InitCInterfaceError(sErr);
     try {
@@ -955,11 +940,7 @@ extern "C" RM_DLL_API int GetStatFromString(const char * psStat)
         return -1;
 }
 
-<<<<<<< HEAD
 extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr)
-=======
-extern "C" RM_DLL_API void GetReturnCodeAsString(unsigned int eErrorCode, char * sErr, unsigned int iBufferSize)
->>>>>>> I've done all I can for now. Need Philip to proceed
 {
     const char * pRMErr = RasterManagerException::GetReturnCodeOnlyAsString(eErrorCode);
     strncpy(sErr, pRMErr, ERRBUFFERSIZE);

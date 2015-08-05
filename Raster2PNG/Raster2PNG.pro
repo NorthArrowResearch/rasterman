@@ -12,7 +12,7 @@ TARGET = Raster2PNG
 TARGET_EXT = .dll # prevent version suffix on dll
 TEMPLATE = lib
 
-VERSION = 6.1.5
+VERSION = 6.1.9
 DEFINES += LIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
 

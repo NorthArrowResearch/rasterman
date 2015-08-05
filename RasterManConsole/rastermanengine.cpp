@@ -625,7 +625,8 @@ int RasterManEngine::PNG(int argc, char * argv[])
     int nTransparency = GetInteger(argc, argv, 6);
 
     RasterManager::Raster rOriginal(argv[2]);
-    eResult = rOriginal.RastertoPng(argv[3], nQuality, nLongLength, nTransparency, eStyle);
+
+    //eResult = rOriginal.RastertoPng(argv[3], nQuality, nLongLength, nTransparency, eStyle);
 
     return eResult;
 }

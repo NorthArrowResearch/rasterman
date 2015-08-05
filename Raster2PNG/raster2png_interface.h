@@ -5,8 +5,14 @@
 
 namespace Raster2PNG {
 
-extern "C" R2PNG_DLL_API int CreatePNG(const char * psInputRaster, const char * psOutputPNG, int nImageQuality, int nLongAxisPixels, int nTransparency, int eRasterType);
-
+extern "C" R2PNG_DLL_API int CreatePNG(const char * psInputRaster,
+                                       const char * psOutputPNG,
+                                       int nImageQuality,
+                                       int nLongAxisPixels,
+                                       int nLegend,
+                                       int nTransparency,
+                                       int eRasterType,
+                                       char * sErr);
 /**
  * @brief GetSymbologyStyleFromString
  * @param psStyle
