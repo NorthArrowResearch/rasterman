@@ -1,3 +1,5 @@
+#define MY_DLL_EXPORT
+
 #include "raster2png_interface.h"
 #include "raster2png_global.h"
 #include "raster2png_exception.h"
