@@ -217,8 +217,8 @@ int Renderer::setRendererColorTable(ColorRamp rampStyle, int nTransparency)
         {
             entry1.c1 = red[i], entry1.c2 = grn[i], entry1.c3 = blu[i], entry1.c4 = nTransparency;
             entry2.c1 = red[i+1], entry2.c2 = grn[i+1], entry2.c3 = blu[i+1], entry2.c4 = nTransparency;
-            index1 = round((i*1.0 / red.size()) * 254) + 1;
-            index2 = round(((i+1)*1.0 / red.size()) * 254) + 1;
+            index1 = qRound((i*1.0 / red.size()) * 254) + 1;
+            index2 = qRound(((i+1)*1.0 / red.size()) * 254) + 1;
             if (i+1 == red.size())
             {
                 index2 = 255;

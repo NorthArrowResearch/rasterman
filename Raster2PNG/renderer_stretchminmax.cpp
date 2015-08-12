@@ -27,7 +27,7 @@ void Renderer_StretchMinMax::createByteRaster()
             else
             {
                 scaled = fabs(1.0-(maxCalc-(oldRow[j]+corVal)) / (range));
-                byte = round(scaled * 254) + 1;
+                byte = qRound(scaled * 254) + 1;
                 newRow[j] = byte;
             }
         }

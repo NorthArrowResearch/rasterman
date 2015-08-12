@@ -52,7 +52,7 @@ void Renderer_StretchStdDev::createByteRaster()
             else
             {
                 scaled = 1.0 - fabs(((sdMax) - (oldRow[j]+corVal)) / range);
-                byte = round(scaled * 254) + 1;
+                byte = qRound(scaled * 254) + 1;
                 newRow[j] = byte;
             }
         }
