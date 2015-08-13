@@ -51,7 +51,7 @@ win32 {
     # Look for GDAL in a standard place
     GDAL = $$(GDALDIR)
     isEmpty(GDAL){
-        GDAL= ../lib/gdal
+        GDAL= $$PWD/../lib/gdal
     }else{
         GDAL= $$(GDALDIR)
     }
@@ -60,8 +60,6 @@ win32 {
     INCLUDEPATH += $$GDAL/include
     DEPENDPATH += $$GDAL/include
     LIBS += -L$$GDAL/lib -lgdal_i
-    #message($$(PWD)../lib/gdal)
-
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite

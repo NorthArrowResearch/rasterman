@@ -28,16 +28,23 @@ TOOL = $$(TOOLSUFFIX)
 TARGET = $$TARGET$$TOOL
 
 win32 {
+    CONFIG(release, debug|release): BUILD_TYPE = release
+    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
     # Look for GDAL in a standard place
     GDAL = $$(GDALDIR)
     isEmpty(GDAL){
-        GDAL= ""
+        GDAL= $$PWD/../lib/gdal
     }else{
-        GDAL=$$PWD../lib/gdal
+        GDAL= $$(GDALDIR)
     }
-    LIBS += -L$$GDAL -lgdal_i
+
     INCLUDEPATH += $$GDAL/include
     DEPENDPATH += $$GDAL/include
+    LIBS += -L$$GDAL/lib -lgdal_i
+
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
+    LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
@@ -51,11 +58,11 @@ unix{
     LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/local/include
     DEPENDPATH  += /usr/local/include
+
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
+    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 }
 
 INCLUDEPATH += $$PWD/../RasterManager
 DEPENDPATH += $$PWD/../RasterManager
-
-# Tell it where to find compiled RasterManager.dll
-LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager$$TOOL
-LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG$$TOOL
