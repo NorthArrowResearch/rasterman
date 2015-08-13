@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core widgets
-QT       -= gui
+QT       += core
+QT       -= gui widgets
 
 VERSION = 6.1.9
 TARGET = RasterManager
@@ -72,14 +72,17 @@ win32 {
     # Look for GDAL in a standard place
     GDAL = $$(GDALDIR)
     isEmpty(GDAL){
-        GDAL= ""
+        GDAL= ../lib/gdal
     }else{
-        GDAL=$$PWD../lib/gdal
+        GDAL= $$(GDALDIR)
     }
+
     TARGET_EXT = .dll # prevent version suffix on dll
-    LIBS += -L$$GDAL -lgdal_i
     INCLUDEPATH += $$GDAL/include
     DEPENDPATH += $$GDAL/include
+    LIBS += -L$$GDAL/lib -lgdal_i
+    #message($$(PWD)../lib/gdal)
+
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10

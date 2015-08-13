@@ -13,7 +13,6 @@
 #include "rastermanager.h"
 
 #include <QtCore>
-#include <QWidget>
 #include <QString>
 
 
