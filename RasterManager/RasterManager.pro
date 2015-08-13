@@ -92,7 +92,6 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 
 }
 macx{
@@ -100,21 +99,24 @@ macx{
     message("Mac OSX x86_64 build (64bit)")
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-
+    # If the GDAL environment variable is specified use that.
+    GDAL = $$(GDALDIR)
+    isEmpty(GDAL){
+        GDAL= /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    }
     # GDAL is required
-    # GDALNIX = /Users/matt/Projects/nar/gdal/gdal-1.11-debug
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    # SOURCES += /Users/matt/Projects/nar/Libraries/gdal/gdal/alg/gdalproximity.cpp
-    LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    LIBS += -L$$GDAL/lib -lgdal
+    INCLUDEPATH += $$GDAL/include
+    DEPENDPATH  += $$GDAL/include
+    target.path = /usr/local/bin
+    INSTALLS += target
+
+    target.path = /usr/local/lib
+    INSTALLS += target
+
 }
 unix:!macx {
     message("Unix")
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     target.path = /usr/lib
     INSTALLS += target
@@ -124,4 +126,3 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 }
-message("Building to: $$DESTDIR")

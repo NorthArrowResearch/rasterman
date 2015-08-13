@@ -73,16 +73,21 @@ macx{
     message("Mac OSX x86_64 build (64bit)")
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
-
+    # If the GDAL environment variable is specified use that.
+    GDAL = $$(GDALDIR)
+    isEmpty(GDAL){
+        GDAL= /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    }
     # GDAL is required
-    # GDALNIX = /Users/matt/Projects/nar/gdal/gdal-1.11-debug
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    #    SOURCES += /Users/matt/Projects/nar/gdal/gdal/alg/gdalrasterize.cpp
-    LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    LIBS += -L$$GDAL/lib -lgdal
+    INCLUDEPATH += $$GDAL/include
+    DEPENDPATH  += $$GDAL/include
+    target.path = /usr/local/bin
+    INSTALLS += target
+
+    target.path = /usr/local/lib
+    INSTALLS += target
+
 }
 unix:!macx {
     message("Unix")

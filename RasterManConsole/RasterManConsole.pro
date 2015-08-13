@@ -53,7 +53,6 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
     LIBS += -L$$DESTDIR -lRasterManager$$TOOL
 
 }
@@ -62,19 +61,27 @@ macx{
     message("Mac OSX x86_64 build (64bit)")
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
 
+    # When we compile this for an ESRI Addin we have change its name
+    # To Avoid Collisions
+    GDAL = $$(GDALDIR)
+    isEmpty(GDAL){
+        GDAL= /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    }
     # GDAL is required
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    LIBS += -L$$GDAL/lib -lgdal
+    INCLUDEPATH += $$GDAL/include
+    DEPENDPATH  += $$GDAL/include
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    target.path = /usr/local/bin
+    INSTALLS += target
+
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L/usr/local/lib -lRasterManager
+    LIBS += -L/usr/local/lib -lRaster2PNG
+
 }
 unix:!macx {
     message("Unix")
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     target.path = /usr/bin
     INSTALLS += target
@@ -84,10 +91,8 @@ unix:!macx {
     INCLUDEPATH += /usr/include/gdal
     DEPENDPATH  += /usr/include/gdal
 
+    # Tell it where to find compiled RasterManager.dll
+    LIBS += -L/usr/lib -lRasterManager
+    LIBS += -L/usr/lib -lRaster2PNG
+
 }
-
-# Tell it where to find compiled RasterManager.dll
-LIBS += -L$$DESTDIR -lRasterManager
-LIBS += -L$$DESTDIR -lRaster2PNG
-message("Building to: $$DESTDIR")
-
