@@ -62,9 +62,6 @@ HEADERS +=\
     rasterarray.h \
     raster_gutpolygon.h
 
-CONFIG(release, debug|release): BUILD_TYPE = release
-else:CONFIG(debug, debug|release): BUILD_TYPE = debug
-
 win32 {
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -95,34 +92,15 @@ win32 {
 
 }
 macx{
-    ## OSX common build here
-    message("Mac OSX x86_64 build (64bit)")
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
-
-    # If the GDAL environment variable is specified use that.
-    GDAL = $$(GDALDIR)
-    isEmpty(GDAL){
-        GDAL= /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    }
-    # GDAL is required
-    LIBS += -L$$GDAL/lib -lgdal
-    INCLUDEPATH += $$GDAL/include
-    DEPENDPATH  += $$GDAL/include
-    target.path = /usr/local/bin
-    INSTALLS += target
-
-    target.path = /usr/local/lib
-    INSTALLS += target
-
 }
-unix:!macx {
-    message("Unix")
-
-    target.path = /usr/lib
+unix{
+    # Where are we installing to
+    target.path = /usr/local/lib
     INSTALLS += target
 
     # GDAL is required
     LIBS += -L/usr/local/lib -lgdal
-    INCLUDEPATH += /usr/include/gdal
-    DEPENDPATH  += /usr/include/gdal
+    INCLUDEPATH += /usr/local/include
+    DEPENDPATH  += /usr/local/include
 }
