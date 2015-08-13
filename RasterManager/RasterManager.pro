@@ -7,10 +7,10 @@
 QT       += core widgets
 QT       -= gui
 
+VERSION = 6.1.9
 TARGET = RasterManager
 TEMPLATE = lib
 
-VERSION = 6.1.9
 DEFINES += RMLIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
 
@@ -62,34 +62,24 @@ HEADERS +=\
     rasterarray.h \
     raster_gutpolygon.h
 
+
+# When we compile this for an ESRI Addin we have change its name
+# To Avoid Collisions
+TOOL = $$(TOOLSUFFIX)
+TARGET = $$TARGET$$TOOL
+
 win32 {
-    ## There's some trickiness in windows 32 vs 64-bits
-    !contains(QMAKE_TARGET.arch, x86_64) {
-        ARCH = "32"
-        message("x86 build (32 bit) ")
-    } else {
-        message("x86_64 build (64 bit) ")
-        ARCH = "64"
-    }
-
-    # GDAL is required
-    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    TARGET_EXT = .dll # prevent version suffix on dll
-    LIBS += -L$$GDALWIN/lib/ -lgdal_i
-    INCLUDEPATH += $$GDALWIN/include
-    DEPENDPATH += $$GDALWIN/include
-
-    # When we compile this for an ESRI Addin we have change its name
-    # To Avoid Collisions
-    TOOL = $$(TOOLSUFFIX)
-    isEmpty(TOOL){
-        TOOLDIR= ""
+    # Look for GDAL in a standard place
+    GDAL = $$(GDALDIR)
+    isEmpty(GDAL){
+        GDAL= ""
     }else{
-        TOOLDIR=$$TOOL/
+        GDAL=$$PWD../lib/gdal
     }
-
-    TARGET = $$TARGET$$TOOL
-
+    TARGET_EXT = .dll # prevent version suffix on dll
+    LIBS += -L$$GDAL -lgdal_i
+    INCLUDEPATH += $$GDAL/include
+    DEPENDPATH += $$GDAL/include
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10

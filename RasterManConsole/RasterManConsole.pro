@@ -22,36 +22,22 @@ SOURCES += main.cpp \
 HEADERS += \
     rastermanengine.h
 
-INCLUDEPATH += $$PWD/../RasterManager
-DEPENDPATH += $$PWD/../RasterManager
+# When we compile this for an ESRI Addin we have change its name
+# To Avoid Collisions
+TOOL = $$(TOOLSUFFIX)
+TARGET = $$TARGET$$TOOL
 
 win32 {
-    ## There's some trickiness in windows 32 vs 64-bits
-    !contains(QMAKE_TARGET.arch, x86_64) {
-        ARCH = "32"
-        message("x86 build (32 bit) ")
-    } else {
-        message("x86_64 build (64 bit) ")
-        ARCH = "64"
-    }
-
-    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
-    LIBS += -L$$GDALWIN/lib/ -lgdal_i
-    INCLUDEPATH += $$GDALWIN/include
-    DEPENDPATH += $$GDALWIN/include
-
-    # When we compile this for an ESRI Addin we have change its name
-    # To Avoid Collisions
-    TOOL = $$(TOOLSUFFIX)
-    isEmpty(TOOL){
-        TOOLDIR= ""
+    # Look for GDAL in a standard place
+    GDAL = $$(GDALDIR)
+    isEmpty(GDAL){
+        GDAL= ""
     }else{
-        TOOLDIR=$$TOOL/
+        GDAL=$$PWD../lib/gdal
     }
-
-    TARGET = $$TARGET$$TOOL
-    LIBS += -L$$DESTDIR -lRasterManager$$TOOL
-
+    LIBS += -L$$GDAL -lgdal_i
+    INCLUDEPATH += $$GDAL/include
+    DEPENDPATH += $$GDAL/include
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
@@ -65,10 +51,11 @@ unix{
     LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/local/include
     DEPENDPATH  += /usr/local/include
-
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$PWD/../RasterManager -lRasterManager
-    LIBS += -L$$PWD/../Raster2PNG -lRaster2PNG
-
 }
 
+INCLUDEPATH += $$PWD/../RasterManager
+DEPENDPATH += $$PWD/../RasterManager
+
+# Tell it where to find compiled RasterManager.dll
+LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager$$TOOL
+LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG$$TOOL

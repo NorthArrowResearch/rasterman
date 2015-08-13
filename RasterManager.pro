@@ -4,4 +4,3 @@ SUBDIRS += \
     Raster2PNG \
     RasterManager \
     RasterManConsole \
-
