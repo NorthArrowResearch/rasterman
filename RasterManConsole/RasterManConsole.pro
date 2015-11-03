@@ -42,12 +42,13 @@ win32 {
     DEPENDPATH += $$GDAL/include
     LIBS += -L$$GDAL/lib -lgdal_i
 
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
-    LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
 }
 macx{
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
+    QMAKE_MAC_SDK = macosx10.11
+
+    target.path = /usr/local/bin
+    INSTALLS += target
 }
 unix{
     # Where are we installing to
@@ -59,10 +60,10 @@ unix{
     INCLUDEPATH += /usr/local/include
     DEPENDPATH  += /usr/local/include
 
-    # Tell it where to find compiled RasterManager.dll
-    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
-    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 }
+
+LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
+LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
 
 INCLUDEPATH += $$PWD/../RasterManager
 DEPENDPATH += $$PWD/../RasterManager

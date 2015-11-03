@@ -62,7 +62,11 @@ win32 {
     LIBS += -L$$GDAL/lib -lgdal_i
 }
 macx{
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10 #2 Yosemite
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
+    QMAKE_MAC_SDK = macosx10.11
+
+    target.path = /usr/local/lib
+    INSTALLS += target
 }
 unix{
     # Where are we installing to
