@@ -69,18 +69,33 @@ TOOL = $$(TOOLSUFFIX)
 TARGET = $$TARGET$$TOOL
 
 win32 {
-    # Look for GDAL in a standard place
-    GDAL = $$(GDALDIR)
-    isEmpty(GDAL){
-        GDAL= $$PWD/../lib/gdal
-    }else{
-        GDAL= $$(GDALDIR)
+    ## There's some trickiness in windows 32 vs 64-bits
+    !contains(QMAKE_TARGET.arch, x86_64) {
+        ARCH = "32"
+        message("x86 build (32 bit) ")
+    } else {
+        message("x86_64 build (64 bit) ")
+        ARCH = "64"
     }
 
+    # GDAL is required
+    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
     TARGET_EXT = .dll # prevent version suffix on dll
-    INCLUDEPATH += $$GDAL/include
-    DEPENDPATH += $$GDAL/include
-    LIBS += -L$$GDAL/lib -lgdal_i
+    LIBS += -L$$GDALWIN/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
+
+    # When we compile this for an ESRI Addin we have change its name
+    # To Avoid Collisions
+    TOOL = $$(TOOLSUFFIX)
+    isEmpty(TOOL){
+        TOOLDIR= ""
+    }else{
+        TOOLDIR=$$TOOL/
+    }
+
+    TARGET = $$TARGET$$TOOL
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan

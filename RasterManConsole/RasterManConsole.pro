@@ -28,19 +28,32 @@ TOOL = $$(TOOLSUFFIX)
 TARGET = $$TARGET$$TOOL
 
 win32 {
-    CONFIG(release, debug|release): BUILD_TYPE = release
-    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
-    # Look for GDAL in a standard place
-    GDAL = $$(GDALDIR)
-    isEmpty(GDAL){
-        GDAL= $$PWD/../lib/gdal
-    }else{
-        GDAL= $$(GDALDIR)
+    ## There's some trickiness in windows 32 vs 64-bits
+    !contains(QMAKE_TARGET.arch, x86_64) {
+        ARCH = "32"
+        message("x86 build (32 bit) ")
+    } else {
+        message("x86_64 build (64 bit) ")
+        ARCH = "64"
     }
 
-    INCLUDEPATH += $$GDAL/include
-    DEPENDPATH += $$GDAL/include
-    LIBS += -L$$GDAL/lib -lgdal_i
+    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    LIBS += -L$$GDALWIN/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALWIN/include
+    DEPENDPATH += $$GDALWIN/include
+
+    # When we compile this for an ESRI Addin we have change its name
+    # To Avoid Collisions
+    TOOL = $$(TOOLSUFFIX)
+    isEmpty(TOOL){
+        TOOLDIR= ""
+    }else{
+        TOOLDIR=$$TOOL/
+    }
+
+    TARGET = $$TARGET$$TOOL
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    LIBS += -L$$DESTDIR -lRasterManager$$TOOL
 
 }
 macx{
