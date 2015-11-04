@@ -7,7 +7,7 @@
 QT       += core widgets
 QT       -= gui
 
-VERSION = 6.1.9
+VERSION = 6.2.0
 TARGET = Raster2PNG
 TEMPLATE = lib
 
