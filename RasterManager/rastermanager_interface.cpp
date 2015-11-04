@@ -635,6 +635,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
 
         RasterManager::Raster r(ppszRaster);
         std::string projection = r.GetProjectionRef();
+        std::string unit = r.GetUnit();
 
         fCellHeight = r.GetCellHeight();
         fCellWidth = r.GetCellWidth();
@@ -644,6 +645,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         fBottom = r.GetBottom();
         nRows = r.GetRows();
         nCols = r.GetCols();
+
         dRasterMax = r.GetMaximum();
         dRasterMin = r.GetMinimum();
         divisible = r.IsDivisible();
@@ -696,6 +698,7 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
             std::cout << "\n        No Data: none";
 
         std::cout << "\n     Projection: " << projection.substr(0,70) << "...";
+        std::cout << "\n     Unit: " << unit;
         std::cout << "\n ";
 
     }
@@ -718,7 +721,6 @@ extern "C" RM_DLL_API int RasterGetStat(const char * psOperation, double * pdVal
 }
 
 /*******************************************************************************************************
- *******************************************************************************************************
  * Raster copy and resample methods
  */
 
@@ -732,6 +734,42 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
     try{
         RasterManager::Raster ra(ppszOriginalRaster);
         return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
+extern "C" RM_DLL_API int DatasetRefMatches(const char * psDS1, const char * psDS2, int & result, char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        GDALDataset * pDS1 = (GDALDataset*) GDALOpen(psDS1, GA_ReadOnly);
+        GDALDataset * pDS2 = (GDALDataset*) GDALOpen(psDS2, GA_ReadOnly);
+
+        const char * psProj1 = pDS1->GetProjectionRef();
+        const char * psProj2 = pDS2->GetProjectionRef();
+        QString qsProj1(psProj1);
+        QString qsProj2(psProj2);
+        result = int (qsProj1.compare(qsProj2, Qt::CaseInsensitive) == 0);
+        return PROCESS_OK;
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
+extern "C" RM_DLL_API int SetRef(const char * psInputRaster, const char * psOutputRaster, const char * psRefRaster, char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        RasterManager::Raster ra(psInputRaster);
+        RasterManager::Raster ref(psRefRaster);
+        ra.SetProjectionRef(ref.GetProjectionRef());
+        double dCellWidth = ra.GetCellWidth();
+        return ra.Copy(psOutputRaster, &dCellWidth, ra.GetLeft(), ra.GetTop(), ra.GetRows(), ra.GetCols());
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

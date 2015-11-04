@@ -161,7 +161,8 @@ extern "C" RM_DLL_API void DestroyGDAL();
 extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
                                                double & fCellHeight, double & fCellWidth,
                                                double & fLeft, double & fTop, int & nRows, int & nCols,
-                                               double & fNoData, int & bHasNoData, int & nDataType, char *psUnit, char *psProjection, char *sErr);
+                                               double & fNoData, int & bHasNoData, int & nDataType,
+                                               char *psUnit, char *psProjection, char *sErr);
 /**
  * @brief PrintRasterProperties
  *
@@ -407,6 +408,17 @@ extern "C" RM_DLL_API int CreateHillshade(const char * psInputRaster, const char
  * @return
  */
 extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * psOutputSlope, const char *psSlopeType, char *sErr);
+
+
+/**
+ * @brief DatasetRefMatches
+ * @param psDS1
+ * @param psDS2
+ * @param result
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int DatasetRefMatches(const char * psDS1, const char * psDS2, int & result, char * sErr);
 
 /**
  * @brief RasterInvert
