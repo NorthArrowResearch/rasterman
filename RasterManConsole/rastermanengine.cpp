@@ -58,6 +58,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "Copy", Qt::CaseInsensitive) == 0)
             eResult = RasterCopy(argc, argv);
 
+        else if (QString::compare(sCommand, "Delete", Qt::CaseInsensitive) == 0)
+            eResult = RasterDelete(argc, argv);
+
         else if (QString::compare(sCommand, "math", Qt::CaseInsensitive) == 0)
             eResult = RasterMath(argc, argv);
 
@@ -159,7 +162,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    raster          Display basic properties (rows, cols etc) for a raster.";
         std::cout << "\n    stats           Display specific statistics (mean, max, min, etc) for a raster.";
         std::cout << "\n    compare         Compare two rasters: check divisible, orthogonal, concurrent and by cell";
-
+        std::cout << "\n    delete          Delete a dataset. Useful for cleaning up auxiliary files";
         std::cout << "\n";
         std::cout << "\n    bilinear        Bilinear resample of a raster to produce a new raster.";
         std::cout << "\n    copy            Copy a raster to produce a new raster with the specified extent.";
@@ -212,6 +215,25 @@ int RasterManEngine::RasterProperties(int argc, char * argv[])
 
     RasterManager::PrintRasterProperties(argv[2]);
     return PROCESS_OK;
+}
+
+int RasterManEngine::RasterDelete(int argc, char * argv[])
+{
+    int eResult = PROCESS_OK;
+    if (argc != 3)
+    {
+        std::cout << "\nRaster Delete Usage: ";
+        std::cout << "\n    Usage: rasterman delete <raster_file_path> ";
+        std::cout << "\n    Command: delete ";
+        std::cout << "\n Arguments: ";
+        std::cout << "\n    raster_file_path: Absolute full path to existing raster file. ";
+        std::cout << "\n";
+        return eResult;
+    }
+
+    eResult = RasterManager::Raster::Delete(argv[2]);
+    return eResult;
+
 }
 
 int RasterManEngine::BiLinearResample(int argc, char * argv[])

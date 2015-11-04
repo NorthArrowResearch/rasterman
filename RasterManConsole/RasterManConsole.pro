@@ -22,9 +22,11 @@ SOURCES += main.cpp \
 HEADERS += \
     rastermanengine.h
 
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
+
 win32 {
-    CONFIG(release, debug|release): BUILD_TYPE = release
-    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -53,13 +55,18 @@ win32 {
     DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
     LIBS += -L$$DESTDIR -lRasterManager$$TOOL
 
+    LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
+    LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
-    target.path = /usr/local/bin
-    INSTALLS += target
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
+    LIBS += -L$$DESTDIR -lRasterManager
+    LIBS += -L$$DESTDIR -lRaster2PNG
 }
 unix{
     # Where are we installing to
@@ -70,11 +77,12 @@ unix{
     LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/local/include
     DEPENDPATH  += /usr/local/include
-
+    message($$LIBS)
 }
-
-LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
-LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
+unix!macx{
+    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
+    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
+}
 
 INCLUDEPATH += $$PWD/../RasterManager
 DEPENDPATH += $$PWD/../RasterManager

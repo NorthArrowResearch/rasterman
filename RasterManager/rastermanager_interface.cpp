@@ -22,8 +22,6 @@
 
 namespace RasterManager {
 
-const int ERRBUFFERSIZE = 1024;
-
 RM_DLL_API const char * GetLibVersion(){ return RMLIBVERSION; }
 
 RM_DLL_API const char * GetMinGDALVersion(){ return MINGDAL; }
@@ -40,6 +38,7 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
     }
    return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
+
 
 RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta){
     const QByteArray qbFileName = sOutputRaster.toLocal8Bit();
@@ -133,6 +132,17 @@ RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
 
 }
 
+extern "C" RM_DLL_API int DeleteDataset(const char * pOutputRaster, char * sErr){
+
+    InitCInterfaceError(sErr);
+    try {
+        return Raster::Delete(pOutputRaster);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
 
 extern "C" RM_DLL_API void RegisterGDAL() { GDALAllRegister();}
 extern "C" RM_DLL_API void DestroyGDAL() { GDALDestroyDriverManager();}

@@ -140,6 +140,13 @@ public:
     int Copy(const char * pOutputRaster, double *fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
 
     /**
+     * @brief DeleteRaster
+     * @param pOutputRaster
+     * @return
+     */
+    static int Delete(const char * pOutputRaster);
+
+    /**
      * @brief CSVCellClean
      * @param value
      */

@@ -42,9 +42,11 @@ HEADERS +=\
     raster2png_interface.h \
     raster2png_exception.h
 
+CONFIG(release, debug|release): BUILD_TYPE = release
+else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
+
 win32 {
-    CONFIG(release, debug|release): BUILD_TYPE = release
-    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
@@ -78,8 +80,9 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
-    target.path = /usr/local/lib
-    INSTALLS += target
+    # Compile to a central location
+    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+
 }
 unix{
     # Where are we installing to

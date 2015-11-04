@@ -18,6 +18,8 @@ class GDALDataset;
 
 namespace RasterManager {
 
+const int ERRBUFFERSIZE = 1024;
+
 /**
  * @brief
  *
@@ -212,7 +214,20 @@ extern "C" RM_DLL_API int BiLinearResample(const char * ppszOriginalRaster,
  */
 extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOutput, char * sErr);
 
+/**
+ * @brief DeleteDataset
+ * @param pOutputRaster
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int DeleteDataset(const char * pOutputRaster, char * sErr);
 
+/**
+ * @brief CreateDrain
+ * @param sRasterInput
+ * @param sRasterOutput
+ * @param sErr
+ */
 extern "C" RM_DLL_API int CreateDrain(const char * sRasterInput, const char * sRasterOutput, char * sErr);
 
 

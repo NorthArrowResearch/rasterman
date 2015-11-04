@@ -132,7 +132,11 @@ void Raster::Init(bool bFullImage)
 
 }
 
+int Raster::Delete(const char * pOutputRaster){
 
+    GDALDriver * pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
+    return pDR->Delete(pOutputRaster) == CE_Failure ? 0 : 1;
+}
 
 
 /*
@@ -160,8 +164,8 @@ void Raster::CopyObject(Raster &src)
 }
 
 /*
-     * Clean up the object.
-     */
+ * Clean up the object.
+ */
 void Raster::Dispose()
 {
     free(m_sFilePath);
@@ -179,7 +183,7 @@ void Raster::Size(int& xSize, int& ySize)
     ySize = GetRows();
 }
 
-int  Raster::Copy(const char * pOutputRaster,
+int Raster::Copy(const char * pOutputRaster,
                   double * dNewCellSize,
                   double fLeft, double fTop, int nRows, int nCols)
 {
@@ -203,40 +207,13 @@ int  Raster::Copy(const char * pOutputRaster,
 
     GDALRasterBand * pRBInput = pDSOld->GetRasterBand(1);
 
-    /* Create the new dataset. Determine the driver from the output file extension.
-     * Enforce LZW compression for TIFs. The predictor 3 is used for floating point prediction.
-     * Not using this value defaults the LZW to prediction to 1 which causes striping.
-     */
-    char **papszOptions = NULL;
-    GDALDriver * pDR = NULL;
-    std::string psDR = "";
-    const char * pSuffix = ExtractFileExt(pOutputRaster);
-    if (pSuffix == NULL)
-        return OUTPUT_FILE_EXT_ERROR;
-    else
-    {
-        if (strcmp(pSuffix, ".tif") == 0)
-        {
-            psDR = "GTiff";
-            pDR = GetGDALDriverManager()->GetDriverByName(psDR.c_str());
-            papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
-        }
-        else if (strcmp(pSuffix, ".img") == 0){
-            psDR = "HFA";
-            pDR = GetGDALDriverManager()->GetDriverByName(psDR.c_str());
-        }
-        else
-            return OUTPUT_UNHANDLED_DRIVER;
-    }
-
     double dNewCellHeight = (*dNewCellSize) * -1;
     RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, &dNewCellHeight,
-                          dNewCellSize, GetNoDataValuePtr(), psDR.c_str(), GetGDALDataType(), GetProjectionRef() );
+                          dNewCellSize, GetNoDataValuePtr(), GetGDALDriver(), GetGDALDataType(), GetProjectionRef() );
 
-    //const char * pC = pDR->GetDescription();
-    GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nCols, nRows, 1, *GetGDALDataType(), papszOptions);
-    CSLDestroy( papszOptions );
+    // Create the output dataset for writing
+    GDALDataset * pDSOutput = CreateOutputDS(pOutputRaster, &OutputMeta);
+
     if (pDSOutput == NULL)
         return OUTPUT_FILE_ERROR;
 
@@ -421,21 +398,13 @@ int Raster::ReSample(const char * pOutputRaster, double fNewCellSize,
      */
     char **papszOptions = NULL;
     GDALDriver * pDR = NULL;
-    const char * pSuffix = ExtractFileExt(pOutputRaster);
-    if (pSuffix == NULL)
-        return OUTPUT_FILE_EXT_ERROR;
-    else
-    {
-        if (strcmp(pSuffix, ".tif") == 0)
-        {
-            pDR = GetGDALDriverManager()->GetDriverByName("GTiff");
-            papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-            //papszOptions = CSLSetNameValue(papszOptions, "PREDICTOR", "3");
-        }
-        else if (strcmp(pSuffix, ".img") == 0)
-            pDR = GetGDALDriverManager()->GetDriverByName("HFA");
-        else
-            return OUTPUT_UNHANDLED_DRIVER;
+
+    pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
+    if (strcmp( pDR->GetDescription() , "GTiff") == 0){
+        papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
+    }
+    else {
+        papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "PACKBITS");
     }
 
     GDALDataset * pDSOutput = pDR->Create(pOutputRaster, nNewCols, nNewRows, 1,  *GetGDALDataType(), papszOptions);

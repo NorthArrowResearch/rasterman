@@ -24,6 +24,15 @@ private:
      * @param argv
      */
     int RasterProperties(int argc, char *argv[]);
+
+    /**
+     * @brief RasterDelete
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int RasterDelete(int argc, char *argv[]);
+
     /**
      * @brief RasterMath
      * @param argc

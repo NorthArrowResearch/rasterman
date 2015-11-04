@@ -126,7 +126,7 @@ int Raster::RasterMath(const char * psRaster1,
                             pOutputLine[j] = fNoDataValue;
                     }
                     else if (iOperation == RM_BASIC_MATH_THRESHOLD_PROP_ERROR){
-                        if (abs(pInputLine1[j]) > pInputLine2[j]){
+                        if (fabs(pInputLine1[j]) > pInputLine2[j]){
                             pOutputLine[j] = pInputLine1[j];
                         }
                         else{
