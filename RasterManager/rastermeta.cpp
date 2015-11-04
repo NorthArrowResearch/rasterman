@@ -79,7 +79,7 @@ void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType
         SetGDALDataType(eDataType);
 
     SetGDALDriver(psDriver);
-    SetUnits(psUnit);
+    SetUnit(psUnit);
     SetProjectionRef(psProjection);
 
 }
@@ -208,7 +208,7 @@ void RasterMeta::SetNoDataValue(double * fNoData) {
     b_HasNoData = true;
 }
 
-void RasterMeta::SetUnits(const char * psUnits)
+void RasterMeta::SetUnit(const char * psUnits)
 {
     if (m_psUnits){
         free(m_psUnits);

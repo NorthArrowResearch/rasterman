@@ -137,7 +137,7 @@ public:
      * @param nCols
      * @return
      */
-    int Copy(const char * pOutputRaster, double *fNewCellSize, double fLeft, double fTop, int nRows, int nCols);
+    int Copy(const char * pOutputRaster, double *fNewCellSize, double fLeft, double fTop, int nRows, int nCols, const char *psRef, const char *psUnit);
 
     /**
      * @brief DeleteRaster

@@ -184,8 +184,10 @@ void Raster::Size(int& xSize, int& ySize)
 }
 
 int Raster::Copy(const char * pOutputRaster,
-                  double * dNewCellSize,
-                  double fLeft, double fTop, int nRows, int nCols)
+                 double * dNewCellSize,
+                 double fLeft, double fTop, int nRows, int nCols,
+                 const char * psRef,
+                 const char * psUnit)
 {
     if (fLeft <=0)
         return LEFT_ERROR;
@@ -199,7 +201,6 @@ int Raster::Copy(const char * pOutputRaster,
     if (nCols <=0)
         return COLS_ERROR;
 
-
     // Open the original dataset
     GDALDataset * pDSOld = (GDALDataset*) GDALOpen(m_sFilePath, GA_ReadOnly);
     if (pDSOld  == NULL)
@@ -208,6 +209,13 @@ int Raster::Copy(const char * pOutputRaster,
     GDALRasterBand * pRBInput = pDSOld->GetRasterBand(1);
 
     double dNewCellHeight = (*dNewCellSize) * -1;
+
+    if (psRef){
+        SetProjectionRef(psRef);
+    }
+    if (psUnit){
+        SetUnit(psUnit);
+    }
     RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, &dNewCellHeight,
                           dNewCellSize, GetNoDataValuePtr(), GetGDALDriver(), GetGDALDataType(), GetProjectionRef(), GetUnit() );
 

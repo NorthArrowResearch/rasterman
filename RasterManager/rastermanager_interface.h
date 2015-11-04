@@ -245,8 +245,30 @@ extern "C" RM_DLL_API int CreateDrain(const char * sRasterInput, const char * sR
  * @return int
  */
 extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
-                               const char *ppszOutputRaster, double fNewCellSize,
-                               double fLeft, double fTop, int nRows, int nCols, char * sErr);
+                               const char *ppszOutputRaster,
+                               double fNewCellSize,
+                               double fLeft, double fTop, int nRows, int nCols,
+                               char * sErr);
+
+/**
+ * @brief ExtendedCopy
+ * @param ppszOriginalRaster
+ * @param ppszOutputRaster
+ * @param fLeft
+ * @param fTop
+ * @param nRows
+ * @param nCols
+ * @param psRef
+ * @param psUnit
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int ExtendedCopy(const char * ppszOriginalRaster,
+                                       const char *ppszOutputRaster,
+                                       double fLeft, double fTop, int nRows, int nCols,
+                                       const char * psRef,
+                                       const char * psUnit,
+                                       char * sErr);
 
 
 /**

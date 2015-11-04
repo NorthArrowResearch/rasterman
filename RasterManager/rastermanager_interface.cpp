@@ -733,7 +733,27 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
     InitCInterfaceError(sErr);
     try{
         RasterManager::Raster ra(ppszOriginalRaster);
-        return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols);
+        return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols, NULL, NULL);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+}
+
+extern "C" RM_DLL_API int ExtendedCopy(const char * ppszOriginalRaster,
+                               const char *ppszOutputRaster,
+                               double fLeft, double fTop, int nRows, int nCols,
+                               const char * psRef,
+                               const char * psUnit,
+                               char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        RasterManager::Raster ra(ppszOriginalRaster);
+
+        double fNewCellSize = ra.GetCellWidth();
+        return ra.Copy(ppszOutputRaster, &fNewCellSize, fLeft, fTop, nRows, nCols, psRef, psUnit);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
@@ -753,23 +773,10 @@ extern "C" RM_DLL_API int DatasetRefMatches(const char * psDS1, const char * psD
         QString qsProj1(psProj1);
         QString qsProj2(psProj2);
         result = int (qsProj1.compare(qsProj2, Qt::CaseInsensitive) == 0);
-        return PROCESS_OK;
-    }
-    catch (RasterManagerException e){
-        SetCInterfaceError(e, sErr);
-        return e.GetErrorCode();
-    }
-}
 
-extern "C" RM_DLL_API int SetRef(const char * psInputRaster, const char * psOutputRaster, const char * psRefRaster, char * sErr)
-{
-    InitCInterfaceError(sErr);
-    try{
-        RasterManager::Raster ra(psInputRaster);
-        RasterManager::Raster ref(psRefRaster);
-        ra.SetProjectionRef(ref.GetProjectionRef());
-        double dCellWidth = ra.GetCellWidth();
-        return ra.Copy(psOutputRaster, &dCellWidth, ra.GetLeft(), ra.GetTop(), ra.GetRows(), ra.GetCols());
+        GDALClose(pDS1);
+        GDALClose(pDS2);
+        return PROCESS_OK;
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);

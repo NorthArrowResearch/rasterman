@@ -302,7 +302,7 @@ int RasterManEngine::RasterCopy(int argc, char * argv[])
 
         int eResult = PROCESS_OK;
         RasterManager::Raster rOriginal(argv[2]);
-        eResult = rOriginal.Copy(argv[3], &fCellSize, fLeft, fTop, nRows, nCols);
+        eResult = rOriginal.Copy(argv[3], &fCellSize, fLeft, fTop, nRows, nCols, NULL, NULL);
 
 
         PrintRasterProperties(argv[3]);

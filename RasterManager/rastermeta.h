@@ -148,7 +148,7 @@ public:
 protected:
 
     void SetGDALDriver(const char * sGDALDriver);
-    void SetUnits(const char *psUnits);
+    void SetUnit(const char *psUnits);
 
 private:
 
