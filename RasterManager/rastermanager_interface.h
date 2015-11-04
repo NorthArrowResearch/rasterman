@@ -161,7 +161,7 @@ extern "C" RM_DLL_API void DestroyGDAL();
 extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
                                                double & fCellHeight, double & fCellWidth,
                                                double & fLeft, double & fTop, int & nRows, int & nCols,
-                                               double & fNoData, int & bHasNoData, int & nDataType, char *sErr);
+                                               double & fNoData, int & bHasNoData, int & nDataType, char *psUnit, char *psProjection, char *sErr);
 /**
  * @brief PrintRasterProperties
  *

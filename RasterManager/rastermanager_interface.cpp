@@ -573,9 +573,9 @@ extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * cs
  */
 
 extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
-                                                          double & fCellHeight, double & fCellWidth,
-                                                          double & fLeft, double & fTop, int & nRows, int & nCols,
-                                                          double & fNoData, int & bHasNoData, int & nDataType, char * psUnit, char * psProjection, char * sErr)
+                                              double & fCellHeight, double & fCellWidth,
+                                              double & fLeft, double & fTop, int & nRows, int & nCols,
+                                              double & fNoData, int & bHasNoData, int & nDataType, char * psUnit, char * psProjection, char * sErr)
 {
     InitCInterfaceError(sErr);
     try{
