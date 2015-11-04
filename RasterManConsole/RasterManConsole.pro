@@ -65,21 +65,25 @@ macx{
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
+    # GDAL is required
+    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    LIBS += -L$$GDALNIX/lib -lgdal
+    INCLUDEPATH += $$GDALNIX/include
+    DEPENDPATH  += $$GDALNIX/include
+
     LIBS += -L$$DESTDIR -lRasterManager
     LIBS += -L$$DESTDIR -lRaster2PNG
 }
-unix{
-    # Where are we installing to
-    target.path = /usr/local/bin
-    INSTALLS += target
-
+unix!macx{
     # GDAL is required
     LIBS += -L/usr/local/lib -lgdal
     INCLUDEPATH += /usr/local/include
     DEPENDPATH  += /usr/local/include
-    message($$LIBS)
-}
-unix!macx{
+
+    # Where are we installing to
+    target.path = /usr/local/bin
+    INSTALLS += target
+
     LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
     LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 }

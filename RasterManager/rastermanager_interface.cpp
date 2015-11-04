@@ -663,8 +663,8 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
 
         printLine( QString("       Left: %1   Right: %2").arg(fLeft, 0, 'f', leftPrec).arg(fRight, 0, 'f', rightPrec));
 
-        printLine( QString("        Top: %1        Bottom: %2").arg(fTop, 0, 'f', topPrec).arg(fBottom, 0, 'f', bottomPrec));
-        printLine( QString("       Rows: %1          Cols: %2").arg(nRows).arg(nCols));
+        printLine( QString("        Top: %1   Bottom: %2").arg(fTop, 0, 'f', topPrec).arg(fBottom, 0, 'f', bottomPrec));
+        printLine( QString("       Rows: %1         Cols: %2").arg(nRows).arg(nCols));
         printLine( QString("        "));
         printLine( QString("       Cell Width: %1").arg(fCellWidth, 0, 'f', cellWidthPrec));
         printLine( QString("              Min: %1      Max: %2").arg(dRasterMin, 0, 'f', 2).arg(dRasterMax, 0, 'f', 2));

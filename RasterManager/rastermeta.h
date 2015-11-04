@@ -72,7 +72,7 @@ public:
      * @brief GetProjectionRef
      * @return
      */
-    inline char * GetUnit() { return m_psProjection; }
+    inline char * GetUnit() { return m_psUnit; }
 
     /**
      * @brief HasNoDataValue
@@ -148,7 +148,7 @@ public:
 protected:
 
     void SetGDALDriver(const char * sGDALDriver);
-    void SetUnit(const char *psUnits);
+    void SetUnit(const char *psUnit);
 
 private:
 
@@ -157,7 +157,7 @@ private:
 
     char * m_psGDALDriver;
     char * m_psProjection;
-    char * m_psUnits;
+    char * m_psUnit;
 
     double m_fNoDataValue;
     bool b_HasNoData; // Recall we need this because m_fNoDataValue will be a value of

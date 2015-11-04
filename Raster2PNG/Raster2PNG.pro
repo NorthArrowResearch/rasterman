@@ -83,8 +83,14 @@ macx{
     # Compile to a central location
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
+    # GDAL is required
+    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
+    LIBS += -L$$GDALNIX/lib -lgdal
+    INCLUDEPATH += $$GDALNIX/include
+    DEPENDPATH  += $$GDALNIX/include
+
 }
-unix{
+unix!macx{
     # Where are we installing to
     target.path = /usr/local/lib
     INSTALLS += target

@@ -18,7 +18,7 @@ RasterMeta::RasterMeta() : ExtentRectangle()
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    m_psUnits = NULL;
+    m_psUnit = NULL;
     double fNoDataValue = (double) -std::numeric_limits<float>::max();
     Init(&fNoDataValue, DEFAULT_RASTER_DRIVER, &nDType, NULL, NULL);
 }
@@ -30,7 +30,7 @@ RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    m_psUnits = NULL;
+    m_psUnit = NULL;
     Init(fNoData, psDriver, eDataType, psProjection, psUnit);
 }
 
@@ -38,14 +38,14 @@ RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    m_psUnits = NULL;
+    m_psUnit = NULL;
     GetPropertiesFromExistingRaster(psFilePath);
 }
 RasterMeta::RasterMeta(QString psFilePath) : ExtentRectangle(psFilePath)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    m_psUnits = NULL;
+    m_psUnit = NULL;
     const QByteArray qbFilePath = psFilePath.toLocal8Bit();
     GetPropertiesFromExistingRaster(qbFilePath.data());
 }
@@ -54,7 +54,7 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    m_psUnits = NULL;
+    m_psUnit = NULL;
     Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef(), source.GetUnit());
 }
 
@@ -66,8 +66,8 @@ RasterMeta::~RasterMeta()
     if (m_psProjection)
         free(m_psProjection);
 
-    if (m_psUnits)
-        free(m_psUnits);
+    if (m_psUnit)
+        free(m_psUnit);
 }
 
 
@@ -208,14 +208,14 @@ void RasterMeta::SetNoDataValue(double * fNoData) {
     b_HasNoData = true;
 }
 
-void RasterMeta::SetUnit(const char * psUnits)
+void RasterMeta::SetUnit(const char * psUnit)
 {
-    if (m_psUnits){
-        free(m_psUnits);
+    if (m_psUnit){
+        free(m_psUnit);
     }
     // Now set it if necessary
-    if (psUnits)
-        m_psUnits = strdup(psUnits);
+    if (psUnit)
+        m_psUnit = strdup(psUnit);
 }
 
 void RasterMeta::SetGDALDriver(const char * sGDALDriver)
