@@ -22,12 +22,10 @@ SOURCES += main.cpp \
 HEADERS += \
     rastermanengine.h
 
-# When we compile this for an ESRI Addin we have change its name
-# To Avoid Collisions
-TOOL = $$(TOOLSUFFIX)
-TARGET = $$TARGET$$TOOL
-
 win32 {
+    CONFIG(release, debug|release): BUILD_TYPE = release
+    else:CONFIG(debug, debug|release): BUILD_TYPE = debug
+
     ## There's some trickiness in windows 32 vs 64-bits
     !contains(QMAKE_TARGET.arch, x86_64) {
         ARCH = "32"
