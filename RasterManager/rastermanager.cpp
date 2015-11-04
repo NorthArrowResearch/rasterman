@@ -32,6 +32,18 @@ QString appendToBaseFileName(QString sFullFilePath, QString sAppendStr){
     return newPath;
 }
 
+int GetPrecision(double num){
+    int count = 0;
+    num = fabs(num);
+    num = num - int(num);
+    while ( !qFuzzyIsNull( fabs(num) ) ){
+        num = num * 10;
+        num = num - int(num);
+        count++;
+    }
+    return count;
+}
+
 void RM_DLL_API CheckFile(QString sFile, bool bMustExist)
 {
     // Enough arguments

@@ -667,14 +667,20 @@ extern "C" RM_DLL_API void PrintRasterProperties(const char * ppszRaster)
         nDataType = (int) *r.GetGDALDataType();
 
         printLine( QString("     Raster: %1").arg(ppszRaster));
-        printLine( QString("       Left: %1   Right: %2").arg(fLeft).arg(fRight));
 
-        printLine( QString("        Top: %1     Bottom: %2").arg(fTop).arg(fBottom));
-        printLine( QString("       Rows: %1    Cols: %2").arg(nRows).arg(nCols));
+        int leftPrec = GetPrecision(fLeft);
+        int rightPrec = GetPrecision(fRight);
+        int bottomPrec = GetPrecision(fBottom);
+        int topPrec = GetPrecision(fTop);
+        int cellWidthPrec = GetPrecision(fCellWidth);
+
+        printLine( QString("       Left: %1   Right: %2").arg(fLeft, 0, 'f', leftPrec).arg(fRight, 0, 'f', rightPrec));
+
+        printLine( QString("        Top: %1        Bottom: %2").arg(fTop, 0, 'f', topPrec).arg(fBottom, 0, 'f', bottomPrec));
+        printLine( QString("       Rows: %1          Cols: %2").arg(nRows).arg(nCols));
         printLine( QString("        "));
-        printLine( QString("       Cell Width: %1").arg(fCellWidth));
-        printLine( QString("              Min: %1      Max: %2").arg(dRasterMin).arg(dRasterMax));
-        printLine( QString("             Left: %1      Right: %2").arg(fLeft).arg(fRight));
+        printLine( QString("       Cell Width: %1").arg(fCellWidth, 0, 'f', cellWidthPrec));
+        printLine( QString("              Min: %1      Max: %2").arg(dRasterMin, 0, 'f', 2).arg(dRasterMax, 0, 'f', 2));
 
         if (divisible == 1 ){
             printLine( QString("       Divisible: True" ) );

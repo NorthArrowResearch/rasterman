@@ -23,6 +23,13 @@ void CalculateStats(GDALRasterBand * pRasterBand);
 void RM_DLL_API CheckFile(QString sFile, bool bMustExist);
 
 /**
+ * @brief G3etPrecision
+ * @param num
+ * @return
+ */
+int GetPrecision(double num);
+
+/**
  * @brief LibCheck
  */
 void RM_DLL_API LibCheck();

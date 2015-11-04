@@ -157,13 +157,6 @@ private:
                      // actual raster.
     GDALDataType m_eDataType;
 
-    /**
-     * @brief GetPrecision
-     * @param num
-     * @return
-     */
-    static int GetPrecision(double num);
-
 };
 
 
