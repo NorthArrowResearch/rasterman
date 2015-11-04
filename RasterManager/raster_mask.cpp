@@ -178,13 +178,9 @@ int Raster::RasterMaskValue(const char * psInputRaster, const char * psOutput, d
         for (int j = 0; j < rmOutputMeta.GetCols(); j++)
         {
             // Mask out anything not equal to the dMaskVal
-            if ( isEqual(pInputLine[j], dMaskVal) || pInputLine[j] == fNoDataValue )
+            if ( pInputLine[j] != dMaskVal )
             {
-                pOutputLine[j] = fNoDataValue;
-            }
-            else
-            {
-                pOutputLine[j] = pInputLine[j];
+                pOutputLine[j] = rmOutputMeta.GetNoDataValue();
             }
         }
 
