@@ -262,21 +262,6 @@ extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                     const char * psOutput, char *sErr);
 
 /**
- * @brief CreateOutputDSfromRef
- * @param pOutputRaster
- * @param eDataType
- * @param bHasNoData
- * @param fNoDataValue
- * @param pReferenceDS
- * @return
- */
-RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
-                                               GDALDataType eDataType,
-                                               bool bHasNoData,
-                                               double fNoDataValue,
-                                               GDALDataset * pReferenceDS);
-
-/**
  * @brief CreateOutputDS
  * @param pOutputRaster
  * @param pTemplateRastermeta
@@ -285,16 +270,6 @@ RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
 RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta);
-
-/**
- * @brief CreateOutputDSfromRef
- * @param pOutputRaster
- * @param eDataType
- * @param fNoDataValue
- * @param pReferenceDS
- * @return
- */
-RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster, GDALDataType eDataType, double fNoDataValue, GDALDataset * pReferenceDS);
 
 /**
  * @brief

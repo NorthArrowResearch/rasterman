@@ -18,30 +18,34 @@ RasterMeta::RasterMeta() : ExtentRectangle()
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
+    m_psUnits = NULL;
     double fNoDataValue = (double) -std::numeric_limits<float>::max();
-    Init(&fNoDataValue, DEFAULT_RASTER_DRIVER, &nDType, NULL);
+    Init(&fNoDataValue, DEFAULT_RASTER_DRIVER, &nDType, NULL, NULL);
 }
 
 RasterMeta::RasterMeta(double fTop, double fLeft, int nRows, int nCols,
                        double *dCellHeight, double *dCellWidth, double *fNoData,
-                       const char * psDriver, GDALDataType * eDataType, const char * psProjection)
+                       const char * psDriver, GDALDataType * eDataType, const char * psProjection, const char * psUnit)
     : ExtentRectangle(fTop, fLeft,  nRows, nCols, *dCellHeight, *dCellWidth)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    Init(fNoData, psDriver, eDataType, psProjection);
+    m_psUnits = NULL;
+    Init(fNoData, psDriver, eDataType, psProjection, psUnit);
 }
 
 RasterMeta::RasterMeta(const char * psFilePath) : ExtentRectangle(psFilePath)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
+    m_psUnits = NULL;
     GetPropertiesFromExistingRaster(psFilePath);
 }
 RasterMeta::RasterMeta(QString psFilePath) : ExtentRectangle(psFilePath)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
+    m_psUnits = NULL;
     const QByteArray qbFilePath = psFilePath.toLocal8Bit();
     GetPropertiesFromExistingRaster(qbFilePath.data());
 }
@@ -50,7 +54,8 @@ RasterMeta::RasterMeta(RasterMeta &source) : ExtentRectangle(source)
 {
     m_psGDALDriver = NULL;
     m_psProjection = NULL;
-    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
+    m_psUnits = NULL;
+    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef(), source.GetUnit());
 }
 
 RasterMeta::~RasterMeta()
@@ -60,10 +65,13 @@ RasterMeta::~RasterMeta()
 
     if (m_psProjection)
         free(m_psProjection);
+
+    if (m_psUnits)
+        free(m_psUnits);
 }
 
 
-void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType * eDataType, const char * psProjection)
+void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType * eDataType, const char * psProjection, const char * psUnit)
 {
     SetNoDataValue(fNoDataValue);
 
@@ -71,6 +79,7 @@ void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType
         SetGDALDataType(eDataType);
 
     SetGDALDriver(psDriver);
+    SetUnits(psUnit);
     SetProjectionRef(psProjection);
 
 }
@@ -78,7 +87,7 @@ void RasterMeta::Init(double * fNoDataValue, const char * psDriver, GDALDataType
 void RasterMeta::operator=(RasterMeta &source)
 {
     ExtentRectangle::operator =(source);
-    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef());
+    Init(source.GetNoDataValuePtr(), source.GetGDALDriver(), source.GetGDALDataType(), source.GetProjectionRef(), source.GetUnit());
 }
 
 GDALDataType * RasterMeta::GetGDALDataType() { return &m_eDataType; }
@@ -104,11 +113,13 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
 
     const char * psProjection = pDS->GetProjectionRef();
 
+    const char * psUnit = pDS->GetRasterBand(1)->GetUnitType();
+
     if (nSuccess == 0){
         b_HasNoData = false;
         dNoData = DEFAULT_NO_DATA;
     }
-    Init(&dNoData, psDriver, &gdDataType, psProjection);
+    Init(&dNoData, psDriver, &gdDataType, psProjection, psUnit);
 
     GDALClose(pDS);
 
@@ -197,6 +208,15 @@ void RasterMeta::SetNoDataValue(double * fNoData) {
     b_HasNoData = true;
 }
 
+void RasterMeta::SetUnits(const char * psUnits)
+{
+    if (m_psUnits){
+        free(m_psUnits);
+    }
+    // Now set it if necessary
+    if (psUnits)
+        m_psUnits = strdup(psUnits);
+}
 
 void RasterMeta::SetGDALDriver(const char * sGDALDriver)
 {

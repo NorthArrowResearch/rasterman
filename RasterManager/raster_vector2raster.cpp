@@ -189,7 +189,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
     double fNoDataValue = (double) -std::numeric_limits<float>::max();
     GDALDataType nDType = GDT_Float32;
     double dCellHeight = -dCellWidth;
-    RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, &dCellHeight, &dCellWidth, &fNoDataValue, "GTiff", &nDType, "");
+    RasterMeta TemplateRaster(psExtent.MaxY, psExtent.MinX, nRows, nCols, &dCellHeight, &dCellWidth, &fNoDataValue, "GTiff", &nDType, "", "");
 
     pDSVectorInput->Release();
     return VectortoRaster(sVectorSourcePath, sRasterOutputPath, psFieldName, &TemplateRaster);

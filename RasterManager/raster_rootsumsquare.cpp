@@ -69,7 +69,8 @@ int Raster::RasterRootSumSquares(const char * psRaster1, const char * psRaster2,
     float fNoDataValue = (float) -std::numeric_limits<float>::max();
 
     // Create the output dataset for writing
-    GDALDataset * pDSOutput = CreateOutputDSfromRef(psOutput, GDT_Float32, true, fNoDataValue, pDS1);
+    RasterMeta InputMeta(psRaster1);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &InputMeta);
 
 
     /*****************************************************************************************

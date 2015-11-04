@@ -209,7 +209,7 @@ int Raster::Copy(const char * pOutputRaster,
 
     double dNewCellHeight = (*dNewCellSize) * -1;
     RasterMeta OutputMeta(fTop, fLeft, nRows, nCols, &dNewCellHeight,
-                          dNewCellSize, GetNoDataValuePtr(), GetGDALDriver(), GetGDALDataType(), GetProjectionRef() );
+                          dNewCellSize, GetNoDataValuePtr(), GetGDALDriver(), GetGDALDataType(), GetProjectionRef(), GetUnit() );
 
     // Create the output dataset for writing
     GDALDataset * pDSOutput = CreateOutputDS(pOutputRaster, &OutputMeta);

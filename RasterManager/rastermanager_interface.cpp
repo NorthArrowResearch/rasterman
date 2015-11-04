@@ -30,9 +30,9 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
                          GDALDataType eDataType,
                          bool bHasNoData,
                          double fNoDataValue,
-                         int nCols, int nRows, double * newTransform, const char * projectionRef){
+                         int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit){
 
-    RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, &newTransform[5], &newTransform[1], &fNoDataValue, NULL, &eDataType, projectionRef);
+    RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, &newTransform[5], &newTransform[1], &fNoDataValue, NULL, &eDataType, projectionRef, unit);
     if (bHasNoData){
 
     }
@@ -102,33 +102,6 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta *
     if (projectionRef != NULL)
         pDSOutput->SetProjection(projectionRef);
     return pDSOutput;
-
-}
-
-RM_DLL_API GDALDataset * CreateOutputDSfromRef(const char * pOutputRaster,
-                                            GDALDataType eDataType,
-                                            bool bHasNoData,
-                                            double fNoDataValue,
-                                            GDALDataset * pReferenceDS)
-{
-
-    int nCols = pReferenceDS->GetRasterBand(1)->GetXSize();
-    int nRows = pReferenceDS->GetRasterBand(1)->GetYSize();
-
-    double fTransform[6];
-    pReferenceDS->GetGeoTransform(fTransform);
-
-    double newTransform[6];
-    newTransform[0] = fTransform[0];
-    newTransform[1] = fTransform[1];
-    newTransform[2] = 0;
-    newTransform[3] = fTransform[3];
-    newTransform[4] = 0;
-    newTransform[5] = fTransform[5];
-
-    const char * newProjetionRef = pReferenceDS->GetProjectionRef();
-
-    return CreateOutputDS(pOutputRaster, eDataType, bHasNoData, fNoDataValue, nCols, nRows, newTransform, newProjetionRef);
 
 }
 
@@ -602,7 +575,7 @@ extern "C" RM_DLL_API int MakeConcurrent(const char * csRasters, const char * cs
 extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
                                                           double & fCellHeight, double & fCellWidth,
                                                           double & fLeft, double & fTop, int & nRows, int & nCols,
-                                                          double & fNoData, int & bHasNoData, int & nDataType, char * sErr)
+                                                          double & fNoData, int & bHasNoData, int & nDataType, char * psUnit, char * psProjection, char * sErr)
 {
     InitCInterfaceError(sErr);
     try{
@@ -616,6 +589,8 @@ extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
         fNoData = r.GetNoDataValue();
         bHasNoData = (int) r.HasNoDataValue();
         nDataType = (int) *r.GetGDALDataType();
+        psUnit = r.GetUnit();
+        psProjection = r.GetProjectionRef();
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
