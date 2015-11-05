@@ -139,6 +139,11 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "createdrain", Qt::CaseInsensitive) == 0)
             eResult = CreateDrain(argc, argv);
 
+        // NOTE: These are for testing only
+        else if (QString::compare(sCommand, "refcompare", Qt::CaseInsensitive) == 0)
+            eResult = CompareRef(argc, argv);
+
+
         else
             bRecognizedCommand = false;
 
@@ -1080,6 +1085,22 @@ int RasterManEngine::Stats(int argc, char * argv[])
 
     return PROCESS_OK;
 }
+
+
+int RasterManEngine::CompareRef(int argc, char * argv[])
+{
+
+    RasterManager::printLine( QString(" Compare References: "));
+
+    char sErr[ERRBUFFERSIZE];
+    int result = -1;
+    RasterManager::SpatialReferenceMatches(argv[2], argv[3], result, sErr);
+    RasterManager::printLine( QString("\n\n Match: %1").arg(result));
+    RasterManager::printLine( QString("\n\n DONE!\n\n"));
+
+    return PROCESS_OK;
+}
+
 
 int RasterManEngine::Compare(int argc, char * argv[])
 {

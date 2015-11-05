@@ -277,6 +277,14 @@ private:
      */
     int CreateDrain(int argc, char *argv[]);
 
+    /**
+     * @brief CompareRef
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int CompareRef(int argc, char *argv[]);
+
 };
 
 }

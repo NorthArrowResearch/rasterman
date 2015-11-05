@@ -460,6 +460,13 @@ public:
              const char * psOutputRaster,
              const char * psOperation );
 
+     /**
+      * @brief getDSRef
+      * @param pDataSource
+      * @return
+      */
+     static OGRSpatialReference getDSRef(const char *pDataSource);
+
 protected:
 
     /**

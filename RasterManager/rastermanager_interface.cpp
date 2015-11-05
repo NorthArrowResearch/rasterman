@@ -765,17 +765,9 @@ extern "C" RM_DLL_API int SpatialReferenceMatches(const char * psDS1, const char
 {
     InitCInterfaceError(sErr);
     try{
-        GDALDataset * pDS1 = (GDALDataset*) GDALOpen(psDS1, GA_ReadOnly);
-        GDALDataset * pDS2 = (GDALDataset*) GDALOpen(psDS2, GA_ReadOnly);
-
-        const char * psProj1 = pDS1->GetProjectionRef();
-        const char * psProj2 = pDS2->GetProjectionRef();
-        QString qsProj1(psProj1);
-        QString qsProj2(psProj2);
-        result = int (qsProj1.compare(qsProj2, Qt::CaseInsensitive) == 0);
-
-        GDALClose(pDS1);
-        GDALClose(pDS2);
+        OGRSpatialReference ref1 = RasterManager::Raster::getDSRef(psDS1);
+        OGRSpatialReference ref2 = RasterManager::Raster::getDSRef(psDS2);
+        result = int (ref1.IsSame(&ref2));
         return PROCESS_OK;
     }
     catch (RasterManagerException e){
@@ -810,7 +802,6 @@ extern "C" RM_DLL_API const char * ExtractFileExt(const char * FileName)
     }
     return NULL;
 }
-
 
 extern "C" RM_DLL_API const char * GetDriverFromFilename(const char * FileName)
 {

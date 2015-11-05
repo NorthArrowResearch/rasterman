@@ -132,6 +132,37 @@ void Raster::Init(bool bFullImage)
 
 }
 
+OGRSpatialReference Raster::getDSRef(const char * pDataSource){
+
+    const char * pSuffix = ExtractFileExt(pDataSource);
+
+    if (pSuffix == NULL)
+        return NULL;
+
+    if (strcmp(pSuffix, ".tif") == 0 || strcmp(pSuffix, ".img") == 0){
+        OGRSpatialReference poSRS;
+        GDALDataset * pDS = (GDALDataset*) GDALOpen(pDataSource, GA_ReadOnly);
+        const char * psProjection = pDS->GetProjectionRef();
+        char * psWKT = NULL;
+        psWKT = (char *) psProjection;
+        poSRS.importFromWkt(&psWKT);
+        GDALClose(pDS);
+        return poSRS;
+    }
+    else if (strcmp(pSuffix, ".shp") == 0){
+        OGRRegisterAll();
+        OGRDataSource * pDSVectorInput;
+        pDSVectorInput = OGRSFDriverRegistrar::Open( pDataSource, FALSE );
+        OGRLayer * poLayer = pDSVectorInput->GetLayer(0);
+        OGRSpatialReference * psSRS = poLayer->GetSpatialRef();
+        return *psSRS;
+    }
+    else
+        return NULL;
+
+    return NULL;
+}
+
 int Raster::Delete(const char * pDeleteRaster){
 
     GDALDriver * pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pDeleteRaster));
