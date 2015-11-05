@@ -53,10 +53,10 @@ win32 {
 
     TARGET = $$TARGET$$TOOL
     DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
-    LIBS += -L$$DESTDIR -lRasterManager$$TOOL
 
-    LIBS += -L$$OUT_PWD/../RasterManager/$$BUILD_TYPE -lRasterManager$$TOOL
-    LIBS += -L$$OUT_PWD/../Raster2PNG/$$BUILD_TYPE -lRaster2PNG$$TOOL
+    LIBS += -L$$DESTDIR -lRasterManager$$TOOL
+    LIBS += -L$$DESTDIR -lRaster2PNG$$TOOL
+
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
