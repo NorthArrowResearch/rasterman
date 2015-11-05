@@ -112,8 +112,13 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     const char * psDriver = pDS->GetDriver()->GetDescription();
 
     const char * psProjection = pDS->GetProjectionRef();
+    char * psUnit = NULL;
+    char * psWKT = NULL;
+    psWKT = (char *) psProjection;
 
-    const char * psUnit = pDS->GetRasterBand(1)->GetUnitType();
+    OGRSpatialReference poSRS;
+    poSRS.importFromWkt(&psWKT);
+    poSRS.GetLinearUnits(&psUnit);
 
     if (nSuccess == 0){
         b_HasNoData = false;
@@ -121,6 +126,7 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     }
     Init(&dNoData, psDriver, &gdDataType, psProjection, psUnit);
 
+    CPLFree(psUnit);
     GDALClose(pDS);
 
 }
