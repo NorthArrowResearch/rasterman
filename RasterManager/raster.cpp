@@ -132,10 +132,10 @@ void Raster::Init(bool bFullImage)
 
 }
 
-int Raster::Delete(const char * pOutputRaster){
+int Raster::Delete(const char * pDeleteRaster){
 
-    GDALDriver * pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pOutputRaster));
-    return pDR->Delete(pOutputRaster) == CE_Failure ? 0 : 1;
+    GDALDriver * pDR = GetGDALDriverManager()->GetDriverByName(GetDriverFromFileName(pDeleteRaster));
+    return pDR->Delete(pDeleteRaster) == CE_Failure ? INPUT_FILE_ERROR : PROCESS_OK;
 }
 
 

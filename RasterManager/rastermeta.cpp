@@ -126,7 +126,11 @@ void RasterMeta::GetPropertiesFromExistingRaster(const char * psFilePath)
     }
     Init(&dNoData, psDriver, &gdDataType, psProjection, psUnit);
 
-    CPLFree(psUnit);
+//    if (psUnit)
+//        CPLFree(psUnit);
+//    if (psWKT)
+//        CPLFree(psWKT);
+
     GDALClose(pDS);
 
 }

@@ -144,7 +144,7 @@ public:
      * @param pOutputRaster
      * @return
      */
-    static int Delete(const char * pOutputRaster);
+    static int Delete(const char * pDeleteRaster);
 
     /**
      * @brief CSVCellClean
