@@ -34,8 +34,7 @@ int Raster::RasterRootSumSquares(const char * psRaster1, const char * psRaster2,
         return INPUT_FILE_ERROR;
 
     GDALRasterBand * pRBInput1 = pDS1->GetRasterBand(1);
-    int nHasNoData1 = 0;
-    double fNoDataValue1 = pRBInput1->GetNoDataValue(&nHasNoData1);
+    RasterMeta InputMeta1(psRaster1);
 
     /*****************************************************************************************
      * Raster 2
@@ -48,8 +47,7 @@ int Raster::RasterRootSumSquares(const char * psRaster1, const char * psRaster2,
         return INPUT_FILE_ERROR;
 
     GDALRasterBand * pRBInput2 = pDS2->GetRasterBand(1);
-    int nHasNoData2 = 0;
-    double fNoDataValue2 = pRBInput2->GetNoDataValue(&nHasNoData2);
+    RasterMeta InputMeta2(psRaster2);
 
     /*****************************************************************************************
      * Check that input rasters have the same numbers of rows and columns
@@ -63,41 +61,43 @@ int Raster::RasterRootSumSquares(const char * psRaster1, const char * psRaster2,
     if (psOutput == NULL)
         return OUTPUT_FILE_MISSING;
 
+    // They are the same. Now we can say this:
+    int cols = InputMeta1.GetCols();
+
     /*****************************************************************************************
      * The default output type is 32 bit floating point.
      */
-    float fNoDataValue = (float) -std::numeric_limits<float>::max();
+    double fNoDataValue = (double) -std::numeric_limits<float>::max();
 
     // Create the output dataset for writing
-    RasterMeta InputMeta(psRaster1);
-    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &InputMeta);
-
+    RasterMeta OutputMeta(InputMeta1);
+    OutputMeta.SetNoDataValue(&fNoDataValue);
+    GDALDataset * pDSOutput = CreateOutputDS(psOutput, &OutputMeta);
 
     /*****************************************************************************************
      * Allocate the memory for the input / output lines
      */
-    double * pInputLine1 = (double *) CPLMalloc(sizeof(double)*pRBInput1->GetXSize());
-    double * pInputLine2 = (double *) CPLMalloc(sizeof(double)*pRBInput2->GetXSize());
-    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*pDSOutput->GetRasterBand(1)->GetXSize());
+    double * pInputLine1 = (double *) CPLMalloc(sizeof(double)*cols);
+    double * pInputLine2 = (double *) CPLMalloc(sizeof(double)*cols);
+    double * pOutputLine = (double *) CPLMalloc(sizeof(double)*cols);
 
     int i, j;
-    for (i = 0; i < pRBInput1->GetYSize(); i++)
+    for (i = 0; i < InputMeta1.GetRows(); i++)
     {
-        pRBInput1->RasterIO(GF_Read, 0,  i, pRBInput1->GetXSize(), 1, pInputLine1, pRBInput1->GetXSize(), 1, GDT_Float64, 0, 0);
-        pRBInput2->RasterIO(GF_Read, 0,  i, pRBInput2->GetXSize(), 1, pInputLine2, pRBInput2->GetXSize(), 1, GDT_Float64, 0, 0);
+        pRBInput1->RasterIO(GF_Read, 0,  i, cols, 1, pInputLine1, cols, 1, GDT_Float64, 0, 0);
+        pRBInput2->RasterIO(GF_Read, 0,  i, cols, 1, pInputLine2, cols, 1, GDT_Float64, 0, 0);
 
-        for (j = 0; j < pRBInput1->GetXSize(); j++)
+        for (j = 0; j < InputMeta1.GetCols(); j++)
         {
-            if ( (nHasNoData1 != 0 && pInputLine1[j] == fNoDataValue1) ||
-                 (nHasNoData2 != 0 && pInputLine2[j] == fNoDataValue2) )
-            {
+            if ( ( pInputLine1[j] == InputMeta1.GetNoDataValue() ) ||
+                 ( pInputLine2[j] == InputMeta2.GetNoDataValue() ) ) {
                 pOutputLine[j] = fNoDataValue;
             }
             else
                 pOutputLine[j] = sqrt( pow(pInputLine1[j], 2) + pow(pInputLine2[j], 2) );
         }
 
-        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, pRBInput2->GetXSize(), 1, pOutputLine, pDSOutput->GetRasterBand(1)->GetXSize(), 1, GDT_Float64, 0, 0);
+        pDSOutput->GetRasterBand(1)->RasterIO(GF_Write, 0,  i, cols, 1, pOutputLine, cols, 1, GDT_Float64, 0, 0);
     }
 
     CPLFree(pInputLine1);

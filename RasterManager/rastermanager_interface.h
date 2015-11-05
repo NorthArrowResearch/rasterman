@@ -290,6 +290,12 @@ extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
  * @param pTemplateRastermeta
  * @return
  */
+RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
+                         GDALDataType eDataType,
+                         bool bHasNoData,
+                         double fNoDataValue,
+                         int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit);
+
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
 RM_DLL_API GDALDataset * CreateOutputDS(QString sOutputRaster, RasterMeta * pTemplateRasterMeta);
