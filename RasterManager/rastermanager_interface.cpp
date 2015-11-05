@@ -761,7 +761,7 @@ extern "C" RM_DLL_API int ExtendedCopy(const char * ppszOriginalRaster,
     }
 }
 
-extern "C" RM_DLL_API int DatasetRefMatches(const char * psDS1, const char * psDS2, int & result, char * sErr)
+extern "C" RM_DLL_API int SpatialReferenceMatches(const char * psDS1, const char * psDS2, int & result, char * sErr)
 {
     InitCInterfaceError(sErr);
     try{

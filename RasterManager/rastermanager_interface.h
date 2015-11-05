@@ -433,14 +433,14 @@ extern "C" RM_DLL_API int CreateSlope(const char * psInputRaster, const char * p
 
 
 /**
- * @brief DatasetRefMatches
+ * @brief SpatialReferenceMatches
  * @param psDS1
  * @param psDS2
  * @param result
  * @param sErr
  * @return
  */
-extern "C" RM_DLL_API int DatasetRefMatches(const char * psDS1, const char * psDS2, int & result, char * sErr);
+extern "C" RM_DLL_API int SpatialReferenceMatches(const char * psDS1, const char * psDS2, int & result, char * sErr);
 
 /**
  * @brief RasterInvert
