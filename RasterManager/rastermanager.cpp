@@ -10,7 +10,7 @@
 
 namespace RasterManager {
 
-void CalculateStats(GDALRasterBand * pRasterBand){
+void RM_DLL_API CalculateStats(GDALRasterBand * pRasterBand){
     pRasterBand->ComputeStatistics(0, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
