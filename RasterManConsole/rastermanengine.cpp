@@ -1003,11 +1003,10 @@ int RasterManEngine::dist(int argc, char * argv[])
 
 int RasterManEngine::VectorToRaster(int argc, char * argv[])
 {
-    return PROCESS_OK;
-    if (argc < 6)
+    if (argc < 5)
     {
         std::cout << "\n Convert a Vector file into a raster.";
-        std::cout << "\n    Usage: rasterman vector2raster <vector_file_path> <output_raster_path> <vector_layer> <vector_field> [<cell_size> | <raster_template_path>]";
+        std::cout << "\n    Usage: rasterman vector2raster <vector_file_path> <output_raster_path> <vector_field> [<cell_size> | <raster_template_path>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n       vector_file_path: Absolute full path to existing .shp file.";
@@ -1025,14 +1024,14 @@ int RasterManEngine::VectorToRaster(int argc, char * argv[])
     // Either the last parameter is a double which indicates we are being given cell size.
     QString sArg2 = argv[5];
 
-    bool FileisNumeric;
-    double dCellSize = sArg2.toDouble(&FileisNumeric);
+    bool ParamisNumeric;
+    double dCellSize = sArg2.toDouble(&ParamisNumeric);
 
-    if (FileisNumeric){
+    if (ParamisNumeric){
         eResult = RasterManager::Raster::VectortoRaster( argv[2],    // sVectorSourcePath
                 argv[3],    // sRasterOutputPath
                 dCellSize,  // dCellWidth
-                argv[4]     // FieldNAme
+                argv[4]     // FieldName
                 );
     }
     // Or we are using a template raster for the bounds

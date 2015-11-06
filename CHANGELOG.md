@@ -6,6 +6,27 @@ This release is just to get some minor fixes in, mostly for our C# tools that ca
 
 ### New Features
 
+* Implemented compression for every function, not just select ones.
+* MaskVal now works as expected.
+* Implemented a delete function for wiping out all the `*.aux.tif` complement files. 
+* New C API calls for spatialreference comparison.
+* C API is now able to get units.
+* `Polygon2Raster` now fully working.
+
+### Fixes
+
+* Minor `nodataval` bug in rootsumsquares. 
+* Better formatting of numbers on the console..
+* More consistent build locations on `*nix`
+
+--------------------------------
+
+## 6.1.9
+
+This release is just to get some minor fixes in, mostly for our C# tools that call into RasterMan.
+
+### New Features
+
 * RasterToCSV didn't have a C++ API so we gave it one. 
 
 ### Fixes

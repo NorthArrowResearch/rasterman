@@ -285,6 +285,23 @@ extern "C" RM_DLL_API int BasicMath(const char * ppszOriginalRaster1,
                                     const char * psOutput, char *sErr);
 
 /**
+ * @brief vector2raster
+ * @param sVectorSourcePath
+ * @param sRasterOutputPath
+ * @param sRasterTemplate
+ * @param dCellWidth
+ * @param psFieldName
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int vector2raster(const char * sVectorSourcePath,
+                                        const char * sRasterOutputPath,
+                                        const char * sRasterTemplate,
+                                        double dCellWidth,
+                                        const char * psFieldName,
+                                        char * sErr);
+
+/**
  * @brief CreateOutputDS
  * @param pOutputRaster
  * @param pTemplateRastermeta

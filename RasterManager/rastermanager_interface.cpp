@@ -493,6 +493,27 @@ extern "C" RM_DLL_API int Combine(const char * csRasters, const char * psOutput,
 
 }
 
+extern "C" RM_DLL_API int vector2raster(const char * sVectorSourcePath,
+                                        const char * sRasterOutputPath,
+                                        const char * sRasterTemplate,
+                                        double dCellWidth,
+                                        const char * psFieldName,
+                                        char * sErr)
+{
+    InitCInterfaceError(sErr);
+    try{
+        if (dCellWidth)
+            return Raster::VectortoRaster(sVectorSourcePath, sRasterOutputPath, dCellWidth, psFieldName);
+        else
+            return Raster::VectortoRaster(sVectorSourcePath, sRasterOutputPath, sRasterTemplate, psFieldName);
+    }
+    catch (RasterManagerException e){
+        SetCInterfaceError(e, sErr);
+        return e.GetErrorCode();
+    }
+
+}
+
 extern "C" RM_DLL_API int Fill(const char * sRasterInput, const char * sRasterOutput, char * sErr){
 
 
