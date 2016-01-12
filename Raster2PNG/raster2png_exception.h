@@ -37,7 +37,7 @@ public:
             break;
 
         default:
-            std::string errMsg = "Unhandled Raster Manager return code: " + std::to_string((long long)eErrorCode);
+            std::string errMsg = QString("Unhandled Raster Manager return code: ").arg(eErrorCode).toStdString();
             return errMsg.c_str();
             break;
         }

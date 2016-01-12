@@ -90,14 +90,14 @@ macx{
     DEPENDPATH  += $$GDALNIX/include
 
 }
-unix!macx{
+linux{
     # Where are we installing to
-    target.path = /usr/local/lib
+    target.path = /usr/lib
     INSTALLS += target
 
     # GDAL is required
-    LIBS += -L/usr/local/lib -lgdal
-    INCLUDEPATH += /usr/local/include
-    DEPENDPATH  += /usr/local/include
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 }
 

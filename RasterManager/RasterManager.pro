@@ -65,7 +65,6 @@ HEADERS +=\
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
-
 win32 {
 
     ## There's some trickiness in windows 32 vs 64-bits
@@ -110,13 +109,13 @@ macx{
     DEPENDPATH  += $$GDALNIX/include
 
 }
-unix!macx{
+linux{
     # Where are we installing to
-    target.path = /usr/local/lib
+    target.path = /usr/lib
     INSTALLS += target
 
     # GDAL is required
-    LIBS += -L/usr/local/lib -lgdal
-    INCLUDEPATH += /usr/local/include
-    DEPENDPATH  += /usr/local/include
+    LIBS +=      -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 }

@@ -74,14 +74,14 @@ macx{
     LIBS += -L$$DESTDIR -lRasterManager
     LIBS += -L$$DESTDIR -lRaster2PNG
 }
-unix!macx{
+linux{
     # GDAL is required
-    LIBS += -L/usr/local/lib -lgdal
-    INCLUDEPATH += /usr/local/include
-    DEPENDPATH  += /usr/local/include
+    LIBS += -L/usr/lib -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    DEPENDPATH  += /usr/include/gdal
 
     # Where are we installing to
-    target.path = /usr/local/bin
+    target.path = /usr/bin
     INSTALLS += target
 
     LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
