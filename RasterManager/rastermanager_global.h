@@ -32,6 +32,10 @@
 #  define RASTERMANAGERSHARED_EXPORT Q_DECL_IMPORT
 #endif
  
+#if _MSC_VER>=1900
+#  define STDC99
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 #   ifdef MY_DLL_EXPORT
 #       define RM_DLL_API __declspec(dllexport)

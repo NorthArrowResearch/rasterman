@@ -19,7 +19,7 @@ int Raster2Polygon::Initialize(const char * psShpFile, const char * psInput)
     // Get the driver for the job
     OGRSFDriver *poDriver;
     const char *pszDriverName = "ESRI Shapefile";
-    poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
+    poDriver = GDALGetDriverByName(pszDriverName);
 
     // Create a dataset
     OGRDataSource * poDS;
@@ -90,7 +90,7 @@ int Raster2Polygon::AddGut(const char * psShpFile,
 
     // Open the Shapefile
     const char *pszDriverName = "ESRI Shapefile";
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName);
+    OGRSFDriver *poDriver = GDALGetDriverByName(pszDriverName);
 
     OGRDataSource *poDS = poDriver->Open(psShpFile, true);
 

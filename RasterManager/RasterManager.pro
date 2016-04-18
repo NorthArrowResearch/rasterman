@@ -77,7 +77,7 @@ win32 {
     }
 
     # GDAL is required
-    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    GDALWIN = $$(GDALLIBDIR)
     TARGET_EXT = .dll # prevent version suffix on dll
     LIBS += -L$$GDALWIN/lib/ -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
@@ -105,8 +105,8 @@ macx{
     # GDAL is required
     GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
     LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    INCLUDEPATH += $$(GDALLIBDIR)/include
+    DEPENDPATH  += $$(GDALLIBDIR)/include
 
 }
 linux{
@@ -115,7 +115,7 @@ linux{
     INSTALLS += target
 
     # GDAL is required
-    LIBS +=      -L/usr/lib -lgdal
-    INCLUDEPATH += /usr/include/gdal
-    DEPENDPATH  += /usr/include/gdal
+    LIBS += -L/usr/local/lib -lgdal
+    INCLUDEPATH += $$(GDALLIBDIR)/include
+    DEPENDPATH  += $$(GDALLIBDIR)/include
 }

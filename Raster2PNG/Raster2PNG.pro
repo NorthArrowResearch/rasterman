@@ -58,7 +58,7 @@ win32 {
     }
 
     # GDAL is required
-    GDALWIN = $$PWD/../Libraries/gdalwin$$ARCH-1.10.1
+    GDALWIN = $$(GDALLIBDIR)
     TARGET_EXT = .dll # prevent version suffix on dll
     LIBS += -L$$GDALWIN/lib/ -lgdal_i
     INCLUDEPATH += $$GDALWIN/include
