@@ -45,6 +45,10 @@ HEADERS +=\
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
+GDALLIB = $$(GDALLIBDIR)
+isEmpty(GDALLIB){
+    error("GDALLIBDIR not set. This will cause failures")
+}
 
 win32 {
 
@@ -58,11 +62,10 @@ win32 {
     }
 
     # GDAL is required
-    GDALWIN = $$(GDALLIBDIR)
     TARGET_EXT = .dll # prevent version suffix on dll
-    LIBS += -L$$GDALWIN/lib/ -lgdal_i
-    INCLUDEPATH += $$GDALWIN/include
-    DEPENDPATH += $$GDALWIN/include
+    LIBS += -L$$GDALLIB/lib/ -lgdal_i
+    INCLUDEPATH += $$GDALLIB/include
+    DEPENDPATH += $$GDALLIB/include
 
     # When we compile this for an ESRI Addin we have change its name
     # To Avoid Collisions
@@ -84,10 +87,9 @@ macx{
     DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
 
     # GDAL is required
-    GDALNIX = /Library/Frameworks/GDAL.framework/Versions/1.11/unix
-    LIBS += -L$$GDALNIX/lib -lgdal
-    INCLUDEPATH += $$GDALNIX/include
-    DEPENDPATH  += $$GDALNIX/include
+    LIBS += -L$$GDALLIB/lib -lgdal
+    INCLUDEPATH += $$GDALLIB/include
+    DEPENDPATH  += $$GDALLIB/include
 
 }
 linux{
@@ -96,8 +98,8 @@ linux{
     INSTALLS += target
 
     # GDAL is required
-    LIBS += -L/usr/lib -lgdal
-    INCLUDEPATH += /usr/include/gdal
-    DEPENDPATH  += /usr/include/gdal
+    LIBS += -L$$GDALLIB/lib -lgdal
+    INCLUDEPATH += $$GDALLIB/include
+    DEPENDPATH  += $$GDALLIB/include
 }
 
