@@ -610,8 +610,13 @@ extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
         fNoData = r.GetNoDataValue();
         bHasNoData = (int) r.HasNoDataValue();
         nDataType = (int) *r.GetGDALDataType();
-        psUnit = r.GetUnit();
-        psProjection = r.GetProjectionRef();
+
+        const char * ccProjectionRef =  r.GetProjectionRef();
+        const char * ccUnit = r.GetUnit();
+
+        strncpy(psProjection, ccProjectionRef, ERRBUFFERSIZE);
+        strncpy(psUnit, ccUnit, ERRBUFFERSIZE);
+
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
