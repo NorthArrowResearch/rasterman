@@ -7,7 +7,7 @@
 QT       += core
 QT       -= gui widgets
 
-VERSION = 6.2.0
+VERSION = 6.3.0
 TARGET = RasterManager
 TEMPLATE = lib
 
