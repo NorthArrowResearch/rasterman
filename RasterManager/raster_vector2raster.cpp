@@ -25,7 +25,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
 
     OGRRegisterAll();
 
-    OGRDataSource * pDSVectorInput;
+    GDALDataset * pDSVectorInput;
     pDSVectorInput = (GDALDataset*) GDALOpenEx( sVectorSourcePath, GDAL_OF_VECTOR, NULL, NULL, NULL );
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;
@@ -156,7 +156,7 @@ int Raster::VectortoRaster(const char * sVectorSourcePath,
                            const char * psFieldName){
 
     OGRRegisterAll();
-    OGRDataSource * pDSVectorInput;
+    GDALDataset * pDSVectorInput;
     pDSVectorInput = (GDALDataset*) GDALOpenEx( sVectorSourcePath, GDAL_OF_VECTOR, NULL, NULL, NULL );
     if (pDSVectorInput == NULL)
         return INPUT_FILE_ERROR;

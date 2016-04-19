@@ -12,7 +12,7 @@ TARGET = Raster2PNG
 TEMPLATE = lib
 
 DEFINES += PNGLIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
-DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
+DEFINES += MINGDAL=\\\"2.0.1\\\" # Minimum Version of GDAL we need
 
 DEFINES += RASTER2PNG_LIBRARY
 

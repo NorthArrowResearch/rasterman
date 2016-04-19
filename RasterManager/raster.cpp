@@ -151,7 +151,7 @@ OGRSpatialReference Raster::getDSRef(const char * pDataSource){
     }
     else if (strcmp(pSuffix, ".shp") == 0){
         OGRRegisterAll();
-        OGRDataSource * pDSVectorInput;
+        GDALDataset * pDSVectorInput;
         pDSVectorInput = (GDALDataset*) GDALOpenEx( pDataSource, GDAL_OF_VECTOR, NULL, NULL, NULL );
         OGRLayer * poLayer = pDSVectorInput->GetLayer(0);
         OGRSpatialReference * psSRS = poLayer->GetSpatialRef();

@@ -12,7 +12,7 @@ TARGET = RasterManager
 TEMPLATE = lib
 
 DEFINES += RMLIBVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
-DEFINES += MINGDAL=\\\"1.11.1\\\" # Minimum Version of GDAL we need
+DEFINES += MINGDAL=\\\"2.0.1\\\" # Minimum Version of GDAL we need
 
 DEFINES += RASTERMANAGER_LIBRARY
 

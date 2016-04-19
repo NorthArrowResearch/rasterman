@@ -17,13 +17,14 @@ int Raster2Polygon::Initialize(const char * psShpFile, const char * psInput)
     CheckFile(psShpFile, false);
 
     // Get the driver for the job
-    OGRSFDriver *poDriver;
+    GDALDriver *poDriver;
     const char *pszDriverName = "ESRI Shapefile";
-    poDriver = GDALGetDriverByName(pszDriverName);
+    poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName);
 
     // Create a dataset
-    OGRDataSource * poDS;
-    poDS = poDriver->CreateDataSource(psShpFile, NULL );
+    GDALDataset * poDS;
+    poDS = poDriver->Create( psShpFile, 0, 0, 0, GDT_Unknown, NULL );
+
     if( poDS == NULL )
         throw RasterManagerException( OUTPUT_FILE_ERROR, "Creation of output file failed." );
 
@@ -53,7 +54,7 @@ int Raster2Polygon::Initialize(const char * psShpFile, const char * psInput)
     CreateField( poLayer, "Value", OFTReal );
 
     // Clean up and close everything
-    OGRDataSource::DestroyDataSource( poDS );
+    GDALClose(poDS);
 
     return PROCESS_OK;
 }
@@ -89,10 +90,7 @@ int Raster2Polygon::AddGut(const char * psShpFile,
     }
 
     // Open the Shapefile
-    const char *pszDriverName = "ESRI Shapefile";
-    OGRSFDriver *poDriver = GDALGetDriverByName(pszDriverName);
-
-    OGRDataSource *poDS = poDriver->Open(psShpFile, true);
+    GDALDataset *poDS = (GDALDataset*) GDALOpenEx( psShpFile, GDAL_OF_VECTOR, NULL, NULL, NULL );
 
     // Get the raster band
     GDALDataset * pDSInput = (GDALDataset*) GDALOpen(psInput, GA_ReadOnly);
@@ -128,7 +126,7 @@ int Raster2Polygon::AddGut(const char * psShpFile,
 
     qDebug() << QString("Layers: %1 Features: %2").arg(poDS->GetLayerCount()).arg(poLayer->GetFeatureCount());
 
-    OGRDataSource::DestroyDataSource( poDS );
+    GDALClose(poDS);
 
     return PROCESS_OK;
 }
