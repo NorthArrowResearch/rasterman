@@ -2,6 +2,7 @@
 #include "rastermanager_exception.h"
 #include "raster.h"
 #include <iostream>
+#include <QDebug>
 
 namespace RasterManager {
 
@@ -52,12 +53,12 @@ HistogramsClass::HistogramsClass(const char* filename, int numBins) throw (Raste
     Raster r(filename);
     double min = r.GetMinimum();
     double max = r.GetMaximum();
-    if (max-min == 0)
+    if (numBins == 0)
         throw new RasterManagerException(INPUT_FILE_ERROR, "division by zero since max and min are the same.");
 
-    double binSize = numBins/ (max-min);
+    double binSize = (max-min) / numBins;
 
-    init(filename, numBins, min, binSize, NULL);
+    init(filename, numBins, min, binSize, 0);
 }
 
 /*
@@ -485,8 +486,8 @@ bool HistogramsClass::writeCSV(const char* filename)
     csv.open(filename);
     if (csv.fail())
         setErrorMsg("Could not open " + std::string(filename) + " for writing.");
-    csv << "Lower Elevation Range (m),Upper Elevation Range(m),Total Area (m2)," <<
-           "Total Volume (m3),Number of Cells" << std::endl;
+    csv << "Lower Range,Upper Range,Total Area," <<
+           "Total Volume,Number of Cells" << std::endl;
     double min = minBin;
     double max = min + binSize;
     for (int i=0; i<numBins; i++)

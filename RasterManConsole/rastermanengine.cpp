@@ -397,10 +397,10 @@ int RasterManEngine::Histogram(int argc, char * argv[])
         std::cout << "\n          raster_file_path: input raster file paths";
         std::cout << "\n     output_histogram_path: Absolute full path to desired output histogram file.";
 
-        std::cout << "\n    number_of_bins: number of bins (int)";
-        std::cout << "\n       minimum_bin: minimum bin (int)";
-        std::cout << "\n          bin_size: Bin size (float)";
-        std::cout << "\n     bin_increment: Bin increment (float).";
+        std::cout << "\n            number_of_bins: number of bins (int)";
+        std::cout << "\n               minimum_bin: minimum bin (int)";
+        std::cout << "\n                  bin_size: Bin size (float)";
+        std::cout << "\n             bin_increment: Bin increment (float).";
 
         std::cout << "\n ";
         return PROCESS_OK;
