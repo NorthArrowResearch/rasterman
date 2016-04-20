@@ -238,7 +238,7 @@ extern "C" RM_DLL_API int RasterToCSV(const char * sRasterSourcePath,
 
 }
 
-int CalcSimpleHistograms(const char * psRasterPath,
+extern "C" RM_DLL_API int CalcSimpleHistograms(const char * psRasterPath,
                                          const char * psHistogramPath,
                                          int nNumBins,
                                          char * sErr)
