@@ -388,10 +388,10 @@ int RasterManEngine::RasterMath(int argc, char * argv[])
 
 int RasterManEngine::Histogram(int argc, char * argv[])
 {
-    if (argc != 8)
+    if (argc != 8 && argc != 5)
     {
         std::cout << "\n Create a histogram from a raster.";
-        std::cout << "\n    Usage: rasterman histogram <raster_file_path> <output_histogram_path> <number_of_bins> <minimum_bin> <bin_size> <bin_increment>";
+        std::cout << "\n    Usage: rasterman histogram <raster_file_path> <output_histogram_path> <number_of_bins> [<minimum_bin> <bin_size> <bin_increment>]";
         std::cout << "\n ";
         std::cout << "\n Arguments:";
         std::cout << "\n          raster_file_path: input raster file paths";
@@ -407,15 +407,24 @@ int RasterManEngine::Histogram(int argc, char * argv[])
     }
 
     int eResult = PROCESS_OK;
-
     int nNumBins = GetInteger(argc, argv, 4);
-    int nMinimumBin = GetInteger(argc, argv, 5);
-    double fBinSize = GetDouble(argc, argv, 6);
-    double fBinIncrement = GetDouble(argc, argv, 7);
 
-    RasterManager::HistogramsClass theHisto(argv[2],nNumBins, nMinimumBin, fBinSize, fBinIncrement);
 
-    theHisto.writeCSV(argv[3]);
+    // let's go get the
+    if (argc == 5){
+        RasterManager::HistogramsClass theHisto(argv[2],nNumBins);
+        theHisto.writeCSV(argv[3]);
+    }
+    else{
+        int nMinimumBin = GetInteger(argc, argv, 5);
+        double fBinSize = GetDouble(argc, argv, 6);
+        double fBinIncrement = GetDouble(argc, argv, 7);
+
+        RasterManager::HistogramsClass theHisto(argv[2],nNumBins, nMinimumBin, fBinSize, fBinIncrement);
+        theHisto.writeCSV(argv[3]);
+    }
+
+
     eResult = PROCESS_OK;
 
     return eResult;

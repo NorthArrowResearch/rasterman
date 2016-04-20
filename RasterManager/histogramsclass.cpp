@@ -1,5 +1,6 @@
 #include "histogramsclass.h"
 #include "rastermanager_exception.h"
+#include "raster.h"
 #include <iostream>
 
 namespace RasterManager {
@@ -33,6 +34,30 @@ HistogramsClass::HistogramsClass(const char* filename) throw (RasterManagerExcep
 HistogramsClass::HistogramsClass(int numBins, double minBin, double binSize, double binIncrement) throw (RasterManagerException)
 {
     init(numBins, minBin, binSize, binIncrement);
+}
+
+/*
+     * Constructor.
+     * @param filename The full path and filename to the DoD to calculate histograms for.
+     * @param numBins The number of bins.
+     * @param minBin The minimum bin value.
+     * @param binSize The size of the bins.
+     * @param binIncrement The bin label increment to use when plotting the histogram. It's here
+     * because I was too lazy to write more code to try to compute one that made sense -- it can be
+     * up the the user.
+     */
+HistogramsClass::HistogramsClass(const char* filename, int numBins) throw (RasterManagerException)
+{
+
+    Raster r(filename);
+    double min = r.GetMinimum();
+    double max = r.GetMaximum();
+    if (max-min == 0)
+        throw new RasterManagerException(INPUT_FILE_ERROR, "division by zero since max and min are the same.");
+
+    double binSize = numBins/ (max-min);
+
+    init(filename, numBins, min, binSize, NULL);
 }
 
 /*
@@ -436,96 +461,6 @@ void HistogramsClass::init(std::string filename, int numBins, double minBin, dou
     if (!calculate())
         throw RasterManagerException(OTHER_ERROR, error.c_str());
 }
-
-/*
-     * Plot area and volume histograms.
-     * @param filename Full path and filename to the png to create.
-     * @param title The title of the plot.
-     */
-//bool HistogramsClass::plotAreaVolume(const char* filename, const char* title)
-//{
-    /*
-    // Add up totals.
-    double maxArea = 0;
-    double maxVolume = 0;
-    double totalErosionArea = 0;
-    double totalDepositionArea = 0;
-    double totalErosionVolume = 0;
-    double totalDepositionVolume = 0;
-    double count = 0;
-    int zeroBin = (minBin < 0) ? (int)(fabs(minBin) / binSize) : 0;
-    double area, volume;
-    for (int i=0; i<numBins; i++)
-    {
-        count += countHistogram[i];
-        area = areaHistogram[i];
-        volume = volumeHistogram[i];
-        if (area > maxArea)
-            maxArea = area;
-        if (volume > maxVolume)
-            maxVolume = volume;
-        if (i < zeroBin)
-        {
-            totalErosionArea += area;
-            totalErosionVolume += volume;
-        }
-        else
-        {
-            totalDepositionArea += area;
-            totalDepositionVolume += volume;
-        }
-    }
-    if (count == 0)
-        return setErrorMsg("No data to plot.");
-
-    // Set up the plot
-    Plot plot = Plot(1650, 1275);
-    if (!plot.setMargin(150))
-        return setErrorMsg(plot.getError());
-    if (!plot.writeTitle(title, NULL))
-        return setErrorMsg(plot.getError());
-
-    // Top (area) plot
-    int width = 1350; // 1650 - 2 * 150
-    int height = 472; // (1275 - 2 * 150 - 30) / 2
-    if (!plot.setDrawArea(0, 30, width, height))
-        return setErrorMsg(plot.getError());
-    char yLabel[20], msg[1000];
-    sprintf(yLabel, "Area (m%c)", 31);
-    double yInterval = computeYInterval(maxArea);
-    if (!plot.drawHistogram(areaHistogram, numBins, binSize, minBin, binIncrement, 1,
-                            "Elevation Change (m)", nearestCeil(maxArea, yInterval), yInterval, 0, yLabel, ""))
-        return setErrorMsg(plot.getError());
-    sprintf(msg, "Total Area of Erosion: %.1f m%c", totalErosionArea, 31);
-    if (!plot.writeHText(msg, NULL))
-        return setErrorMsg(plot.getError());
-    sprintf(msg, "Total Area of Deposition: %.1f m%c", totalDepositionArea, 31);
-    if (!plot.writeHText(msg, NULL))
-        return setErrorMsg(plot.getError());
-
-    // Bottom (volume) plot
-    if (!plot.setDrawArea(0, 30 + height, width, height))
-        return setErrorMsg(plot.getError());
-    //sprintf(yLabel, "Volume (m%c)", 31);
-    sprintf(yLabel, "Volume (m3)");
-    yInterval = computeYInterval(maxVolume);
-    if (!plot.drawHistogram(volumeHistogram, numBins, binSize, minBin, binIncrement, 1,
-                            "Elevation Change (m)", nearestCeil(maxVolume, yInterval), yInterval, 0, yLabel, ""))
-        return setErrorMsg(plot.getError());
-    sprintf(msg, "Total Volume of Erosion: %.1f m3", totalErosionVolume);
-    if (!plot.writeHText(msg,NULL))
-        return setErrorMsg(plot.getError());
-    sprintf(msg, "Total Volume of Deposition: %.1f m3", totalDepositionVolume);
-    if (!plot.writeHText(msg, NULL))
-        return setErrorMsg(plot.getError());
-    sprintf(msg, "Net Volume: %.1f m3", totalDepositionVolume - totalErosionVolume);
-    if (!plot.writeHText(msg, NULL))
-        return setErrorMsg(plot.getError());
-
-    plot.savePng(filename);
-*/
-//    return true;
-//}
 
 /*
      * Convenience function to set an error message and return false.

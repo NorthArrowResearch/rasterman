@@ -105,6 +105,14 @@ public:
      * @param filename
      */
     HistogramsClass(const char* filename) throw (RasterManagerException);
+
+    /**
+     * @brief HistogramsClass
+     * @param filename
+     * @param numBins
+     */
+    HistogramsClass(const char* filename, int numBins) throw (RasterManagerException);
+
     /**
      * @brief
      *
