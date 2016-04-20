@@ -159,10 +159,10 @@ extern "C" RM_DLL_API void DestroyGDAL();
  * @param nDataType
  */
 extern "C" RM_DLL_API int GetRasterProperties(const char * ppszRaster,
-                                               double & fCellHeight, double & fCellWidth,
-                                               double & fLeft, double & fTop, int & nRows, int & nCols,
-                                               double & fNoData, int & bHasNoData, int & nDataType,
-                                               char *psUnit, char *psProjection, char *sErr);
+                                              double & fCellHeight, double & fCellWidth,
+                                              double & fLeft, double & fTop, int & nRows, int & nCols,
+                                              double & fNoData, int & bHasNoData, int & nDataType,
+                                              char *psUnit, char *psProjection, char *sErr);
 /**
  * @brief PrintRasterProperties
  *
@@ -308,10 +308,10 @@ extern "C" RM_DLL_API int vector2raster(const char * sVectorSourcePath,
  * @return
  */
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
-                         GDALDataType eDataType,
-                         bool bHasNoData,
-                         double fNoDataValue,
-                         int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit);
+                                        GDALDataType eDataType,
+                                        bool bHasNoData,
+                                        double fNoDataValue,
+                                        int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit);
 
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta * pTemplateRastermeta);
 
@@ -394,8 +394,8 @@ extern "C" RM_DLL_API int LinearThreshold(const char * psInputRaster,
  * @return
  */
 extern "C" RM_DLL_API int AreaThreshold(const char * psInputRaster,
-                                          const char * psOutputRaster,
-                                          double dAreaThresh, char *sErr);
+                                        const char * psOutputRaster,
+                                        double dAreaThresh, char *sErr);
 
 /**
  * @brief SmoothEdges
@@ -478,6 +478,18 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
                                        char *sErr);
 
 
+/**
+ * @brief CalcSimpleHistograms
+ * @param psRasterPath
+ * @param psHistogramPath
+ * @param nNumBins
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int CalcSimpleHistograms(const char * psRasterPath,
+                                               const char * psHistogramPath,
+                                               int nNumBins,
+                                               char * sErr);
 /**
  * @brief CalcHistograms
  * @param psRasterPath

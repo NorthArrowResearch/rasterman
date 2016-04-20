@@ -238,6 +238,29 @@ extern "C" RM_DLL_API int RasterToCSV(const char * sRasterSourcePath,
 
 }
 
+int CalcSimpleHistograms(const char * psRasterPath,
+                                         const char * psHistogramPath,
+                                         int nNumBins,
+                                         char * sErr)
+{
+    int eResult = PROCESS_OK;
+    InitCInterfaceError(sErr);
+    try
+    {
+        RasterManager::HistogramsClass theHisto(psRasterPath,nNumBins);
+
+        theHisto.writeCSV(psHistogramPath);
+        eResult = PROCESS_OK;
+    }
+    catch (RasterManagerException ex)
+    {
+        SetCInterfaceError(ex, sErr);
+        eResult = ex.GetErrorCode();
+    }
+
+    return eResult;
+}
+
 extern "C" RM_DLL_API int CalcHistograms(const char * psRasterPath,
                                          const char * psHistogramPath,
                                          int nNumBins,
