@@ -285,6 +285,14 @@ private:
      */
     int CompareRef(int argc, char *argv[]);
 
+    /**
+     * @brief Histogram
+     * @param argc
+     * @param argv
+     * @return
+     */
+    int Histogram(int argc, char *argv[]);
+
 };
 
 }

@@ -477,6 +477,26 @@ extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
                                        double dValue,
                                        char *sErr);
 
+
+/**
+ * @brief CalcHistograms
+ * @param psRasterPath
+ * @param psHistogramPath
+ * @param nNumBins
+ * @param nMinimumBin
+ * @param fBinSize
+ * @param fBinIncrement
+ * @param sErr
+ * @return
+ */
+extern "C" RM_DLL_API int CalcHistograms(const char * psRasterPath,
+                                         const char * psHistogramPath,
+                                         int nNumBins,
+                                         int nMinimumBin,
+                                         double fBinSize,
+                                         double fBinIncrement,
+                                         char * sErr);
+
 /**
  * @brief RasterNormalize
  * @param psRaster1

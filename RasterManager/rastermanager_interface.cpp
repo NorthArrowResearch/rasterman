@@ -5,7 +5,7 @@
 #include "extentrectangle.h"
 #include "rasterarray.h"
 #include "raster_gutpolygon.h"
-
+#include "histogramsclass.h"
 #include <stdio.h>
 #include "extentrectangle.h"
 #include "rastermanager.h"
@@ -238,6 +238,31 @@ extern "C" RM_DLL_API int RasterToCSV(const char * sRasterSourcePath,
 
 }
 
+extern "C" RM_DLL_API int CalcHistograms(const char * psRasterPath,
+                                         const char * psHistogramPath,
+                                         int nNumBins,
+                                         int nMinimumBin,
+                                         double fBinSize,
+                                         double fBinIncrement,
+                                         char * sErr)
+{
+    int eResult = PROCESS_OK;
+    InitCInterfaceError(sErr);
+    try
+    {
+        RasterManager::HistogramsClass theHisto(psRasterPath,nNumBins, nMinimumBin, fBinSize, fBinIncrement);
+
+        theHisto.writeCSV(psHistogramPath);
+        eResult = PROCESS_OK;
+    }
+    catch (RasterManagerException ex)
+    {
+        SetCInterfaceError(ex, sErr);
+        eResult = ex.GetErrorCode();
+    }
+
+    return eResult;
+}
 
 
 extern "C" RM_DLL_API int RasterFromCSVandExtents(const char * sCSVSourcePath,

@@ -46,7 +46,8 @@ SOURCES += \
     raster_area.cpp \
     raster_gutpolygon.cpp \
     raster_vector2raster.cpp \
-    raster_setnull.cpp
+    raster_setnull.cpp \
+    histogramsclass.cpp
 
 HEADERS +=\
     rastermanager_global.h \
@@ -60,7 +61,8 @@ HEADERS +=\
     raster_pitremove.h \
     benchmark.h \
     rasterarray.h \
-    raster_gutpolygon.h
+    raster_gutpolygon.h \
+    histogramsclass.h
 
 CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug

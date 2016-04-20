@@ -11,6 +11,7 @@
 #include "rastermanager_exception.h"
 #include "raster_pitremove.h"
 #include "raster_gutpolygon.h"
+#include "histogramsclass.h"
 
 namespace RasterManager {
 
@@ -133,6 +134,9 @@ int RasterManEngine::Run(int argc, char * argv[])
         else if (QString::compare(sCommand, "compare", Qt::CaseInsensitive) == 0)
             eResult = Compare(argc, argv);
 
+        else if (QString::compare(sCommand, "histogram", Qt::CaseInsensitive) == 0)
+            eResult = Histogram(argc, argv);
+
         else if (QString::compare(sCommand, "gutpoly", Qt::CaseInsensitive) == 0)
             eResult = GutPoly(argc, argv);
 
@@ -194,6 +198,7 @@ int RasterManEngine::Run(int argc, char * argv[])
         std::cout << "\n    hillshade    Create a hillshade raster.";
         std::cout << "\n    slope        Create a slope raster.";
         std::cout << "\n    png          Create a PNG image copy of a raster.";
+        std::cout << "\n    histogram    Create a histogram for a specific raster.";
         std::cout << "\n ";
         std::cout << "\n    csv2raster      Create a raster from a .csv file";
         std::cout << "\n    raster2csv      Create a raster from a .csv file";
@@ -375,6 +380,43 @@ int RasterManEngine::RasterMath(int argc, char * argv[])
     else{
         throw RasterManagerException(ARGUMENT_VALIDATION, "Could not validate arguments.");
     }
+
+    return eResult;
+
+}
+
+
+int RasterManEngine::Histogram(int argc, char * argv[])
+{
+    if (argc != 8)
+    {
+        std::cout << "\n Create a histogram from a raster.";
+        std::cout << "\n    Usage: rasterman histogram <raster_file_path> <output_histogram_path> <number_of_bins> <minimum_bin> <bin_size> <bin_increment>";
+        std::cout << "\n ";
+        std::cout << "\n Arguments:";
+        std::cout << "\n          raster_file_path: input raster file paths";
+        std::cout << "\n     output_histogram_path: Absolute full path to desired output histogram file.";
+
+        std::cout << "\n    number_of_bins: number of bins (int)";
+        std::cout << "\n       minimum_bin: minimum bin (int)";
+        std::cout << "\n          bin_size: Bin size (float)";
+        std::cout << "\n     bin_increment: Bin increment (float).";
+
+        std::cout << "\n ";
+        return PROCESS_OK;
+    }
+
+    int eResult = PROCESS_OK;
+
+    int nNumBins = GetInteger(argc, argv, 4);
+    int nMinimumBin = GetInteger(argc, argv, 5);
+    double fBinSize = GetDouble(argc, argv, 6);
+    double fBinIncrement = GetDouble(argc, argv, 7);
+
+    RasterManager::HistogramsClass theHisto(argv[2],nNumBins, nMinimumBin, fBinSize, fBinIncrement);
+
+    theHisto.writeCSV(argv[3]);
+    eResult = PROCESS_OK;
 
     return eResult;
 
