@@ -1,8 +1,8 @@
+#define MY_DLL_EXPORT
 #include "histogramsclass.h"
 #include "rastermanager_exception.h"
 #include "raster.h"
 #include <iostream>
-#include <QDebug>
 
 namespace RasterManager {
 
