@@ -1,8 +1,12 @@
+#ifndef HISTOGRAMCLASS_H
+#define HISTOGRAMCLASS_H
+
 #include <fstream>
 #include <iomanip>
 #include "cpl_conv.h"
 #include "gdal_priv.h"
 #include "rastermanager_exception.h"
+#include "histogramsclass.h"
 
 namespace RasterManager {
 
@@ -279,3 +283,5 @@ public:
 
 };
 }
+
+#endif // HISTOGRAMCLASS_H

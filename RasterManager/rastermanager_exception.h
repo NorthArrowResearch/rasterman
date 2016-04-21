@@ -13,7 +13,7 @@ enum RasterManagerOutputCodes {
     , INPUT_FILE_NOT_VALID
 
     , PATH_ERROR
-
+    , HISTOGRAM_ERROR
     , OUTPUT_FILE_MISSING
     , OUTPUT_FILE_ERROR
     , OUTPUT_NO_DATA_ERROR
@@ -176,6 +176,9 @@ public:
 
         case RASTER_ORTHOGONAL:
             return "Rasters are not Orthogonal";
+
+        case HISTOGRAM_ERROR:
+            return "Error calculating histogram";
 
         case RASTER_COMPARISON:
             return "Rasters are not the same";
