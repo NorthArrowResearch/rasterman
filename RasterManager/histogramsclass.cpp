@@ -9,7 +9,7 @@ namespace RasterManager {
 /*
      * Default constructor.
      */
-HistogramsClass::HistogramsClass(void)
+HistogramsClass::HistogramsClass()
 {
     init();
 }
@@ -18,7 +18,7 @@ HistogramsClass::HistogramsClass(void)
      * Constructor.
      * @param filename The full path and filename to the DoD to calculate histograms for.
      */
-HistogramsClass::HistogramsClass(const char* filename) throw (RasterManagerException)
+HistogramsClass::HistogramsClass(const char* filename)
 {
     init(filename);
 }
@@ -32,7 +32,7 @@ HistogramsClass::HistogramsClass(const char* filename) throw (RasterManagerExcep
      * because I was too lazy to write more code to try to compute one that made sense -- it can be
      * up the the user.
      */
-HistogramsClass::HistogramsClass(int numBins, double minBin, double binSize, double binIncrement) throw (RasterManagerException)
+HistogramsClass::HistogramsClass(int numBins, double minBin, double binSize, double binIncrement)
 {
     init(numBins, minBin, binSize, binIncrement);
 }
@@ -47,7 +47,7 @@ HistogramsClass::HistogramsClass(int numBins, double minBin, double binSize, dou
      * because I was too lazy to write more code to try to compute one that made sense -- it can be
      * up the the user.
      */
-HistogramsClass::HistogramsClass(const char* filename, int numBins) throw (RasterManagerException)
+HistogramsClass::HistogramsClass(const char* filename, int numBins)
 {
 
     Raster r(filename);
@@ -72,7 +72,7 @@ HistogramsClass::HistogramsClass(const char* filename, int numBins) throw (Raste
      * up the the user.
      */
 HistogramsClass::HistogramsClass(const char* filename, int numBins, double minBin,
-                                 double binSize, double binIncrement) throw (RasterManagerException)
+                                 double binSize, double binIncrement)
 {
     init(filename, numBins, minBin, binSize, binIncrement);
 }
@@ -418,7 +418,7 @@ void HistogramsClass::init(void)
 /*
      * Initialize the object.
      */
-void HistogramsClass::init(std::string filename) throw (RasterManagerException)
+void HistogramsClass::init(std::string filename)
 {
     init();
     int numBins;
@@ -432,7 +432,7 @@ void HistogramsClass::init(std::string filename) throw (RasterManagerException)
 /*
      * Initialize the object.
      */
-void HistogramsClass::init(int numBins, double minBin, double binSize, double binIncrement) throw (RasterManagerException)
+void HistogramsClass::init(int numBins, double minBin, double binSize, double binIncrement)
 {
     init();
     this->numBins = numBins;
@@ -455,7 +455,7 @@ void HistogramsClass::init(int numBins, double minBin, double binSize, double bi
      * Initialize the object.
      */
 void HistogramsClass::init(std::string filename, int numBins, double minBin, double binSize,
-                           double binIncrement) throw (RasterManagerException)
+                           double binIncrement)
 {
     init(numBins, minBin, binSize, binIncrement);
     this->filename = filename;

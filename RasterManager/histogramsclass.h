@@ -1,12 +1,11 @@
 #ifndef HISTOGRAMCLASS_H
 #define HISTOGRAMCLASS_H
 
+#include "rastermanager_global.h"
 #include <fstream>
 #include <iomanip>
 #include "cpl_conv.h"
 #include "gdal_priv.h"
-#include "rastermanager_exception.h"
-#include "histogramsclass.h"
 
 namespace RasterManager {
 
@@ -14,18 +13,18 @@ namespace RasterManager {
  * @brief
  *
  */
-class HistogramsClass
+class RM_DLL_API HistogramsClass
 {
 private:
-    int numBins; /**< TODO */
-    double minBin; /**< TODO */
-    double binSize; /**< TODO */
-    double binIncrement; /**< TODO */
-    long* countHistogram; /**< TODO */
-    double* areaHistogram; /**< TODO */
-    double* volumeHistogram; /**< TODO */
-    std::string filename; /**< TODO */
-    std::string error; /**< TODO */
+    int numBins; 
+    double minBin; 
+    double binSize; 
+    double binIncrement; // TODO:: NOT IN USER
+    long* countHistogram; 
+    double* areaHistogram; 
+    double* volumeHistogram; 
+    std::string filename; 
+    std::string error; 
 protected:
     /**
      * @brief
@@ -54,7 +53,7 @@ protected:
      *
      * @param filename
      */
-    void init(std::string filename) throw (RasterManagerException);
+    void init(std::string filename);
     /**
      * @brief
      *
@@ -63,8 +62,7 @@ protected:
      * @param binSize
      * @param binIncrement
      */
-    void init(int numBins, double minBin, double binSize, double binIncrement)
-    throw (RasterManagerException);
+    void init(int numBins, double minBin, double binSize, double binIncrement);
     /**
      * @brief
      *
@@ -75,7 +73,7 @@ protected:
      * @param binIncrement
      */
     void init(std::string filename, int numBins, double minBin, double binSize,
-              double binIncrement) throw (RasterManagerException);
+              double binIncrement);
     /**
      * @brief
      *
@@ -96,26 +94,24 @@ protected:
     static void getEndBins(double min, double max, double increment, bool equal, double& binMin,
                            double& binMax);
 public:
-    friend class BaseGCDClass;
-    friend class MaskHistogramsClass;
     /**
      * @brief
      *
      */
-    HistogramsClass(void);
+    HistogramsClass();
     /**
      * @brief
      *
      * @param filename
      */
-    HistogramsClass(const char* filename) throw (RasterManagerException);
+    HistogramsClass(const char* filename);
 
     /**
      * @brief HistogramsClass
      * @param filename
      * @param numBins
      */
-    HistogramsClass(const char* filename, int numBins) throw (RasterManagerException);
+    HistogramsClass(const char* filename, int numBins);
 
     /**
      * @brief
@@ -125,8 +121,7 @@ public:
      * @param binSize
      * @param binIncrement
      */
-    HistogramsClass(int numBins, double minBin, double binSize, double binIncrement)
-    throw (RasterManagerException);
+    HistogramsClass(int numBins, double minBin, double binSize, double binIncrement);
     /**
      * @brief
      *
@@ -137,7 +132,7 @@ public:
      * @param binIncrement
      */
     HistogramsClass(const char* filename, int numBins, double minBin, double binSize,
-                    double binIncrement) throw (RasterManagerException);
+                    double binIncrement);
     /**
      * @brief
      *
@@ -210,14 +205,7 @@ public:
      * @return double
      */
     double* getVolumeHistogram(void) const;
-    /**
-     * @brief
-     *
-     * @param filename
-     * @param title
-     * @return bool
-     */
-//    bool plotAreaVolume(const char* filename, const char* title);
+
     /**
      * @brief
      *
