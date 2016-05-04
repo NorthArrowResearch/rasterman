@@ -208,6 +208,12 @@ public:
         return sOutput;
     }
 
+    /**
+     * @brief GetEvidence: Just return the evidence string
+     * @return
+     */
+    inline QString GetEvidence(){ return m_sEvidence; }
+
 private:
     int m_nErrorCode;
     QString m_sEvidence;

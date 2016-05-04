@@ -27,16 +27,16 @@ RM_DLL_API const char * GetLibVersion(){ return RMLIBVERSION; }
 RM_DLL_API const char * GetMinGDALVersion(){ return MINGDAL; }
 
 RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster,
-                         GDALDataType eDataType,
-                         bool bHasNoData,
-                         double fNoDataValue,
-                         int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit){
+                                        GDALDataType eDataType,
+                                        bool bHasNoData,
+                                        double fNoDataValue,
+                                        int nCols, int nRows, double * newTransform, const char * projectionRef, const char * unit){
 
     RasterMeta pInputMeta(newTransform[3], newTransform[0], nRows, nCols, &newTransform[5], &newTransform[1], &fNoDataValue, NULL, &eDataType, projectionRef, unit);
     if (bHasNoData){
 
     }
-   return CreateOutputDS(pOutputRaster, &pInputMeta);
+    return CreateOutputDS(pOutputRaster, &pInputMeta);
 }
 
 
@@ -69,11 +69,11 @@ RM_DLL_API GDALDataset * CreateOutputDS(const char * pOutputRaster, RasterMeta *
     }
 
     GDALDataset * pDSOutput =  pDR->Create(pOutputRaster,
-                                          pTemplateRastermeta->GetCols(),
-                                          pTemplateRastermeta->GetRows(),
-                                          1,
-                                          *pTemplateRastermeta->GetGDALDataType(),
-                                          papszOptions);
+                                           pTemplateRastermeta->GetCols(),
+                                           pTemplateRastermeta->GetRows(),
+                                           1,
+                                           *pTemplateRastermeta->GetGDALDataType(),
+                                           papszOptions);
 
     CSLDestroy( papszOptions );
 
@@ -130,10 +130,10 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
     InitCInterfaceError(sErr);
     try {
         return Raster::RasterMath(psRaster1,
-                   psRaster2,
-                   &dNumericArg,
-                   psOperation,
-                   psOutput);
+                                  psRaster2,
+                                  &dNumericArg,
+                                  psOperation,
+                                  psOutput);
     }
     catch (RasterManagerException e){
         SetCInterfaceError(e, sErr);
@@ -142,8 +142,8 @@ extern "C" RM_DLL_API int BasicMath(const char * psRaster1,
 }
 
 extern "C" RM_DLL_API int RasterInvert(const char * psRaster1,
-                                 const char * psRaster2,
-                                 double dValue, char * sErr)
+                                       const char * psRaster2,
+                                       double dValue, char * sErr)
 {
     InitCInterfaceError(sErr);
     try {
@@ -239,9 +239,9 @@ extern "C" RM_DLL_API int RasterToCSV(const char * sRasterSourcePath,
 }
 
 extern "C" RM_DLL_API int CalcSimpleHistograms(const char * psRasterPath,
-                                         const char * psHistogramPath,
-                                         int nNumBins,
-                                         char * sErr)
+                                               const char * psHistogramPath,
+                                               int nNumBins,
+                                               char * sErr)
 {
     int eResult = PROCESS_OK;
     InitCInterfaceError(sErr);
@@ -364,7 +364,7 @@ extern "C" RM_DLL_API int RasterNormalize(const char * psRaster1,
 }
 
 extern "C" RM_DLL_API int RasterEuclideanDistance(const char * psInput,
-                                 const char * psOutput, const char * psUnits, char * sErr)
+                                                  const char * psOutput, const char * psUnits, char * sErr)
 {
     InitCInterfaceError(sErr);
     try {
@@ -593,9 +593,9 @@ extern "C" RM_DLL_API int CreateDrain(const char * sRasterInput, const char * sR
 
 
 extern "C" RM_DLL_API int AddGut(const char *psShpFile,
-                  const char *psInput,
-                  const char *tier1,
-                  const char *tier2, char * sErr)
+                                 const char *psInput,
+                                 const char *tier1,
+                                 const char *tier2, char * sErr)
 {
     InitCInterfaceError(sErr);
     try{
@@ -816,11 +816,11 @@ extern "C" RM_DLL_API int Copy(const char * ppszOriginalRaster,
 }
 
 extern "C" RM_DLL_API int ExtendedCopy(const char * ppszOriginalRaster,
-                               const char *ppszOutputRaster,
-                               double fLeft, double fTop, int nRows, int nCols,
-                               const char * psRef,
-                               const char * psUnit,
-                               char * sErr)
+                                       const char *ppszOutputRaster,
+                                       double fLeft, double fTop, int nRows, int nCols,
+                                       const char * psRef,
+                                       const char * psUnit,
+                                       char * sErr)
 {
     InitCInterfaceError(sErr);
     try{
