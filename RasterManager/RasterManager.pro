@@ -7,7 +7,7 @@
 QT       += core
 QT       -= gui widgets
 
-VERSION = 6.3.0
+VERSION = 6.4.0
 TARGET = RasterManager
 TEMPLATE = lib
 
@@ -68,9 +68,6 @@ CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 GDALLIB = $$(GDALLIBDIR)
-isEmpty(GDALLIB){
-    error("GDALLIBDIR not set. This will cause failures")
-}
 
 win32 {
 
@@ -81,6 +78,10 @@ win32 {
     } else {
         message("x86_64 build (64 bit) ")
         ARCH = "64"
+    }
+
+    isEmpty(GDALLIB){
+        error("GDALLIBDIR not set. This will cause failures")
     }
 
     # GDAL is required
@@ -99,28 +100,44 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
+    # Where are we installing to
+    target.path = /usr/local/lib
+    INSTALLS += target
 }
 linux{
-    # Where are we installing to
-    target.path = /usr/lib
-    INSTALLS += target
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
+
+    # Where are we installing to
+    target.path = /usr/local/lib
+    INSTALLS += target
 }

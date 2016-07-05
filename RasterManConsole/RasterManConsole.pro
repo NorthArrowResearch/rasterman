@@ -5,9 +5,9 @@
 #-------------------------------------------------
 
 QT       += core xml
-QT       -= gui
+QT       -= gui widgets
 
-VERSION = 6.3.0
+VERSION = 6.4.0
 DEFINES += EXEVERSION=\\\"$$VERSION\\\" # Makes verion available to c++
 
 TARGET = rasterman
@@ -26,9 +26,11 @@ CONFIG(release, debug|release): BUILD_TYPE = release
 else:CONFIG(debug, debug|release): BUILD_TYPE = debug
 
 GDALLIB = $$(GDALLIBDIR)
-isEmpty(GDALLIB){
-    error("GDALLIBDIR not set. This will cause failures")
-}
+
+INCLUDEPATH += $$PWD/../RasterManager
+DEPENDPATH += $$PWD/../RasterManager
+INCLUDEPATH += $$PWD/../Raster2PNG
+DEPENDPATH += $$PWD/../Raster2PNG
 
 win32 {
 
@@ -40,6 +42,11 @@ win32 {
         message("x86_64 build (64 bit) ")
         ARCH = "64"
     }
+
+    isEmpty(GDALLIB){
+        error("GDALLIBDIR not set. This will cause failures")
+    }
+
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal_i
@@ -56,7 +63,7 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 
     LIBS += -L$$DESTDIR -lRasterManager$$TOOL
     LIBS += -L$$DESTDIR -lRaster2PNG$$TOOL
@@ -66,8 +73,13 @@ macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
-    # Compile to a central location
-    DESTDIR = $$OUT_PWD/../../../Deploy/$$BUILD_TYPE
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
@@ -76,20 +88,27 @@ macx{
 
     LIBS += -L$$DESTDIR -lRasterManager
     LIBS += -L$$DESTDIR -lRaster2PNG
+
+    # Where are we installing to
+    target.path = /usr/local/bin
+    INSTALLS += target
 }
 linux{
+    isEmpty(GDALLIB){
+        warning("GDALLIBDIR not set. Defaulting to /usr/local")
+        GDALLIB = /usr/local
+    }
+
+    # This is mostly to keep the debug builds sane
+    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
     # Where are we installing to
-    target.path = /usr/bin
+    target.path = /usr/local/bin
     INSTALLS += target
 
-    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
-    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 }
-
-INCLUDEPATH += $$PWD/../RasterManager
-DEPENDPATH += $$PWD/../RasterManager
