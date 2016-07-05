@@ -100,7 +100,7 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
@@ -112,7 +112,7 @@ macx{
     }
 
     # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal
@@ -130,7 +130,7 @@ linux{
     }
 
     # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
 
     # GDAL is required
     LIBS += -L$$GDALLIB/lib -lgdal

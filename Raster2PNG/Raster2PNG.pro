@@ -78,14 +78,14 @@ win32 {
     }
 
     TARGET = $$TARGET$$TOOL
-    DESTDIR = $$OUT_PWD/../../Deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$TOOLDIR$$BUILD_TYPE$$ARCH
 }
 macx{
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11 #2 ElCapitan
     QMAKE_MAC_SDK = macosx10.11
 
     # This is mostly to keep the debug builds sane
-    DESTDIR = $$OUT_PWD/../../Deploy/$$BUILD_TYPE$$ARCH
+    DESTDIR = $$OUT_PWD/../../deploy/$$BUILD_TYPE$$ARCH
 
     isEmpty(GDALLIB){
         warning("GDALLIBDIR not set. Defaulting to /usr/local")
