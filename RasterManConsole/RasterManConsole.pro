@@ -86,8 +86,9 @@ macx{
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
-    LIBS += -L$$DESTDIR -lRasterManager
-    LIBS += -L$$DESTDIR -lRaster2PNG
+    # Libs inside the project must be locally referenced with OUT_PWD
+    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
+    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 
     # Where are we installing to
     target.path = /usr/local/bin
@@ -107,11 +108,13 @@ linux{
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
-    LIBS += -L$$DESTDIR -lRasterManager
-    LIBS += -L$$DESTDIR -lRaster2PNG
+    # Libs inside the project must be locally referenced with OUT_PWD
+    LIBS += -L$$OUT_PWD/../RasterManager -lRasterManager
+    LIBS += -L$$OUT_PWD/../Raster2PNG -lRaster2PNG
 
     # Where are we installing to
     target.path = /usr/local/bin
     INSTALLS += target
 
 }
+
