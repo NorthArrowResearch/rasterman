@@ -107,6 +107,9 @@ linux{
     INCLUDEPATH += $$GDALLIB/include
     DEPENDPATH  += $$GDALLIB/include
 
+    LIBS += -L$$DESTDIR -lRasterManager
+    LIBS += -L$$DESTDIR -lRaster2PNG
+
     # Where are we installing to
     target.path = /usr/local/bin
     INSTALLS += target
